@@ -1,0 +1,386 @@
+*** Settings ***
+Documentation     This suite contains all the scenarios of Manage Income Frequencies page.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyIncomeFrequenciesLink
+    [Documentation]    This script verifies the Manage Income Frequency Link under Application Settings Tab.
+    Focus    xpath=(//a[contains(text(),'Admin')])[2]
+    Click Element    xpath=(//a[contains(text(),'Admin')])[2]
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Income Frequencies    ${Timeout}    Income Frequencies \ link is not displayed in the "Application settings" tab
+    Page Should Contain Element    link=Income Frequencies    Income Frequencies \ link is not displayed in the "Application settings" tab
+
+verifyIncomeFrequenciesButton
+    [Documentation]    This script verifies the Manage Income Frequency button after clicking Application Settings Tab.
+    Focus    xpath=(//a[contains(text(),'Admin')])[2]
+    Click Element    xpath=(//a[contains(text(),'Admin')])[2]
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Income Frequencies    ${Timeout}    Income Frequencies Button is not displayed in the "Application settings" tab
+    Page Should Contain Element    link=Income Frequencies    Income Frequencies Button is not displayed in the "Application settings" tab
+
+toVerifyTheIncomeFrequenciesLinkRedirection
+    [Documentation]    This script navigate to Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Income Frequencies Page not loaded properly
+    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Manage Income Frequencies Page not loaded properly
+    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Income Frequencies    Manage Income Frequencies header has invalid Text on Manage Income Frequencies page
+
+toVerifyUIOfManageIncomeFrequenciesPage
+    [Documentation]    This script verifies the UI elements of Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Manage Income Frequencies page not has General Application Settings - Manage Income Frequencies haeder
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Income Frequencies    Manage Income Frequencies header has invalid Text on Manage Income Frequencies page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_income_frequencies']/table/thead/tr/th    Manage Income Frequencies page not has Income Frequency Column
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_income_frequencies']/table/thead/tr/th    Income Frequency    Income Frequency Column has invalid Text on Manage Income Frequencies page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_income_frequencies']/table/thead/tr/th[2]    Core ID    Core ID Column has invalid text on Manage Income Frequencies page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_income_frequencies']/table/thead/tr/th[3]    Status Column not present on Manage Income Frequencies page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_income_frequencies']/table/thead/tr/th[3]    Status    Status Column has invalid text on Manage Income Frequencies page \
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_income_frequencies']    Last Updated label not present on Manage Income Frequencies page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Textfield    id=new_income_frequency_name    Income Frequency text field not present on Manage Income Frequencies page \
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    id=new_income_frequency_core_code    Core Code list box not present on Manage Income Frequencies page \
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    css=label    Enable checkbox not present on Manage Income Frequencies page \ \
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add button not present on Manage Income Frequencies page \ \ \
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}
+    @{Messages}=    Create List    Manage Income Frequencies page not has General Application Settings - Manage Income Frequencies haeder    General Application Settings - Manage Income Frequencies header has invalid Text on Manage Income Frequencies page    Manage Income Frequencies page not has Income Frequency Column    Income Frequency Column has invalid Text on Manage Income Frequencies page    Core ID Column has invalid text on Manage Income Frequencies page
+    ...    Status Column not present on Manage Income Frequencies page    Status Column has invalid text on Manage Income Frequencies page \    Last Updated label not present on Manage Income Frequencies page    Income Frequency text field not present on Manage Income Frequencies page    Core Code list box not present on Manage Income Frequencies page    Enable checkbox not present on Manage Income Frequencies page
+    ...    Add button not present on Manage Income Frequencies page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDefaultValues
+    [Documentation]    This script verifies the default values on Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    Sleep    1
+    ${IncomeFrequencyWaterMarkText}    Get Element Attribute    id=new_income_frequency_name@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Income Frequency    ${IncomeFrequencyWaterMarkText}    Income Frequency text box has invalid watermark text
+    @{AllCoreCode}=    Get List Items    id=new_income_frequency_core_code
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    Core ID    @{AllCoreCode}[0]    [Core System] Code value in the drop down has invalid characters on Manage Income Frequencies page
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    Annually    @{AllCoreCode}[1]    Annually \ value in the drop down has invalid characters on Manage Income Frequencies page
+    ${V4}=    Run Keyword And Return Status    Should Be Equal As Strings    Semiannually    @{AllCoreCode}[2]    Semiannually value in the drop down has invalid characters on Manage Income Frequencies page
+    ${V5}=    Run Keyword And Return Status    Should Be Equal As Strings    Quarterly    @{AllCoreCode}[3]    Quarterly value in the drop down has invalid characters on Manage Income Frequencies page
+    ${V6}=    Run Keyword And Return Status    Should Be Equal As Strings    Bimonthly    @{AllCoreCode}[4]    Bimonthlyvalue in the drop down has invalid characters on Manage Income Frequencies page
+    ${V7}=    Run Keyword And Return Status    Should Be Equal As Strings    Monthly    @{AllCoreCode}[5]    Monthly value in the drop down has invalid characters on Manage Income Frequencies page
+    ${V8}=    Run Keyword And Return Status    Should Be Equal As Strings    Semimonthly    @{AllCoreCode}[6]    Semimonthly value in the drop down has invalid characters on Manage Income Frequencies page
+    ${V9}=    Run Keyword And Return Status    Should Be Equal As Strings    Biweekly    @{AllCoreCode}[7]    Biweekly value in the drop down has invalid characters on Manage Income Frequencies page
+    ${V10}=    Run Keyword And Return Status    Should Be Equal As Strings    Weekly    @{AllCoreCode}[8]    Weekly value in the drop down has invalid characters on Manage Income Frequencies page
+    ${V11}=    Run Keyword And Return Status    Should Be Equal As Strings    Hourly    @{AllCoreCode}[9]    Hourly value in the drop down has invalid characters on Manage Income Frequencies page
+    ${V12}=    Run Keyword And Return Status    Checkbox Should Be Selected    name=enabled
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}
+    @{Messages}=    Create List    Income Frequency text box has invalid watermark text    [Core System] Code value in the drop down has invalid characters on Manage Income Frequencies page    Annually \ value in the drop down has invalid characters on Manage Income Frequencies page    Semiannually value in the drop down has invalid characters on Manage Income Frequencies page    Quarterly value in the drop down has invalid characters on Manage Income Frequencies page
+    ...    Bimonthlyvalue in the drop down has invalid characters on Manage Income Frequencies page    Monthly value in the drop down has invalid characters on Manage Income Frequencies page    Semimonthly value in the drop down has invalid characters on Manage Income Frequencies page    Biweekly value in the drop down has invalid characters on Manage Income Frequencies page    Weekly value in the drop down has invalid characters on Manage Income Frequencies page    Hourly value in the drop down has invalid characters on Manage Income Frequencies page
+    ...    Enabled check box not selected by default on Manage Income Frequencies page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewIncomeFrequencyEnabled
+    [Documentation]    This script add the new income frequency with enable status on Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    ${IncomeFrequencyName}=    Generate Random String    7    [LETTERS]
+    addNewIncomeFrequency    ${IncomeFrequencyName}    2    Enabled
+    Sleep    3
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${IncomeFrequencyName}']    Could not add New Income Frequency on Manage Income Frequency page
+
+addNewIncomeFrequencyDisabled
+    [Documentation]    This script add the new income frequency with disable status on Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    ${IncomeFrequencyName}=    Generate Random String    7    [LETTERS]
+    addNewIncomeFrequency    ${IncomeFrequencyName}    2    Disabled
+    Sleep    3
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${IncomeFrequencyName}']    Could not add New Income Frequency on Manage Income Frequency page
+
+verifyBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation on Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    addNewIncomeFrequency    ${EMPTY}    0    ${EMPTY}
+    Comment    Blank field validation Error message for Income Frequency Name
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Income Frequency name validation message not appear on Manage Income Frequencies page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Income Frequency name has invalid characters on Manage Income Frequencies page
+    Comment    Blank field validation Error message for Core Code field
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    css=td.secondCol > small.error    Empty Core Code validation message not appear on Manage Income Frequencies page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=td.secondCol > small.error    This field is required.    This field is required. message for the Empty Core Code has invalid characters on Manage Income Frequencies page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Empty Income Frequency name validation message not appear on Manage Income Frequencies page    This field is required. message for the Empty Income Frequency name has invalid characters on Manage Income Frequencies page    Empty Core Code validation message not appear on Manage Income Frequencies page    This field is required. message for the Empty Core Code has invalid characters on Manage Income Frequencies page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addIncomeFrequencyUniqueNameValidation
+    [Documentation]    This script verifies the unique income frequency name validation on Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    ${IncomeFrequencyName}=    Generate Random String    7    [LETTERS]
+    addNewIncomeFrequency    ${IncomeFrequencyName}    2    Enabled
+    Sleep    1
+    addNewIncomeFrequency    ${IncomeFrequencyName}    2    Enabled
+    Sleep    1
+    Page Should Contain Element    css=small.error    Unique name validation message not appear on Manage Income Frequency page
+    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+
+verifyTheEditButtonClick
+    [Documentation]    This script verifies the Edit button functionality on Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Income Frequency not opened
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    name=name    Income Frequency name text box not present for the edited record
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    name=core_code    Core Code drop down not present for the edited record
+    ${V4}=    Run Keyword And Return Status    Element Should Be Visible    //button[@type='submit']    Save link not appear on the Edit Income Frequency page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='submit']    Save link not present on the Edit Income Frequency page
+    ${V6}=    Run Keyword And Return Status    Element Should Be Visible    xpath=(//button[@type='button'])[2]    Close link not appear on the Edit Income Frequency page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    xpath=(//button[@type='button'])[2]    X("Close") link not present on the Edit Income Frequency page
+    ${V8}=    Run Keyword And Return Status    Element Should Not Be Visible    //tr[1]/td[4]/form/button    Edit link button present on Edit Income Frequency page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}
+    @{Messages}=    Create List    Edit button not found for the first row in the grid    Income Frequency name text box not present for the edited record    Core Code drop down not present for the edited record    Save link not appear on the Edit Income Frequency page    Save link not present on the Edit Income Frequency page
+    ...    Close link not appear on the Edit Income Frequency page    X("Close") link not present on the Edit Income Frequency page    Edit link button present on Edit Income Frequency page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editIncomeFrequencyToolTipsOnControls
+    [Documentation]    This script verifies the tool tips of all controls on Edit mode on Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Comment    Taking Tool Tip of Edit Button
+    ${EditButtonToolTip}=    Get Element Attribute    //tr[1]/td[4]/form/button@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${EditButtonToolTip}    Edit Income Frequency    Edit button has invalid tool tip
+    Mouse Over    //tr[1]/td[4]/form/button
+    Focus    //tr[1]/td[4]/form/button
+    Sleep    2
+    Click Element    //tr[1]/td[4]/form/button
+    sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened properly
+    Comment    Taking Tool Tip of Save and Close button
+    ${SaveButtonToolTip}=    Get Element Attribute    //div[@id='manage_income_frequencies']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]@title
+    ${CancelButtonToolTip}=    Get Element Attribute    //div[@id='manage_income_frequencies']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button@title
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${SaveButtonToolTip}    Update Income Frequency    Save button has invalid tool tip
+    Mouse Over    //div[@id='manage_income_frequencies']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CancelButtonToolTip}    Cancel    Cancel button has invalid tool tip
+    Mouse Over    //div[@id='manage_income_frequencies']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button
+    Sleep    2
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Edit button has invalid tool tip    Save button has invalid tool tip    Cancel button has invalid tool tip
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editIncomeFrequencyWaterMarkText
+    [Documentation]    This script verifies the water mark text of Income Frequency field on Edit mode on Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Income Frequency not opened
+    Input Text    name=name    ${EMPTY}
+    ${IncomeFrequencyWaterMarkText}    Get Element Attribute    name=name@placeholder
+    Should Be Equal As Strings    ${IncomeFrequencyWaterMarkText}    Income Frequency    Income Frequency text box has invalid watermark text at edit mode
+
+editIncomeFrequencyNameDetails
+    [Documentation]    This script verifies the updated values of Income frequency on Edit mode on Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Income Frequency not opened
+    Comment    Enter new details for existing Income Frequency
+    ${IncomeFrequencyName}=    Generate Random String    7    [LETTERS]
+    Focus    name=name
+    Input Text    name=name    ${IncomeFrequencyName}
+    @{AllCoreCodes}=    Get List Items    name=core_code
+    ${AlreadySelectedValue}=    Get Selected List Label    name=core_code
+    Run Keyword If    '@{AllCoreCodes}[2]'!='${AlreadySelectedValue}'    Select From List    name=core_code    @{AllCoreCodes}[2]
+    Run Keyword If    '@{AllCoreCodes}[3]'!='${AlreadySelectedValue}'    Select From List    name=core_code    @{AllCoreCodes}[3]
+    Sleep    1
+    ${Updated Value}=    Get Selected List Label    name=core_code
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    4
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values not saved properly
+    Element Text Should Be    //tr[1]/td    ${IncomeFrequencyName}    Updated Income Frequency name not displayed correctly
+    Element Text Should Be    //tr[1]/td[2]    ${Updated Value}    Updated \ Core Code not displayed correctly
+
+editBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation on Edit mode on Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Income Frequency not opened
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    @{AllCoreCodes}=    Get List Items    name=core_code
+    ${AlreadySelectedValue}=    Get Selected List Label    name=core_code
+    Select From List    name=core_code    @{AllCoreCodes}[0]
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Updated values saved properly without giving error messages
+    Comment    Error Message for the Income Frequency Name
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Income Frequency name validation message not appear on the Manage Income Frequency \ page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Income Frequency name \ has invalid characters on Manage Income Frequency \ page
+    Comment    Error Message for the Core Code Drop down List
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    css=td.secondCol > small.error    Empty Core Code \ validation message not appear on the Manage Income Frequency \ page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=td.secondCol > small.error    This field is required.    This field is required. message for the Empty Core Code has invalid characters on the Manage Income Frequency \ page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Empty Income Frequency name validation message not appear on the Manage Income Frequency \ page    This field is required. message for the Empty Income Frequency name \ has invalid characters on Manage Income Frequency \ page    Empty Core Code \ validation message not appear on the Manage Income Frequency \ page    This field is required. message for the Empty Core Code has invalid characters on the Manage Income Frequency \ page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+
+editIncomeFrequencyCancelButtonFunctionality
+    [Documentation]    This script verifies the Cancel button functionality on Edit mode on Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${ExistingName}=    Get Text    //tr[1]/td
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Income Frequency not opened
+    Comment    Enter the New Details in Income Frequency and Core Code fields
+    ${IncomeFrequencyName}=    Generate Random String    7    [LETTERS]
+    Focus    name=name
+    Input Text    name=name    ${IncomeFrequencyName}
+    @{AllCoreCodes}=    Get List Items    name=core_code
+    ${AlreadySelectedValue}=    Get Selected List Label    name=core_code
+    Run Keyword If    '@{AllCoreCodes}[2]'!='${AlreadySelectedValue}'    Select From List    name=core_code    @{AllCoreCodes}[2]
+    Run Keyword If    '@{AllCoreCodes}[3]'!='${AlreadySelectedValue}'    Select From List    name=core_code    @{AllCoreCodes}[3]
+    ${Updated Value}=    Get Selected List Label    name=core_code
+    Focus    xpath=(//button[@type='button'])[2]
+    Click Element    xpath=(//button[@type='button'])[2]
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values not saved properly
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${ExistingName}    Cancel button click update the Income Frequency name value
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td[2]    ${AlreadySelectedValue}    Cancel button click update the Core Code value
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='manage_income_frequencies']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    Save link present on the Income Frequency page after clicking on the Cancel Edit button
+    ${V4}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='manage_income_frequencies']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    Close link present on the Income Frequency page after clicking on the Cancel Edit button
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Cancel button click update the Income Frequency name value    Cancel button click update the Core Code value    Save link present on the Income Frequency page after clicking on the Cancel Edit button    Close link present on the Income Frequency page after clicking on the Cancel Edit button
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editIncomeFrequencyUniqueNameValidation
+    [Documentation]    This script verifies the unique income frequency name validation on edit mode on Manage Income Frequencies page.
+    goToManageIncomeFrequenciesPage
+    ${SecondName}=    Get Text    //tr[2]/td
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Income Frequency not opened
+    Comment    Enter the New Details
+    Focus    name=name
+    Input Text    name=name    ${SecondName}
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Updated values/duplicate values saved without any error message
+    Page Should Contain Element    css=small.error    Unique name validation message not appear on the Page
+    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+
+verifyAddedEnabledIncomeFrequencyInApplicationPage
+    [Documentation]    This script add new income frequency with enable status and verifies newly added income frequency on New Application page.
+    goToManageIncomeFrequenciesPage
+    ${IncomeFrequencyName}=    Generate Random String    7    [LETTERS]
+    addNewIncomeFrequency    ${IncomeFrequencyName}    2    Enabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${IncomeFrequencyName}']    Could not added New Income Frequency on Manage Income Frequency Page
+    fillNewApplicationForm
+    Sleep    1
+    Focus    name=-1_frequency
+    @{AllTypes}=    Get List Items    name=-1_frequency
+    ${V2}=    Run Keyword And Return Status    Should Contain    ${AllTypes}    ${IncomeFrequencyName}    Added Enabled Income Frequency name is not displayed on the Primary Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${IncomeFrequencyName}    1    Added Income Frequency name is displayed more than one time on the Primary Applicant page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Could not added New Income Frequency    Added Enabled Income Frequency name is not displayed on the Primary Applicant page    Added Income Frequency name is displayed more than one time on the Primary Applicant page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedDisabledIncomeFrequencyInApplicationPage
+    [Documentation]    This script add new income frequency with disable status and verifies newly added income frequency on New Application page.
+    goToManageIncomeFrequenciesPage
+    ${IncomeFrequencyName}=    Generate Random String    7    [LETTERS]
+    addNewIncomeFrequency    ${IncomeFrequencyName}    2    Disabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${IncomeFrequencyName}']    Could not added New Income Frequency on Manage Income Frequency Page
+    fillNewApplicationForm
+    Sleep    1
+    Focus    name=-1_frequency
+    @{AllTypes}=    Get List Items    name=-1_frequency
+    ${V2}=    Run Keyword And Return Status    Should Not Contain    ${AllTypes}    ${IncomeFrequencyName}    Added Disabled Income Frequency name is displaying \ on the Primary Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${IncomeFrequencyName}    0    Added Disabled Income frequency name is displayed in the frequency \ drop down
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Could not added New Income Frequency    Added Disabled Income Frequency name is displaying \ on the Primary Applicant page    Added Disabled Income frequency name is displayed in the frquency \ drop down
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+goToManageIncomeFrequenciesPage
+    [Documentation]    This keyword navigate to Manage Income Frequencies page.
+    Focus    xpath=(//a[contains(text(),'Admin')])[2]
+    Click Element    xpath=(//a[contains(text(),'Admin')])[2]
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Income Frequencies    ${Timeout}    Income Frequencies link is not displaying in the "Application settings" tab
+    Page Should Contain Element    link=Income Frequencies    Income Frequencies link is not displaying in the "Application settings" tab
+    Focus    link=Income Frequencies
+    Click Element    link=Income Frequencies
+    Sleep    2
+
+addNewIncomeFrequency
+    [Arguments]    ${Name}    ${CoreCodeNumber}    ${Status}
+    [Documentation]    This keyword use to add new income frequency on Manage Income Frequency page.
+    Focus    id=new_income_frequency_name
+    Input Text    id=new_income_frequency_name    ${Name}
+    Focus    id=new_income_frequency_core_code
+    @{AllCoreCodes}=    Get List Items    id=new_income_frequency_core_code
+    Select From List    id=new_income_frequency_core_code    @{AllCoreCodes}[${CoreCodeNumber}]
+    Run Keyword If    '${Status}'=='Disabled'    Unselect Checkbox    name=enabled
+    Focus    name=submit-add
+    Click Element    name=submit-add
+
+fillNewApplicationForm
+    [Documentation]    This keyword use to fill new application form.
+    sleep    1
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    sleep    1
+    Page Should Contain Element    link=New Application    New Application link is not present.
+    Click Element    link=New Application
+    Sleep    2
+    Page Should Contain Element    name=loan_type    Loan Type drop down is not present on first page of New application.
+    @{LoanType}=    Get List Items    name=loan_type
+    Select From List    name=loan_type    @{LoanType}[1]
+    Page Should Contain Element    id=request_amount    Request Amount text box is not present on first page of New Application.
+    Input Text    id=request_amount    100
+    Page Should Contain Textfield    id=request_term    Request Term text box is not present on first page of New Application.
+    Focus    id=request_term
+    Input Text    id=request_term    1
+    Click Element    name=continue
+    Sleep    1
+    Wait Until Page Contains Element    id=search_ssn    ${Timeout}    Primary Applicant page not loaded properly
+    Focus    //input[@value=' Additional Income']
+    Click Element    //input[@value=' Additional Income']
+    Sleep    3

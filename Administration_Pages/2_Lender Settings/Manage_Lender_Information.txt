@@ -1,0 +1,350 @@
+*** Settings ***
+Documentation     This suite contains scenarios of Manage Lender Information Page.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyLenderInformationLink
+    [Documentation]    This script verifyes the Manage Lender Information link.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Information    ${Timeout}    Lender Information link not present under Lender Settings tab
+
+verifyLenderInformationButton
+    [Documentation]    This script verifyes the Manage Lender Information button under Lender Settings tab.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Focus    link=Lender Settings
+    Click Element    link=Lender Settings
+    Sleep    1
+    Page Should Contain Element    link=Manage Lender Information    Manage Lender Information button not present under Lender Settings tab
+
+verifyLenderInformationLinkRedirection
+    [Documentation]    This script navigates to Manage Lender Information page.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Information    ${Timeout}    Lender Information link not present under Lender Settings tab
+    Click Element    link=Lender Information
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Lender Information page not loaded properly
+
+toVerifyUIOfManageLenderInformationPage
+    [Documentation]    This script veriyes the UI of Manage Lender Information Page.
+    goToManageLenderInformationPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Manage Lender Information header not present on Manage Lender Information page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Lender Information    Manage Lender Information header has invalid text on Manage Lender Information page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='lenderInfo']/div/h3    Lender Information label not present on Manage Lender Information page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div/h3    Lender Information    Lender Information label has invalid text on Manage Lender Information page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    link=Edit    Edit lonk button not present on Manage Lender Information page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div/div    Full Name:    Full Name label has invalid text on Manage Lender Information page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[2]/div    Short Name:    Short Name label has invalid text on Manage Lender Information page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[3]/div    Main Address:    Main Address label has invalid text on Manage Lender Information page
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[4]/div    Phone:    exact phone label has invalid text on Manage Lender Information page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[5]/div    Fax:    exact Fax label has invalid text on Manage Lender Information page
+    ${V11}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[6]/div    Mailing Address:    Mailing Address label has invalid text on Manage Lender Information page
+    ${V12}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[7]/div    Titling Address:    Titling Address label has invalid text on Manage Lender Information page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}
+    @{Messages}=    Create List    Manage Lender Information header not present on Manage Lender Information page    Manage Lender Information header has invalid text on Manage Lender Information page    Lender Information label not present on Manage Lender Information page    Lender Information label has invalid text on Manage Lender Information page    Edit lonk button not present on Manage Lender Information page
+    ...    Full Name label has invalid text on Manage Lender Information page    Short Name label has invalid text on Manage Lender Information page    Main Address label has invalid text on Manage Lender Information page    exact phone label has invalid text on Manage Lender Information page    exact Fax label has invalid text on Manage Lender Information page    Mailing Address label has invalid text on Manage Lender Information page
+    ...    Titling Address label has invalid text on Manage Lender Information page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+toVerifyEditLinkOnManageLenderInformationPage
+    [Documentation]    This script verifyes the Edit link button functionality on Manage Lender Information Page.
+    goToManageLenderInformationPage
+    Page Should Contain Element    link=Edit    Edit link not present on Manage Lender Information Page
+    Sleep    1
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Edit page of Manage Lender Information not loaded properly
+
+toVerifyUIOfUpdateLenderInformationPage
+    [Documentation]    This script verifyes the UI of Update Lender Information page.
+    goToManageLenderInformationPage
+    Sleep    1
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Edit page of Manage Lender Information not loaded properly
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Update Lender Information header is not present on Update Lender Information page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Update Lender Information    Update Lender Information header has invalid text on Update Lender Information page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='lenderInfo']/fieldset/legend    Lender Information section not present on Update Lender Information page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/fieldset/legend    Lender Information    Lender Information section has invalid text on on Update Lender Information page
+    Comment    To verify Lender Information Section
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/fieldset/div/div/label    Full Name*    Full Name label has invalid text on Update Lender Information page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Textfield    id=full_name    full name text field not present on Update Lender Information page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/fieldset/div[2]/div/label    Short Name*    Short Name label has invalid text on Update Lender Information page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Textfield    id=short_name    Short name text field not present on Update Lender Information page
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/fieldset/div[3]/div/label    Main Address    Main Address label has invalid text on Update Lender Information page
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Textfield    id=address1    address1 text field not present on Update Lender Information page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Textfield    id=address2    address2 text field not present on Update Lender Information page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Textfield    id=main_zip    main_zip text field not present on Update Lender Information page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Textfield    id=main_city    main_city text field not present on Update Lender Information page
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    id=main_state    State dropdown not present on Update Lender Information page
+    ${V15}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/fieldset/div[4]/div/label    Phone    Phone label has invalid text on Update Lender Information page \
+    ${V16}=    Run Keyword And Return Status    Page Should Contain Textfield    id=phone1    phone1 text field not present on Update Lender Information page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Textfield    id=phone2    phone2 text field not present on Update Lender Information page
+    ${V18}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/fieldset/div[5]/div/label    Fax    Fax label not present on Update Lender Information page \
+    ${V19}=    Run Keyword And Return Status    Page Should Contain Textfield    id=fax    fax text field not present on Update Lender Information page
+    ${V20}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/fieldset/div[6]/div/label    Mailing Address    Mailing Address label not present on Update Lender Information page
+    ${V21}=    Run Keyword And Return Status    Page Should Contain Element    id=mail_same    Copy Main Address button not present on Update Lender Information page \
+    ${V22}=    Run Keyword And Return Status    Page Should Contain Textfield    id=mail_address1    mail_address1 text field not present on Update Lender Information page
+    ${V23}=    Run Keyword And Return Status    Page Should Contain Textfield    id=mail_address2    mail_address2 text field not present on Update Lender Information page
+    ${V24}=    Run Keyword And Return Status    Page Should Contain Textfield    id=mail_zip    mail_zip text field not present on Update Lender Information page
+    ${V25}=    Run Keyword And Return Status    Page Should Contain Textfield    id=mail_city    mail_city text field not present on Update Lender Information page
+    ${V26}=    Run Keyword And Return Status    Page Should Contain Element    id=mail_state    mail_state drop down not present on Update Lender Information page
+    ${V27}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/fieldset/div[7]/div/label    Titling Address    Titling Address label has invalid text on Update Lender Information page \
+    ${V28}=    Run Keyword And Return Status    Page Should Contain Element    id=title_same    Copy Main Address button not present on Update Lender Information page
+    ${V29}=    Run Keyword And Return Status    Page Should Contain Textfield    id=title_address1    title_address1 text field not present on Update Lender Information page
+    ${V30}=    Run Keyword And Return Status    Page Should Contain Textfield    id=title_address2    title_address2 \ text field not present on Update Lender Information page
+    ${V31}=    Run Keyword And Return Status    Page Should Contain Textfield    id=title_zip    title_zip text field not present on Update Lender Information page
+    ${V32}=    Run Keyword And Return Status    Page Should Contain Textfield    id=title_city    title_city text field not present on Update Lender Information page
+    ${V33}=    Run Keyword And Return Status    Page Should Contain Element    id=title_state    title_state drop down not present on Update Lender Information page
+    ${V34}=    Run Keyword And Return Status    Page Should Contain Element    link=Cancel    Cancel link button not present on Update Lender Information page \
+    ${V35}=    Run Keyword And Return Status    Element Text Should Be    link=Cancel    Cancel    Cancel link button has ivalid text on Update Lender Information page \
+    ${V36}=    Run Keyword And Return Status    Page Should Contain Element    link=Save    Save link button not present on Update Lender Information page
+    ${V37}=    Run Keyword And Return Status    Element Text Should Be    link=Save    Save    Save link button has ivalid text on Update Lender Information page
+    ${V38}=    Run Keyword And Return Status    Page Should Contain Element    id=cancel    Cancel button not present on Update Lender Information page
+    ${V39}=    Run Keyword And Return Status    Element Text Should Be    id=cancel    Cancel    Save \ button has ivalid text on Update Lender Information page
+    ${V40}=    Run Keyword And Return Status    Page Should Contain Element    //form[@id='main_address']/div[2]/div/div/div/button[2]    Update Lender Info button not present on Update Lender Information page
+    ${V41}=    Run Keyword And Return Status    Element Text Should Be    //form[@id='main_address']/div[2]/div/div/div/button[2]    Update Lender Info    Update Lender Info \ button has ivalid text on Update Lender Information page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}    ${V21}    ${V22}    ${V23}
+    ...    ${V24}    ${V25}    ${V26}    ${V27}    ${V28}    ${V29}
+    ...    ${V30}    ${V31}    ${V32}    ${V33}    ${V34}    ${V35}
+    ...    ${V36}    ${V37}    ${V38}    ${V39}    ${V40}    ${V41}
+    @{Messages}=    Create List    Update Lender Information header is not present on Update Lender Information page    Update Lender Information header has invalid text on Update Lender Information page    Lender Information section not present on Update Lender Information page    Lender Information section has invalid text on on Update Lender Information page    Full Name label has invalid text on Update Lender Information page
+    ...    full name text field not present on Update Lender Information page    Short Name label has invalid text on Update Lender Information page    Short name text field not present on Update Lender Information page    Main Address label has invalid text on Update Lender Information page    address1 text field not present on Update Lender Information page    address2 text field not present on Update Lender Information page
+    ...    main_zip text field not present on Update Lender Information page    main_city text field not present on Update Lender Information page    State dropdown not present on Update Lender Information page    Phone label has invalid text on Update Lender Information page \    phone1 text field not present on Update Lender Information page    phone2 text field not present on Update Lender Information page
+    ...    Fax label not present on Update Lender Information page \    fax text field not present on Update Lender Information page    Mailing Address label not present on Update Lender Information page    Copy Main Address button not present on Update Lender Information page \    mail_address1 text field not present on Update Lender Information page    mail_address2 text field not present on Update Lender Information page
+    ...    mail_zip text field not present on Update Lender Information page    mail_city text field not present on Update Lender Information page    mail_state drop down not present on Update Lender Information page    Titling Address label has invalid text on Update Lender Information page \    Copy Main Address button not present on Update Lender Information page    title_address1 text field not present on Update Lender Information page
+    ...    title_address2 \ text field not present on Update Lender Information page    title_zip text field not present on Update Lender Information page    title_city text field not present on Update Lender Information page    title_state dropdown not present on Update Lender Information page    Cancel link button not present on Update Lender Information page \    Cancel link button has ivalid text on Update Lender Information page \
+    ...    Save link button not present on Update Lender Information page    Save link button has ivalid text on Update Lender Information page    Cancel button not present on Update Lender Information page    Cancel button has ivalid text on Update Lender Information page    Update Lender Info button not present on Update Lender Information page    Update Lender Info \ button has ivalid text on Update Lender Information page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyBlankFieldValidationOnEditPage
+    [Documentation]    This script verifyes the blank field validation on Update Lender Information page.
+    goToManageLenderInformationPage
+    Sleep    1
+    ${FullName}=    Generate Random String    7    [LETTERS]
+    ${ShortName}=    Generate Random String    7    [LETTERS]
+    ${Address1}=    Generate Random String    7    [LETTERS]
+    ${Address2}=    Generate Random String    7    [LETTERS]
+    ${Zip}=    Generate Random String    7    [LETTERS]
+    ${City}=    Generate Random String    7    [LETTERS]
+    ${Phone1}=    Generate Random String    7    [LETTERS]
+    ${Phone2}=    Generate Random String    7    [LETTERS]
+    ${Fax}=    Generate Random String    7    [LETTERS]
+    toFillTheLenderInfromation    ${EMPTY}    ${EMPTY}    ${EMPTY}    ${EMPTY}    ${EMPTY}    ${EMPTY}
+    ...    ${EMPTY}    ${EMPTY}
+    Focus    //form[@id='main_address']/div[2]/div/div/div/button[2]
+    Click Element    //form[@id='main_address']/div[2]/div/div/div/button[2]
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Blank field validation message for Full Name is not displayed
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message has invalid text on Update Lender Information page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Blank field validation message for Short Name is not displayed
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message has invalid text on Update Lender Information page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Blank field validation message for Full Name is not displayed on Update Lender Information page    This field is required. message has invalid text on Update Lender Information page    Blank field validation message for Short Name is not displayed on Update Lender Information page    This field is required. message has invalid text on Update Lender Information page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifySuccessfullyUpdatedDetailsNotification
+    [Documentation]    This script verifyes successfull updation notification message on Manage Lender Information page after updating the Details.
+    goToManageLenderInformationPage
+    Sleep    1
+    ${FullName}=    Generate Random String    7    [LETTERS]
+    ${ShortName}=    Generate Random String    7    [LETTERS]
+    ${Address1}=    Generate Random String    7    [LETTERS]
+    ${Address2}=    Generate Random String    7    [LETTERS]
+    ${Zip}=    Generate Random String    5    [NUMBERS]
+    ${City}=    Generate Random String    7    [LETTERS]
+    ${Phone1}=    Generate Random String    10    [NUMBERS]
+    ${Phone2}=    Generate Random String    10    [NUMBERS]
+    ${Fax}=    Generate Random String    10    [NUMBERS]
+    toFillTheLenderInfromation    ${FullName}    ${ShortName}    ${Address1}    ${Address2}    11211    ${Phone1}
+    ...    ${Phone2}    ${Fax}
+    Focus    //form[@id='main_address']/div[2]/div/div/div/button[2]
+    Click Element    //form[@id='main_address']/div[2]/div/div/div/button[2]
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Updated Values not saved properly
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='message']/div    Your changes have been successfully saved. notification not present \ on Manage Lender Informtion page
+    ${Notification}=    Get Text    //div[@id='message']/div
+    @{Notification}=    Split To Lines    ${Notification}
+    ${V2}=    Run Keyword And Return Status    Should Be Equal    @{Notification}[0]    ×    Cross sign not display
+    ${V3}=    Run Keyword And Return Status    Should Be Equal    @{Notification}[1]    Your changes have been successfully saved.    Your changes have been successfully saved. notification has invalid text.
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}=
+    @{Messages}=    Create List    Your changes have been successfully saved. notification not present \ on Manage Lender Informtion page    Cross sign not display    Your changes have been successfully saved. notification has invalid text.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+updateTheDetailsAndVerifyUpdatedDetails
+    [Documentation]    This script update the details and verifyes updated details on Manage Lender Information page.
+    goToManageLenderInformationPage
+    Sleep    1
+    ${FullName}=    Generate Random String    7    [LETTERS]
+    ${ShortName}=    Set Variable    ATFCU
+    ${Address1}=    Generate Random String    7    [LETTERS]
+    ${Address2}=    Generate Random String    7    [LETTERS]
+    ${Phone1}=    Generate Random String    10    [NUMBERS]
+    ${Phone2}=    Generate Random String    10    [NUMBERS]
+    ${Fax}=    Generate Random String    10    [NUMBERS]
+    toFillTheLenderInfromation    ${FullName}    ${ShortName}    ${Address1}    ${Address2}    11211    ${Phone1}
+    ...    ${Phone2}    ${Fax}
+    Focus    //form[@id='main_address']/div[2]/div/div/div/button[2]
+    Click Element    //form[@id='main_address']/div[2]/div/div/div/button[2]
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Updated Values not saved properly
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div/div[2]    ${FullName}    Displays Incorrect Full Name on Manage Lender Informtion page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[2]/div[2]    ${ShortName}    Displays Incorrect Shortl Name on Manage Lender Informtion page
+    ${Address}=    Get Text    //div[@id='lenderInfo']/div[2]/div[3]/div[2]/address
+    @{Address}=    Split To Lines    ${Address}
+    ${V3}=    Run Keyword And Return Status    Should Be Equal    @{Address}[0]    ${Address1}    Displays Incorrect Address on Manage Lender Informtion page
+    ${V4}=    Run Keyword And Return Status    Should Be Equal    @{Address}[1]    ${Address2} Brooklyn, NY \ 11211    Displays Incorrect Address on Manage Lender Informtion page
+    ${Phone}=    Get Text    //div[@id='lenderInfo']/div[2]/div[4]/div[2]
+    ${Phone}=    Evaluate    "${Phone}".replace('(','')
+    ${Phone}=    Evaluate    "${Phone}".replace(')','')
+    ${Phone}=    Evaluate    "${Phone}".replace(' ','')
+    ${PrimaryPhoneNumber}=    Fetch From Right    ${Phone}    Primary
+    ${PrimaryPhoneNumber}=    Fetch From Left    ${PrimaryPhoneNumber}    Secondary
+    ${PrimaryPhoneNumber}=    Evaluate    "${PrimaryPhoneNumber}".replace('-','')
+    ${SecondaryPhoneNumber}=    Fetch From Right    ${Phone}    Secondary
+    ${SecondaryPhoneNumber}=    Evaluate    "${SecondaryPhoneNumber}".replace('-','')
+    ${V5}=    Run Keyword And Return Status    Should Be Equal    ${PrimaryPhoneNumber}    ${Phone1}    Displays Incorrect Primary Phone Number on Manage Lender Informtion page
+    ${V6}=    Run Keyword And Return Status    Should Be Equal    ${SecondaryPhoneNumber}    ${Phone2}    Displays Incorrect Secondary Phone Number on Manage Lender Informtion page
+    ${FaxNumber}=    Get Text    //div[@id='lenderInfo']/div[2]/div[5]/div[2]
+    ${FaxNumber}=    Evaluate    "${FaxNumber}".replace('(','')
+    ${FaxNumber}=    Evaluate    "${FaxNumber}".replace(')','')
+    ${FaxNumber}=    Evaluate    "${FaxNumber}".replace(' ','')
+    ${FaxNumber}=    Evaluate    "${FaxNumber}".replace('-','')
+    ${V7}=    Run Keyword And Return Status    Should Be Equal    ${FaxNumber}    ${Fax}    Displays Incorrect Fax Number on Manage Lender Informtion page
+    ${Address}=    Get Text    //div[@id='lenderInfo']/div[2]/div[6]/div[2]/address
+    @{Address}=    Split To Lines    ${Address}
+    ${V8}=    Run Keyword And Return Status    Should Be Equal    @{Address}[0]    ${Address1}    Displays Incorrect Mailing Address on Manage Lender Informtion page
+    ${V9}=    Run Keyword And Return Status    Should Be Equal    @{Address}[1]    ${Address2} Brooklyn, NY \ 11211    Displays Incorrect Mailing Address on Manage Lender Informtion page
+    ${Address}=    Get Text    //div[@id='lenderInfo']/div[2]/div[7]/div[2]/address
+    @{Address}=    Split To Lines    ${Address}
+    ${V10}=    Run Keyword And Return Status    Should Be Equal    @{Address}[0]    ${Address1}    Displays Incorrect Title Address on Manage Lender Informtion page
+    ${V11}=    Run Keyword And Return Status    Should Be Equal    @{Address}[1]    ${Address2} Brooklyn, NY \ 11211    Displays Incorrect Title Address on Manage Lender Informtion page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    @{Messages}=    Create List    Displays Incorrect Full Name on Manage Lender Informtion page    Displays Incorrect Shortl Name on Manage Lender Informtion page    Displays Incorrect Address on Manage Lender Informtion page    Displays Incorrect Address on Manage Lender Informtion page    Displays Incorrect Primary Phone Number on Manage Lender Informtion page
+    ...    Displays Incorrect Secondary Phone Number on Manage Lender Informtion page    Displays Incorrect Fax Number on Manage Lender Informtion page    Displays Incorrect Mailing Address on Manage Lender Informtion page    Displays Incorrect Mailing Address on Manage Lender Informtion page    Displays Incorrect Title Address on Manage Lender Informtion page    Displays Incorrect Title Address on Manage Lender Informtion page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyCancelButtonFunctionalty
+    [Documentation]    This script verifyes Cancel Button functionality on Update Lender Information Page.
+    goToManageLenderInformationPage
+    Sleep    1
+    ${ExistingFullName}=    Get Text    //div[@id='lenderInfo']/div[2]/div/div[2]
+    ${ExistingShortName}=    Get Text    //div[@id='lenderInfo']/div[2]/div[2]/div[2]
+    ${ExistingAddress}=    Get Text    //div[@id='lenderInfo']/div[2]/div[3]/div[2]/address
+    ${ExistingPhone}=    Get Text    //div[@id='lenderInfo']/div[2]/div[4]/div[2]
+    ${ExistingFax}=    Get Text    //div[@id='lenderInfo']/div[2]/div[5]/div[2]
+    ${ExistingMailingAddress}=    Get Text    //div[@id='lenderInfo']/div[2]/div[6]/div[2]/address
+    ${ExistingTitleAddress}=    Get Text    //div[@id='lenderInfo']/div[2]/div[7]/div[2]/address
+    Sleep    1
+    ${FullName}=    Generate Random String    7    [LETTERS]
+    ${ShortName}=    Generate Random String    7    [LETTERS]
+    ${Address1}=    Generate Random String    7    [LETTERS]
+    ${Address2}=    Generate Random String    7    [LETTERS]
+    ${Zip}=    Generate Random String    5    [NUMBERS]
+    ${City}=    Generate Random String    7    [LETTERS]
+    ${Phone1}=    Generate Random String    10    [NUMBERS]
+    ${Phone2}=    Generate Random String    10    [NUMBERS]
+    ${Fax}=    Generate Random String    10    [NUMBERS]
+    Sleep    1
+    toFillTheLenderInfromation    ${FullName}    ${ShortName}    ${Address1}    ${Address2}    11211    ${Phone1}
+    ...    ${Phone2}    ${Fax}
+    Sleep    1
+    Focus    id=cancel
+    Click Element    id=cancel
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Lender Information page not loaded after clicking on Cancel button
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div/div[2]    ${ExistingFullName}    Full Name updated after clicking on Cancel button
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[2]/div[2]    ${ExistingShortName}    Short Name updated after clicking on Cancel button
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[3]/div[2]/address    ${ExistingAddress}    Address updated after clicking on Cancel button
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[4]/div[2]    ${ExistingPhone}    Phone number updated after clicking on Cancel button
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[5]/div[2]    ${ExistingFax}    Fax number updated after clicking on Cancel button
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[6]/div[2]/address    ${ExistingMailingAddress}    Mailing Address updated after clicking on Cancel button
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='lenderInfo']/div[2]/div[7]/div[2]/address    ${ExistingTitleAddress}    Title Address updated after clicking on Cancel button
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}
+    @{Messages}=    Create List    Full Name updated after clicking on Cancel button    Short Name updated after clicking on Cancel button    Address updated after clicking on Cancel button    Phone number updated after clicking on Cancel button    Fax number updated after clicking on Cancel button
+    ...    Mailing Address updated after clicking on Cancel button    Title Address updated after clicking on Cancel button
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+goToManageLenderInformationPage
+    [Documentation]    This keyword navigates to Manage Lender Information page.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Information    ${Timeout}    Lender Information link not present under Lender Settings tab
+    Click Element    link=Lender Information
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Lender Information page not loaded properly
+
+toFillTheLenderInfromation
+    [Arguments]    ${FullName}    ${ShortName}    ${Address1}    ${Address2}    ${Zip}    ${Phone1}
+    ...    ${Phone2}    ${Fax}
+    [Documentation]    This keyword update the values/details on Update Lender Information page.
+    Page Should Contain Element    link=Edit    Edit link not present on Manage Lender Information Page
+    Sleep    1
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Edit page of Manage Lender Information not loaded properly
+    Focus    id=full_name
+    Input Text    id=full_name    ${FullName}
+    Focus    id=short_name
+    Input Text    id=short_name    ${ShortName}
+    Focus    id=address1
+    Input Text    id=address1    ${Address1}
+    Focus    id=address2
+    Input Text    id=address2    ${Address2}
+    Focus    id=main_zip
+    ${InvalidZip}=    Generate Random String    5    [NUMBERS]
+    Input Text    id=main_zip    ${InvalidZip}
+    Focus    id=main_zip
+    Focus    id=main_city
+    Sleep    1
+    Input Text    id=main_zip    ${Zip}
+    Focus    id=main_city
+    Sleep    1
+    Focus    id=phone1
+    Input Text    id=phone1    ${Phone1}
+    Focus    id=phone2
+    Input Text    id=phone2    ${Phone2}
+    Focus    id=fax
+    Input Text    id=fax    ${Fax}
+    Sleep    1
+    Click Element    id=mail_same
+    Sleep    1
+    Click Element    id=title_same
+    Sleep    1

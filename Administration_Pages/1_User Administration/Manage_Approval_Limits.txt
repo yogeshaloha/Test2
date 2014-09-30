@@ -1,0 +1,486 @@
+*** Settings ***
+Documentation     This suite contais the scripts related to \ Manage Approval Limits Page
+...
+...               Description:
+...
+...
+...
+...               New "" Configuration under user Administration. When creating/editing approval limit:
+...               * Allow for editing of name, description, and enable/disable.
+...               * Would list all loan types (both enabled and disabled). When a loan type is used, it should be removed from the list of available loan types (when adding/editing another loan type rule).
+...               * Would show the min and max approval limits set on loan type.
+...               * Would not allow admin to set up a an approval limit outside of loan min and max.
+...               * Require the user to add at least one approval limit for one loan type before saving a new Approval Limit Group.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close Browser
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyApprovalLink
+    [Documentation]    This script verifies Manage Approval Limit Groups link displayed under User Administration section
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=User Administration    ${Timeout}    User Administration section not appear on page
+    Click Element    link=User Administration
+    Sleep    2
+    Page Should Contain Element    link=Approval Limit Groups    Approval Limit Groups link under User Administration page not appeared \ on Admin Page
+    Element Text Should Be    link=Approval Limit Groups    Approval Limit Groups    Approval Limit Groups link under User Administration page has invalid text on Admin Page
+
+verifyApprovalLinkClick
+    [Documentation]    This script verifies Manage Approval Limit Groups link click.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=User Administration    ${Timeout}    User Administration section not appear on page
+    Click Element    link=User Administration
+    Sleep    2
+    Focus    link=Approval Limit Groups
+    Sleep    1
+    Click Element    link=Approval Limit Groups
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Approval Limit Group    ${Timeout}    Manage Approval Limit Groups page not loaded properly
+    Element Text Should Be    css=h1.subheading    Manage Approval Limit Groups    Manage Approval Limit Groups not functioning properly
+
+verifyApprovalLimitGroupsPageUI
+    [Documentation]    This script verifies Manage Approval Limit Groups Page UI
+    goToManageApprovalLimitGroupsPage
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage Approval Limit Groups    Manage Approval Limit Groups page has invalid header text
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    link=Add Approval Limit Group    Add Approval Limit Group    New Approval Limit Group link has invalid text on \ Manage Approval Limit Groups page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    css=label > input[type="text"]    Search Text box not present \ on Manage Approval Limit Groups page
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    name=manage_limit_grps_table_length    Per page drop down not present \ on Manage Approval Limit Groups page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_limit_grps_table']/thead/tr/th    Approval Limits Group Name    Approval Limits Group Name column name has invalid text on Manage Approval Limit Groups page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_limit_grps_table']/thead/tr/th[2]    Description    Description column name has invalid text on Manage Approval Limit Groups page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_limit_grps_table']/thead/tr/th[3]    Updated On    Updated On column name has invalid text on Manage Approval Limit Groups page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_limit_grps_table']/thead/tr/th[4]    By    By column name has invalid text on Manage Approval Limit Groups page
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_limit_grps_table']/thead/tr/th[5]    Status    Status column name has invalid text on Manage Approval Limit Groups page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}
+    @{Messages}=    Create List    Manage Approval Limit Groups page has invalid header text    New Approval Limit Group link has invalid text on \ Manage Approval Limit Groups page    Search Text box not present \ on Manage Approval Limit Groups page    Per page drop down not present \ on Manage Approval Limit Groups page    Approval Limits Group Name column name has invalid text on Manage Approval Limit Groups page
+    ...    Description column name has invalid text on Manage Approval Limit Groups page    Updated On column name has invalid text on Manage Approval Limit Groups page    By column name has invalid text on Manage Approval Limit Groups page    Status column name has invalid text on Manage Approval Limit Groups page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+toVerifyNewApprovalLimitGroupLink
+    [Documentation]    This script verifies New Approval Limit Group link click
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    Element Text Should Be    css=h1.subheading    Add Approval Limits Group    New Approval Limit Group link not working properly
+
+toVerifyAddApprovalLimitsGroupUI
+    [Documentation]    This script verifies Add Approval Limits Group page UI
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Add Approval Limits Group    Add Approval Limits Group page has invalid header text
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    link=Manage Approval Limit Groups    Manage Approval Limit Groups link not present on Add Approval Limits Group page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    link=Save    Save link not present \ on Add Approval Limits Group page
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    link=Cancel    Cancel link not present \ on Add Approval Limits Group page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    css=small    LAST UPDATED label not present on Add Approval Limits Group page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Textfield    id=name    Group \ name text box not present on Add Approval Limits Group page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Textfield    name=description    Description text box not present on Add Approval Limits Group page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Checkbox    id=enabled    Enable Check \ box not present on Add Approval Limits Group page
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_approval_limits']/table/thead/tr/th    Loan Type    Loan Type \ column name has invalid text on Add Approval Limits Group page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_approval_limits']/table/thead/tr/th[2]    Min    Min column name has invalid text on Add Approval Limits Group page
+    ${V11}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_approval_limits']/table/thead/tr/th[3]    Max    Max column name has invalid text on Add Approval Limits Group page
+    ${V12}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_approval_limits']/table/thead/tr/th[5]    Approval Limit    Approval Limit \ column name has invalid text on Add Approval Limits Group page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Element    id=add_entry    Add New Entry button not present on Add Approval Limits Group page
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    id=unique1    Loan Type drop down not presend on page in first row on Add Approval Limits Group page
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Element    id=unique2    Approval Limit text box \ not presend on page in first row on Add Approval Limits Group page
+    ${V16}=    Run Keyword And Return Status    Page Should Contain Element    xpath=(//button[@type='button'])[2]    Delete row not presend on page in first row on Add Approval Limits Group page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Element    css=button.btn.cancel    Cancel \ button not present on Add Approval Limits Group page
+    ${V18}=    Run Keyword And Return Status    Page Should Contain Element    css=button.btn.btn-primary    Save button not present on Add Approval Limits Group page
+    ${V19}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_approval_limits']/table/thead/tr/th[4]    Limit Is Loan Type's Max    Limit Is Loan Type's Max column name has invalid text on Add Approval Limits Group page
+    ${V20}=    Run Keyword And Return Status    Page Should Contain Element    id=unique2    Limit Is Loan Type's Max check box not appear on Add Approval Limits Group page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}
+    @{Messages}=    Create List    Add Approval Limits Group page has invalid header text    Manage Approval Limit Groups link not present on Add Approval Limits Group page    Save link not present \ on Add Approval Limits Group page    Cancel link not present \ on Add Approval Limits Group page    LAST UPDATED label not present on Add Approval Limits Group page
+    ...    Group \ name text box not present on Add Approval Limits Group page    Description text box not present on Add Approval Limits Group page    Enable Check \ box not present on Add Approval Limits Group page    Loan Type \ column name has invalid text on Add Approval Limits Group page    Min column name has invalid text on Add Approval Limits Group page    Max column name has invalid text on Add Approval Limits Group page
+    ...    Approval Limit \ column name has invalid text on Add Approval Limits Group page    Add New Entry button not present on Add Approval Limits Group page    Loan Type drop down not presend on page in first row on Add Approval Limits Group page    Approval Limit text box \ not presend on page in first row on Add Approval Limits Group page    Delete row not presend on page in first row on Add Approval Limits Group page    Cancel \ button not present on Add Approval Limits Group page
+    ...    Save button not present on Add Approval Limits Group page    Limit Is Loan Type's Max column name has invalid text on Add Approval Limits Group page    Limit Is Loan Type's Max check box not appear on Add Approval Limits Group page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyWaterMarkText
+    [Documentation]    This script verifies Water mark text on Add Approval Limits Group page
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add Approval Limit Group page not loaded properly
+    ${GroupName}=    Get Element Attribute    id=name@placeholder
+    ${Description}=    Get Element Attribute    name=description@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal    New Group Name    ${GroupName}    Group Name text box \ has invalid water mark text on Add Approval Limits Group page
+    ${V2}=    Run Keyword And Return Status    Should Be Equal    This is the user-defined definition of this approval limit group.    ${Description}    Group Description text box has invalid water mark text on Add Approval Limits Group page
+    ${ApprovalLimit}=    Get Element Attribute    id=unique3@placeholder
+    ${V3}=    Run Keyword And Return Status    Should Be Equal    Approval Limit    ${ApprovalLimit}    Approval Limit text box has invalid water mark text on Add Approval Limits Group page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Group Name text box \ has invalid water mark text on Add Approval Limits Group page    Group Description text box has invalid water mark text on Add Approval Limits Group page    Approval Limit text box has invalid water mark text on Add Approval Limits Group page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+toVerifyLoanTypeRowRequired
+    [Documentation]    This script verifies "At least one approval limit rule must be added." alert appeared on Save button click.
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    ${String}=    Generate Random String    10    [LETTERS]
+    Focus    id=name
+    Input Text    id=name    ${String}
+    Focus    name=description
+    Input Text    name=description    ${String}
+    Focus    xpath=(//button[@type='button'])[2]
+    Click Element    xpath=(//button[@type='button'])[2]
+    Sleep    1
+    Click Element    link=Save
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Alert Should Be Present    At least one approval limit rule must be added.
+    Run Keyword If    '${V1}'=='False'    Fail    At least one approval limit rule must be added. validation pop up not displayed on Add Approval Limit Group Page
+
+verifyAddandDeleteRowButton
+    [Documentation]    This script verifies Add and Delete row functionality
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    Wait Until Page Contains Element    xpath=(//button[@type='button'])[2]    ${Timeout}    Add New Group page not loaded properly
+    Comment    Delete Row
+    Click Element    xpath=(//button[@type='button'])[2]
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Should Not Be Visible    id=unique1    Clicking on Delete button, Row not deleted on Add Group Page
+    Comment    Add Row
+    Click Element    id=add_entry
+    Sleep    2
+    ${V2}=    Run Keyword And Return Status    Element Should Be Visible    id=unique4    Clicking on Add \ button, Row not added \ on Add Group Page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Clicking on Delete button, Row not deleted on Add Group Page    Clicking on Add \ button, Row not added \ on Add Group Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewEnabledGroup
+    [Documentation]    This script add New Approval Limit group with Enabled status
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    15    [LETTERS]
+    fillGroupDetails    ${Name}    ${Description}    Enabled
+    Sleep    4
+    Click Element    link=Manage Approval Limit Groups
+    Sleep    4
+    Wait Until Page Contains Element    link=Add Approval Limit Group    ${Timeout}    Manage Approval Limit Group page not loaded properly
+    Sleep    2
+    Page Should Contain Element    //table[@id='manage_limit_grps_table']/tbody/tr[td/a/text()='${Name}']    Cant add New Approval Group
+    Comment    Element Text Should Be    //table[@id='manage_limit_grps_table']/tbody/tr[td/a/text()='${Name}']//td[3]    Enabled    Added Group Type has invalid status
+
+addNewDisabledGroup
+    [Documentation]    This script add New Approval Limit group with Disabled status
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    15    [LETTERS]
+    fillGroupDetails    ${Name}    ${Description}    Disabled
+    Sleep    4
+    Click Element    link=Manage Approval Limit Groups
+    Sleep    4
+    Wait Until Page Contains Element    link=Add Approval Limit Group    ${Timeout}    Manage Approval Limit Group page not loaded properly
+    Sleep    2
+    Page Should Contain Element    //table[@id='manage_limit_grps_table']/tbody/tr[td/a/text()='${Name}']    Cant add New Approval Group
+    Comment    Element Text Should Be    //table[@id='manage_limit_grps_table']/tbody/tr[td/a/text()='${Name}']//td[3]    Disabled    Added Group Type has invalid status
+
+verifyCancelButtonFunctionality
+    [Documentation]    This script verifies Cancel button click on Add Group Page
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    15    [LETTERS]
+    Focus    id=name
+    Input Text    id=name    ${Name}
+    Focus    name=description
+    Input Text    name=description    ${Description}
+    Sleep    4
+    Click Element    link=Cancel
+    Sleep    2
+    Wait Until Page Contains Element    link=Add Approval Limit Group    ${Timeout}    Manage Add Approval Limit Group page not loaded properly
+    Sleep    2
+    Page Should Not Contain Element    //table[@id='manage_limit_grps_table']/tbody/tr[td/a/text()='${Name}']    After Clicking on Cancel button , New Group added in Application
+
+addNewGroupAndVerifyDetails
+    [Documentation]    This script verifies Group details on View Page when added.
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    ${Name}=    Generate Random String    7    [UPPER]
+    ${Description}=    Generate Random String    15    [UPPER]
+    fillGroupDetails    ${Name}    ${Description}    Enabled
+    Sleep    4
+    Click Element    link=Manage Approval Limit Groups
+    Sleep    4
+    Wait Until Page Contains Element    link=Add Approval Limit Group    ${Timeout}    Manage Approval Limit Group page not loaded properly
+    Sleep    2
+    Page Should Contain Element    //table[@id='manage_limit_grps_table']/tbody/tr[td/a/text()='${Name}']    Cant add New Approval Group
+    Comment    Element Text Should Be    //table[@id='manage_limit_grps_table']/tbody/tr[td/a/text()='${Name}']//td[3]    Enabled    Added Group Type has invalid status
+    Focus    link=${Name}
+    Click Element    link=${Name}
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    Group View Page not loaded properly
+    ${getAmount}=    Get Text    //div[@id='manage_approval_limits']/table/tbody/tr/td[4]
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='mainContent']/div[3]/div/span    ${Name} Approval Limits Group - ${Description}    Added Group name and \ Description not displayed correctly \ on view Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='mainContent']/div[3]/div/span[2]/em    (Enabled)    Added Group Status not displayed correctly on view Page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_approval_limits']/table/tbody/tr/td    ${LoanType}    Loan Type not displayed correctly \ on view Page for Added Group
+    ${V4}=    Run Keyword And Return Status    Should Be Equal    ${getAmount.replace(",","")}    $${ApprovalAmount}    Approval Amount not displayed correctly \ on view Page for Added Group
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Added Group name and \ Description not displayed correctly \ on view Page    Added Group Status not displayed correctly on view Page    Loan Type not displayed correctly \ on view Page for Added Group    Approval Amount not displayed correctly \ on view Page for Added Group
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyLinksOnViewPage
+    [Documentation]    This script verifies Link and there respective redirections on View Page
+    goToManageApprovalLimitGroupsPage
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td/a
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    link=Manage Approval Limit Groups    Manage Approval Limit Groups link not present on Group View Page
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    link=Edit    Edit link not present on Group View Page
+    Comment    Verify \ Manage Approval Limit Groups link
+    Click Element    link=Manage Approval Limit Groups
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage Approval Limit Groups    Manage Approval Limit Groups link not working properly
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Focus    link=Edit
+    Click Element    link=Edit
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Edit Approval Limits Group    Edit \ link not working properly
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Manage Approval Limit Groups link not present on Group View Page    Edit link not present on Group View Page    Manage Approval Limit Groups link not working properly    Edit \ link not working properly
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUpdateFunctionality
+    [Documentation]    This script verifies Update group functionality and verifies updated details
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    ${Name}=    Generate Random String    7    [UPPER]
+    ${Description}=    Generate Random String    15    [UPPER]
+    fillGroupDetails    ${Name}    ${Description}    Enabled
+    Sleep    4
+    Click Element    link=Manage Approval Limit Groups
+    Sleep    4
+    Wait Until Page Contains Element    link=Add Approval Limit Group    ${Timeout}    Manage Approval Limit Group page not loaded properly
+    Sleep    2
+    Page Should Contain Element    //table[@id='manage_limit_grps_table']/tbody/tr[td/a/text()='${Name}']    Cant add New Approval Group
+    Comment    Element Text Should Be    //table[@id='manage_limit_grps_table']/tbody/tr[td/a/text()='${Name}']//td[3]    Enabled    Added Group Type has invalid status
+    Focus    link=${Name}
+    Click Element    link=${Name}
+    Sleep    1
+    Focus    link=Edit
+    Click Element    link=Edit
+    ${NewName}=    Generate Random String    7    [UPPER]
+    ${NewDesc}=    Generate Random String    15    [UPPER]
+    fillGroupDetails    ${NewName}    ${NewDesc}    Enabled
+    Sleep    3
+    Click Element    link=Manage Approval Limit Groups
+    Sleep    4
+    Wait Until Page Contains Element    link=Add Approval Limit Group    ${Timeout}    Manage Approval Limit Group page not loaded properly
+    Sleep    2
+    Wait Until Page Contains Element    link=${NewName}    ${Timeout}    Manage Approval Limit Groups page not loaded properly
+    Focus    link=${NewName}
+    Click Element    link=${NewName}
+    Sleep    2
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    View Page not loaded
+    ${getAmount}=    Get Text    //div[@id='manage_approval_limits']/table/tbody/tr/td[4]
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='mainContent']/div[3]/div/span    ${NewName} Approval Limits Group - ${NewDesc}    Updated \ Group name \ and Description \ not displayed correctly \ on view Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='mainContent']/div[3]/div/span[2]/em    (Enabled)    Updated Group \ status not displayed correctly \ on view Page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_approval_limits']/table/tbody/tr/td    ${LoanType}    Updated \ Loan Type not displayed correctly \ on view Page for Added Group
+    ${V4}=    Run Keyword And Return Status    Should Be Equal    ${getAmount.replace(",","")}    $${ApprovalAmount}    Updated \ Approval Amount not displayed correctly \ on view Page for Added Group
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Updated \ Group name \ and Description \ not displayed correctly \ on view Page    Updated Group \ status not displayed correctly \ on view Page    Updated \ Loan Type not displayed correctly \ on view Page for Added Group    Updated \ Approval Amount not displayed correctly \ on view Page for Added Group
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyEditPageCancelButton
+    [Documentation]    This script verifies Cancel button click on Edit page
+    goToManageApprovalLimitGroupsPage
+    Wait Until Page Contains Element    //tr[1]/td/a
+    Click Element    //tr[1]/td/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit
+    Click Element    link=Edit
+    Sleep    2
+    Focus    id=name
+    Input Text    id=name    Test
+    Focus    name=description
+    Input Text    name=description    Description
+    Sleep    4
+    Click Element    link=Cancel
+    Sleep    1
+    Wait Until Page Contains Element    css=label > input[type="text"]
+    Sleep    1
+    Element Text Should Be    css=h1.subheading    Manage Approval Limit Groups    Manage Approval Limit Groups link not working properly
+
+verifySelectedLoanTypeNotDisplayedInSecondRowAddPage
+    [Documentation]    This script verifies Selected Loan type in First row shpuld not be appeared in Loan Type Drop down in Second Row on Add New Approval Limit page
+    goToManageApprovalLimitGroupsPage
+    Sleep    1
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    Wait Until Page Contains Element    id=unique1    ${Timeout}    Add New Approval Limot page not loaded successfully
+    @{AllLoanType}=    Get List Items    id=unique1
+    Select From List    id=unique1    @{AllLoanType}[1]
+    Sleep    2
+    Click Element    id=add_entry
+    Sleep    1
+    Focus    id=unique4
+    @{UpdatedLoanType}=    Get List Items    id=unique4
+    Should Not Contain    ${UpdatedLoanType}    @{AllLoanType}[1]    Selected Loan type displayed in Added New Row on Add New Approval Group Page
+    Should Contain X Times    ${UpdatedLoanType}    @{AllLoanType}[1]    0    Selected Loan type displayed once \ in Added New Row on Add New Approval Group Page
+
+verifySelectedLoanTypeNotDisplayedInSecondRowEditPage
+    [Documentation]    This script verifies Selected Loan type in First row shpuld not be appeared in Loan Type Drop down in Second Row on Edit Approval Limit page
+    goToManageApprovalLimitGroupsPage
+    Sleep    1
+    Sleep    1
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    id=unique1    ${Timeout}    Edit \ Group page not loaded properly
+    @{AllLoanType}=    Get List Items    id=unique1
+    Select From List    id=unique1    @{AllLoanType}[1]
+    Sleep    2
+    Click Element    id=add_entry
+    Sleep    1
+    Focus    id=unique4
+    @{UpdatedLoanType}=    Get List Items    id=unique4
+    Should Not Contain    ${UpdatedLoanType}    @{AllLoanType}[1]    Selected Loan type displayed in Added New Row on Edit \ Approval Group Page
+    Should Contain X Times    ${UpdatedLoanType}    @{AllLoanType}[1]    0    Selected Loan type displayed once \ in Added New Row on Edit \ Approval Group Page
+
+validSearchOnManageApprovalLimitGroupPage
+    [Documentation]    This script verifies the valid search on Manage Approval Limits Groups page. Here it adds a new group and searches it in search text field.
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    15    [LETTERS]
+    fillGroupDetails    ${Name}    ${Description}    Enabled
+    Sleep    4
+    Click Element    link=Manage Approval Limit Groups
+    Sleep    4
+    Wait Until Page Contains Element    link=Add Approval Limit Group    ${Timeout}    Manage Approval Limit Group page not loaded properly
+    Sleep    2
+    Page Should Contain Element    //table[@id='manage_limit_grps_table']/tbody/tr[td/a/text()='${Name}']    Cant add New Approval Group
+    Page Should Contain Element    css=label > input[type="text"]    Search Text field is not present on Manage Approval Limits Groups.
+    Focus    css=label > input[type="text"]
+    Input Text    css=label > input[type="text"]    ${Name}
+    Focus    name=manage_limit_grps_table_length
+    Sleep    1
+    Element Text Should Be    //tr[1]/td/a    ${Name}    Searched Group name not found in Approved Limit list page
+
+invalidSearchOnManageApprovalLimitGroupPage
+    [Documentation]    This script verifies the invalid search on Manage Approval Limits Groups page.
+    goToManageApprovalLimitGroupsPage
+    Page Should Contain Element    css=label > input[type="text"]    Search Text field is not present on Manage Approval Limits Groups.
+    ${Search}=    Generate Random String    8    [LETTERS]
+    Focus    css=label > input[type="text"]
+    Input Text    css=label > input[type="text"]    ${Search}
+    Focus    name=manage_limit_grps_table_length
+    Sleep    1
+    Element Text Should Be    //table[@id='manage_limit_grps_table']/tbody/tr/td    No matching records found    For invalid search "No matching records found" message is not displayed on " Manage Approval Limit Group" page
+
+verifyLimitLoanTypeMaxFunctionality
+    [Documentation]    This script verifies the Limit Is Loan Type's Max check box functionality
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add Approval Limit Group page not loaded properly
+    Sleep    1
+    Page Should Contain Element    id=unique2    Limit Is Loan Type's Max check box not appear on Add Approval Limits Group page
+    Comment    Verify Check to Disable Approval Limit Text Box
+    Focus    id=unique2
+    Click Element    id=unique2
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Should Be Disabled    id=unique3
+    Comment    Verify Unheck to Enable Approval Limit Text Box
+    Focus    id=unique2
+    Click Element    id=unique2
+    Sleep    2
+    ${V2}=    Run Keyword And Return Status    Element Should Be Enabled    id=unique3
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    After Checking the check box Limit Max Loan type Approval Limit text box not get disabled    After Unchecking the check box Limit Max Loan type Approval Limit text box not get enabled
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyMaxLimitInApprovalLimitTextBox
+    [Documentation]    This script verifies the Max limit value of the Selected Loan is displayed when user check Limit Is Loan Type's Max check box
+    goToManageApprovalLimitGroupsPage
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add Approval Limit Group page not loaded properly
+    Sleep    1
+    @{AllLoanType}=    Get List Items    id=unique1
+    Select From List    id=unique1    @{AllLoanType}[2]
+    Sleep    2
+    Focus    id=unique2
+    Click Element    id=unique2
+    Sleep    2
+    ${MaxLimit}=    Get Text    //tr[@id='entry_row_-1']/td[3]
+    ${MaxLimit}=    Evaluate    "${MaxLimit}".replace(',','')
+    ${MaxLimit}=    Evaluate    "${MaxLimit}".replace('$','')
+    ${MaxLimit}=    Evaluate    "${MaxLimit}".strip()
+    Textfield Value Should Be    id=unique3    ${MaxLimit}    Max limit value not displayed properly in Approval Limit Text box when user checked the Loan Type's Max check \ box
+
+*** Keywords ***
+goToManageApprovalLimitGroupsPage
+    [Documentation]    This keyword is used to navigate Manage Approval Limits Group \ Page
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=User Administration    ${Timeout}    User Administration section not appear on page
+    Click Element    link=User Administration
+    Sleep    2
+    Wait Until Page Contains Element    link=Approval Limit Groups    ${Timeout}    Approval Limit Groups link not appear on page
+    Click Element    link=Approval Limit Groups
+    Sleep    2
+    Wait Until Page Contains Element    link=Add Approval Limit Group    ${Timeout}    Manage Approval Limit Groups page not loaded properly
+    Element Text Should Be    css=h1.subheading    Manage Approval Limit Groups    Manage Approval Limit Groups \ link not functioning properly
+
+fillGroupDetails
+    [Arguments]    ${GroupName}    ${Description}    ${Status}
+    [Documentation]    This keyword is used to Fill details for Approval Limit \ Group
+    Focus    id=name
+    Input Text    id=name    ${GroupName}
+    Focus    name=description
+    Input Text    name=description    ${Description}
+    Run Keyword If    '${Status}'=='Enabled'    Select Checkbox    id=enabled
+    Sleep    1
+    Focus    id=unique1
+    @{AllLoanType}=    Get List Items    id=unique1
+    Select From List    id=unique1    @{AllLoanType}[2]
+    Sleep    1
+    Focus    id=unique2
+    ${LoanType}    Set Variable    Test
+    Set Global Variable    ${LoanType}    @{AllLoanType}[2]
+    ${ApprovalAmount}=    Get Text    //td[3]
+    ${ApprovalAmount}=    Get Substring    ${ApprovalAmount}    1
+    ${ApprovalAmount}=    Evaluate    "${ApprovalAmount}".replace(',','')
+    ${ApprovalAmount}=    Evaluate    "${ApprovalAmount}".strip()
+    Run Keyword If    '${ApprovalAmount}'=='0'    Set Global Variable    ${ApprovalAmount}    1
+    ${ApprovalAmount}=    Evaluate    ${ApprovalAmount}-1
+    Set Global Variable    ${ApprovalAmount}    ${ApprovalAmount}
+    Focus    id=unique3
+    Input Text    id=unique3    ${ApprovalAmount}
+    Sleep    2
+    Click Element    css=button.btn.btn-primary
+    Sleep    2

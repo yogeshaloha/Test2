@@ -1,0 +1,366 @@
+*** Settings ***
+Documentation     This suite contains all the scenarios of Manage PDF Form Types under lender settings.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyPDFFormTypesLink
+    [Documentation]    This script verifyes the Manage PDF Form Types Link.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=PDF Form Types    ${Timeout}    PDF Form Types link not present under Lender Settings tab
+
+verifyPDFFormTypesButton
+    [Documentation]    This script verifyes the Manage PDF Form Types button under Lender Settings tab.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=PDF Form Types    ${Timeout}    PDF Form Types link not present under Lender Settings tab
+    Page Should Contain Element    link=Manage PDF Form Types    Manage PDF Form Types button not present under Lender Settings tab
+
+verifyPDFFormTypesLinkRedirection
+    [Documentation]    This script navigates to Manage PDF Form Types page.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=PDF Form Types    ${Timeout}    PDF Form Types link not present under Lender Settings tab
+    Click Element    link=PDF Form Types
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Form Types page not loaded properly
+
+verifyUIOfManageFormTypesPage
+    [Documentation]    This script verifyes the UI elements of Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Manage Form Types header is not present on Manage Form Types page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Form Types    Manage Form Types header has invalid text on Manage Form Types page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='mainContent']/div/p    Description message not present on Manage Form Types page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='mainContent']/div/p    Use Form Types to create categories to help keep your forms organized.    Use Form Types to create categories to help keep your forms organized. message has invalid text on Manage Form Types page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_form_types']/table/thead/tr/th    Form Type label not present on Manage Form Types page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_form_types']/table/thead/tr/th    Form Type    Form Type label has invalid text on Manage Form Types page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_form_types']/table/thead/tr/th[2]    Description label not present on Manage Form Types page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_form_types']/table/thead/tr/th[2]    Description    Description label has invalid text on Manage Form Types page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_form_types']/table/thead/tr/th[3]    Status label not present on Manage Form Types page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_form_types']/table/thead/tr/th[3]    Status    Status label has invalid text on Manage Form Types page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    id=manage_form_types    Last Update label not present on Manage Form Types page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Textfield    id=new_form_type_name    Form Type text field not present on Manage Form Types page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Textfield    id=new_form_type_description    Description text field not present on Manage Form Types page
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    name=enabled    Enable check box not present on Manage Form Types page
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add button not present \ on Manage Form Types page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}
+    @{Messages}=    Create List    Manage Form Types header is not present on Manage Form Types page    Manage Form Types header has invalid text on Manage Form Types page    Description message not present on Manage Form Types page    Use Form Types to create categories to help keep your forms organized. message has invalid text on Manage Form Types page    Form Type label not present on Manage Form Types page
+    ...    Form Type label has invalid text on Manage Form Types page    Description label not present on Manage Form Types page    Description label has invalid text on Manage Form Types page    Status label not present on Manage Form Types page    Status label has invalid text on Manage Form Types page    Last Update label not present on Manage Form Types page
+    ...    Form Type text field not present on Manage Form Types page    Description text field not present on Manage Form Types page    Enable check box not present on Manage Form Types page    Add button not present \ on Manage Form Types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDefaultValues
+    [Documentation]    This script verifyes the default values on Manage PDF Form Types page.
+    goToManageFormTypesPage
+    ${FormTypeWaterMarkText}=    Get Element Attribute    id=new_form_type_name@placeholder
+    ${DescriptionWaterMarkText}=    Get Element Attribute    id=new_form_type_description@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Form Type    ${FormTypeWaterMarkText}    Form Type text box has invalid watermark text on manage form types page
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    Description    ${DescriptionWaterMarkText}    Description text box has invalid watermark text on manage form types page
+    ${V3}=    Run Keyword And Return Status    Checkbox Should Be Selected    name=enabled
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Form Type text box has invalid watermark text on manage form types page    Description text box has invalid watermark text on manage form types page    Enabled check box not selected by default on manage form types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewFormTypeEnabled
+    [Documentation]    This script add new form type with Enable status on Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Sleep    1
+    ${FormType}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    addNewFormType    ${FormType}    ${Description}    Enabled
+    Sleep    1
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${FormType}']    Could not add New Form Type on Manage Form Types page
+
+addNewFormTypeDisabled
+    [Documentation]    This script add new form type with Disable status on Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Sleep    1
+    ${FormType}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    addNewFormType    ${FormType}    ${Description}    Disabled
+    Sleep    1
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${FormType}']    Could not add New Form Type on Manage Form Types page
+
+verifyBlankFieldValidation
+    [Documentation]    This script verifyes blank field validation on \ Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Sleep    1
+    addNewFormType    ${EMPTY}    ${EMPTY}    Enabled
+    Sleep    1
+    Comment    Error Message for the Form Type and Description
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Empty Form Type validation message not appear on manage Form Types page.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message has invalid characters on manage Form Types page.
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Empty Form Type validation message not appear on manage Form Types page.    This field is required. message has invalid characters on manage Form Types page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addFormTypeUniqueNameValidation
+    [Documentation]    This script verifyes unique form type validation on Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Sleep    1
+    ${FormType}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    addNewFormType    ${FormType}    ${Description}    Enabled
+    Sleep    1
+    addNewFormType    ${FormType}    ${Description}    Enabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Unique name validation message not appear on the Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique name validation message not appear on the Page    This field must be unique. message has invalid characters
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyTheEditButtonClick
+    [Documentation]    This script verifyes Edit button functionality on Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Sleep    1
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit page not found for the first row in the grid
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    name=name    Form Type text box not present for the edited record
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    name=description    Description text box not present for the edited record
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_form_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/label/input    Status check box not present for edited record
+    ${V4}=    Run Keyword And Return Status    Element Should Be Visible    //button[@type='submit']    Save link not appear on the Edited record
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='submit']    Save link not present on the Edited record
+    ${V6}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='manage_form_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    X("Cancel") \ link not appear on the Edited record
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_form_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    X("Cancel") link not present on the Edited record
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}
+    @{Messages}=    Create List    Form Type text box not present for the edited record    Description text box not present for the edited record    Status check box not present for edited record    Save link not appear on the Edited record    Save link not present on the Edited record
+    ...    X("Cancel") \ link not appear on the Edited record    X("Cancel") link not present on the Edited record
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editFormTypeToolTipsOnControls
+    [Documentation]    This script verifyes tool tips of all controls on edit mode on Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${EditButtonToolTip}=    Get Element Attribute    //tr[@id='view_form_type_row_1']/td[4]/form/button@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${EditButtonToolTip}    Edit Form Type    Edit button has invalid tool tip
+    Mouse Over    //tr[1]/td[4]/form/button
+    Sleep    2
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit page not found for the first row in the grid
+    ${SaveButtonToolTip}=    Get Element Attribute    //button[@type='submit']@title
+    ${CancelButtonToolTip}=    Get Element Attribute    //div[@id='manage_form_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button@title
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${SaveButtonToolTip}    Update Form Type    Save button has invalid tool tip
+    Mouse Over    //button[@type='submit']
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CancelButtonToolTip}    Cancel    Cancel \ button has invalid tool tip
+    Mouse Over    //div[@id='manage_form_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button
+    Sleep    2
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Edit button has invalid tool tip    Save button has invalid tool tip    Cancel \ button has invalid tool tip
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editFormTypeWaterMarkText
+    [Documentation]    This script verifyes the Water mark text on Form type text field on edit mode on Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Sleep    1
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit page not found for the first row in the grid
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    ${FormTypeWaterMarkText}=    Get Element Attribute    name=name@placeholder
+    Sleep    1
+    Focus    name=description
+    Input Text    name=description    ${EMPTY}
+    ${DescriptionWaterMarkText}=    Get Element Attribute    name=description@placeholder
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${FormTypeWaterMarkText}    Form Type    Form Type text box has invalid watermark text at edit mode
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${DescriptionWaterMarkText}    Description    Description text box has invalid watermark text at edit mode
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Form Type text box has invalid watermark text at edit mode    Description text box has invalid watermark text at edit mode
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editBlankFieldValidation
+    [Documentation]    This script verifyes blank field validation on edit mode on Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Sleep    1
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit page not found for the first row in the grid
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Sleep    1
+    Focus    name=description
+    Input Text    name=description    ${EMPTY}
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='manage_form_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    ${Timeout}    Edit page close after clicking on Save button without entering values
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //td/small    Empty form type validation message not appear on edited manage form types page.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //td/small    This field is required.    This field is required. message has invalid text on edited manage form types page.
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Empty form type validation message not appear on edited manage form types page.    This field is required. message has invalid text on edited manage form types page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editFormTypeCancelButton
+    [Documentation]    This script verifyes cancel button functionality on Edit mode Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Sleep    1
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${ExistingForm}=    Get Text    //tr[1]/td
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Form type not opened
+    Comment    Enter the New Details
+    ${FormType}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    Focus    name=name
+    Input Text    name=name    ${FormType}
+    Focus    name=description
+    Input Text    name=description    ${Description}
+    Focus    //div[@id='manage_form_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button
+    Click Element    //div[@id='manage_form_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button
+    Sleep    2
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Edit mode of record not closed after clicking on Cancel button
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${ExistingForm}    Cancel button click update the Form type value
+    ${V2}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='manage_form_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    Save link still present after clicking on Cancel button
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='manage_form_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    Cancel link still present after clicking on Cancel button
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Cancel button click update the Form type value    Save link still present after clicking on Cancel button    Cancel link still present after clicking on Cancel button
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editUniqueFormTypeValidation
+    [Documentation]    This script verifyes the unique form type validation on edit mode on Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Sleep    1
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${SecondName}=    Get Text    //tr[2]/td
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Form Type not opened
+    Comment    Enter the New Details
+    Sleep    1
+    Focus    name=name
+    Input Text    name=name    ${SecondName}
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    //td/small    ${Timeout}    Duplicate Form Type saved without any validation message
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //td/small    Unique name validation message not appear on the Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //td/small    This field must be unique.    This field must be unique. message has invalid characters
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique name validation message not appear on the Page    This field must be unique. message has invalid characters
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editFormTypeDetails
+    [Documentation]    This script update the details and verifyes updated details on Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${FormType}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of form Type not opened
+    Focus    name=name
+    Input Text    name=name    ${FormType}
+    Focus    name=description
+    Input Text    name=description    ${Description}
+    Focus    //div[@id='manage_form_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]
+    Click Element    //div[@id='manage_form_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]
+    Sleep    4
+    Element Text Should Be    //tr[1]/td    ${FormType}    Updated Form Type not displayed correctly
+
+enableAndDisableFormType
+    [Documentation]    This script update the status of Form type and verifyes them on Manage PDF Form Types page.
+    goToManageFormTypesPage
+    Sleep    1
+    ${FormType}=    Generate Random String    8    [LETTERS]
+    ${Description}=    Generate Random String    8    [LETTERS]
+    addNewFormType    ${FormType}    ${Description}    Enabled
+    Sleep    1
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${FormType}']    Could not add New Form Type on Manage Form Types page
+    Sleep    1
+    Comment    Click on edit for added Form Type
+    Click Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${FormType}']//td[4]/form/button
+    Sleep    1
+    Comment    Disable the Form Type
+    Wait Until Page Contains Element    name=enabled    ${Timeout}    Edit form Type page not loaded properly
+    Sleep    2
+    Focus    name=enabled
+    Click Element    name=enabled
+    Comment    Click on the Save button
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    2
+    Comment    Update to Enabled State
+    Click Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${FormType}']//td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=enabled    ${Timeout}    Edit form Type page not loaded properly
+    Sleep    2
+    Focus    name=enabled
+    Click Element    name=enabled
+    Comment    Click on the Save button
+    Sleep    1
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    2
+
+*** Keywords ***
+goToManageFormTypesPage
+    [Documentation]    This keyword navigates to Manage PDF Form Types page.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=PDF Form Types    ${Timeout}    PDF Form Types link not present under Lender Settings tab
+    Click Element    link=PDF Form Types
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Form Types page not loaded properly
+
+addNewFormType
+    [Arguments]    ${FormType}    ${Description}    ${Status}
+    [Documentation]    This keyword add new form type on Manage PDF Form Types page.
+    Sleep    1
+    Focus    id=new_form_type_name
+    Input Text    id=new_form_type_name    ${FormType}
+    Sleep    1
+    Focus    id=new_form_type_description
+    Input Text    id=new_form_type_description    ${Description}
+    Sleep    1
+    Run Keyword If    '${Status}'=='Disabled'    Unselect Checkbox    name=enabled
+    Sleep    1
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    2

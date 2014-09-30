@@ -1,0 +1,455 @@
+*** Settings ***
+Documentation     This suite contains the all the scenarios related to the Manage Applicant Relationship Type page
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyRelationshipTypesLink
+    [Documentation]    This verifies the Manage Applicant Relationship Types \ link under Application Settings tab.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_app_config']/div/a[2]/i    ${Timeout}    Application Settings \ Panel not loaded properly
+    Click Element    //div[@id='controller_app_config']/div/a[2]/i
+    Page Should Contain Element    link=Relationship Types    Relationship Types \ link is not displayed in the "Application settings" tab
+
+verifyRelationshipTypesButton
+    [Documentation]    This verifies the Manage Applicant Relationship Types \ link under Application Settings tab.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Administration Panel not loaded properly
+    Click Element    link=Application Settings
+    Sleep    1
+    Page Should Contain Element    //a[contains(text(),'Manage Applicant Relationship Types')]    Manage Relationship Types Button is not displayed On \ "Application settings" Page
+
+toVerifyTheRelationshipTypesLinkRedirection
+    [Documentation]    This script verifies the Manage Applicant Relationship Types \ link redirection.
+    goToManageApplicantRelationshipTypesPage
+    Sleep    1
+    Wait Until Page Contains Element    id=new_relationship_type_name    ${Timeout}    Manage Applicant Relationship Types \ \ page not loaded properly
+    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Relationship Types    Relationship Types link not working
+    Page Should Contain Element    id=new_relationship_type_name    Relationship Types \ link not working
+
+toVerifyUIOfManageRelationshipTypes
+    [Documentation]    This script verifies the UI of Manage Applicant Relationship Types Page.
+    goToManageApplicantRelationshipTypesPage
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Relationship Types    Manage Relationship Types page header has invalid characters
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_relationship_types']/table/thead/tr/th    Relationship Type    Relationship Type \ column name has invalid characters on the Manage Applicant Relationship Types page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_relationship_types']/table/thead/tr/th[2]    Core ID    Core ID column name has invalid characters on the \ Manage Applicant Relationship Types page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_relationship_types']/table/thead/tr/th[3]    Status    Status \ column name has invalid characters on the Manage Applicant Relationship Types page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //span[@id='last_updated']/small    Last Updated Label not present on the Manage Applicant Relationship Types page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Textfield    id=new_relationship_type_name    Residence Type name text box not present on the Manage Applicant Relationship Types page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Textfield    id=new_relationship_type_core_code    Core ID \ text box not present on the Manage Applicant Relationship Types page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Checkbox    id=new_relationship_type_enabled    Enabled text box not present on the \ Manage Applicant Relationship Types page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add button not present on the \ Manage Applicant Relationship Types page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}
+    @{Messages}=    Create List    General Application Settings - Manage Applicant Relationship Types \ page header has invalid characters    Relationship Type \ column name has invalid characters on the Manage Applicant Relationship Types page    Core ID column name has invalid characters on the \ Manage Applicant Relationship Types page    Status \ column name has invalid characters on the Manage Applicant Relationship Types page    Last Updated Label not present on the Manage Applicant Relationship Types page
+    ...    Residence Type name text box not present on the Manage Applicant Relationship Types page    Core ID \ text box not present on the Manage Applicant Relationship Types page    Enabled text box not present on the \ Manage Applicant Relationship Types page    Add button not present on the \ Manage Applicant Relationship Types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDefaultValues
+    [Documentation]    This script verifies the Default values of fields on Manage Applicant Relationship Types \ Page.
+    goToManageApplicantRelationshipTypesPage
+    ${RelationshipTypeWaterMarkText}=    Get Element Attribute    id=new_relationship_type_name@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Relationship Type    ${RelationshipTypeWaterMarkText}    Relationship Type text box has invalid watermark text
+    ${CoreIDWaterMarkText}=    Get Element Attribute    id=new_relationship_type_core_code@placeholder
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    Core ID    ${CoreIDWaterMarkText}    Core ID \ text box has invalid watermark text
+    ${V3}=    Run Keyword And Return Status    Checkbox Should Be Selected    id=new_relationship_type_enabled
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Relationship Type text box has invalid watermark text    Core ID text box has invalid watermark text    Enabled check box not selected by default on the Manage Relationship Type Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewRelationshipTypeEnabled
+    [Documentation]    This script adds the new \ applicant relationship type with enable status on Manage Applicant Relationship Types page
+    goToManageApplicantRelationshipTypesPage
+    ${RelationshipTypeName}=    Generate Random String    7    [LETTERS]
+    addNewApplicantRelationshipTypeName    ${RelationshipTypeName}    2    Enabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${RelationshipTypeName}']    Could not add New Applicant Relationship Type as Enabled
+
+addNewRelationshipTypeDisabled
+    [Documentation]    This script adds the new \ applicant relationship type with disable status on Manage Applicant Relationship Types page
+    goToManageApplicantRelationshipTypesPage
+    ${RelationshipTypeName}=    Generate Random String    7    [LETTERS]
+    addNewApplicantRelationshipTypeName    ${RelationshipTypeName}    2    Disabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${RelationshipTypeName}']    Could not add New Applicant Relationship Type as Disabled
+
+verifyBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation onManage Applicant Relationship Types Page.
+    goToManageApplicantRelationshipTypesPage
+    addNewApplicantRelationshipTypeName    ${EMPTY}    ${EMPTY}    ${EMPTY}
+    Comment    Error Message for the Applicant \ Relationship Type Name
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Applicant \ Relationship Type \ name validation message not appear on the Manage Residence Type Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Applicant \ Relationship Type name \ has invalid characters on the Manage Applicant \ Relationship Type Page.
+    Comment    Error Message for the Core Code Drop down List
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    //td[2]/small    Empty Core ID \ validation message not appear on the Manage Applicant \ Relationship Type Page.
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //td[2]/small    This field is required.    This field is required. message for the Empty Core ID has invalid characters on the Manage Applicant \ Relationship Type Page.
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Empty Applicant \ Relationship Type \ name validation message not appear on the Manage Residence Type Page    This field is required. message for the Empty Applicant \ Relationship Type name \ has invalid characters on the Manage Applicant \ Relationship Type Page.    Empty Core ID \ validation message not appear on the Manage Applicant \ Relationship Type Page.    This field is required. message for the Empty Core ID has invalid characters on the Manage Applicant \ Relationship Type Page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addRelationshipTypeUniqueNameValidation
+    [Documentation]    This script verifies the unique Applicant Relationship Type name validation on Manage Applicant Relationship Types Page.
+    goToManageApplicantRelationshipTypesPage
+    ${RelationTypeName}=    Generate Random String    7    [LETTERS]
+    addNewApplicantRelationshipTypeName    ${RelationTypeName}    2    Enabled
+    Sleep    1
+    addNewApplicantRelationshipTypeName    ${RelationTypeName}    2    Enabled
+    Sleep    2
+    Element Should Be Visible    css=small.error    Unique name validation message not appear on the Page
+    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+
+verifyTheEditButtonClick
+    [Documentation]    This script verifies the Edit button functionality on Manage Application Relationship Types Page.
+    goToManageApplicantRelationshipTypesPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='manage_relationship_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td/input[3]    ${Timeout}    Edit mode not opened on Manage Applicant Relationships \ Types page
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    name=name    Type name text box not present for the edited record
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    name=core_code    Core ID text box not present for the edited record
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    name=enabled    Satus check box not present for the edited record
+    ${V5}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='manage_relationship_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    Save link not appear on the Edit relationship \ Type
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_relationship_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    Save link not present on the Edit relationship \ Type
+    ${V7}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='manage_relationship_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    Close link not appear on the Edit relationship \ Type
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_relationship_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    X("Close") link not present on the Edit relationship \ Type
+    ${V9}=    Run Keyword And Return Status    Element Should Not Be Visible    //tr[1]/td[4]/form/button    Edit button still appear on the Edit relationship \ Type
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}
+    @{Messages}=    Create List    Edit button not found for the first row in the grid    Type name text box not present for the edited record    Core ID text box not present for the edited record    Satus check box not present for the edited record    Save link not appear on the Edit relationship \ Type
+    ...    Save link not present on the Edit relationship \ Type    Close link not appear on the Edit relationship \ Type    X("Close") link not present on the Edit relationship \ Type    Edit button still appear on the Edit relationship \ Type
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editRelationshipTypeToolTipsOnControls
+    [Documentation]    This script verifies the all tool tips of all controls of edit mode on Manage Application Relationship Types Page.
+    goToManageApplicantRelationshipTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${EditButtonToolTip}=    Get Element Attribute    //tr[1]/td[4]/form/button@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${EditButtonToolTip}    Edit Relationship Type    Edit button has invalid tool tip
+    Mouse Over    //tr[1]/td[4]/form/button
+    Sleep    2
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened on Manage Residence Types page
+    ${SaveButtonToolTip}=    Get Element Attribute    //div[@id='manage_relationship_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]@title
+    ${CancelButtonToolTip}=    Get Element Attribute    //div[@id='manage_relationship_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button@title
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${SaveButtonToolTip}    Update Relationship Type    Save \ button has invalid tool tip
+    Mouse Over    //div[@id='manage_relationship_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CancelButtonToolTip}    Cancel    Cancel button has invalid tool tip
+    Mouse Over    //div[@id='manage_relationship_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button
+    Sleep    2
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Edit button has invalid tool tip    Save button has invalid tool tip    Cancel button has invalid tool tip
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editRelationshipTypeWaterMarkText
+    [Documentation]    This script verifies the Water Mark text of Relationship Type \ and Core ID field on Edit mode on Manage Application Relationship Types Page.
+    goToManageApplicantRelationshipTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened on Manage Application Relationship Types page
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    ${RelationshipTypeWaterMarkText}=    Get Element Attribute    name=name@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${RelationshipTypeWaterMarkText}    Relationship Type    Relationship Type text box has invalid watermark text at edit mode
+    ${Core IDWaterMarkText}=    Get Element Attribute    name=core_code@placeholder
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${Core IDWaterMarkText}    Core ID    Core ID text box has invalid watermark text at edit mode
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Relationship Type text box has invalid watermark text at edit mode    Core ID text box has invalid watermark text at edit mode
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editRelationshipTypeNameDetails
+    [Documentation]    This script verifies the Updated values through the edit functionality on Manage Application Relationship Types Page.
+    goToManageApplicantRelationshipTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    ${RelationshipTypeName}=    Generate Random String    7    [LETTERS]
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened on Manage Residence Types page
+    Focus    name=name
+    Input Text    name=name    ${RelationshipTypeName}
+    Focus    name=core_code
+    ${Updated Value}=    Generate Random String    3    [NUMBERS]
+    Input Text    name=core_code    ${Updated Value}
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated Values not saved properly
+    Sleep    4
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${RelationshipTypeName}    Updated Relationship Type name not displayed correctly
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td[2]    ${Updated Value}    Updated Relationship Type Core Code not displayed correctly
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Updated Relationship Type name not displayed correctly    Updated Relationship Type Core Code not displayed correctly
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation of Edit functiopnality on Manage Application Relationship Types Page.
+    goToManageApplicantRelationshipTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened on Manage Residence Types page
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Focus    name=core_code
+    Input Text    name=core_code    ${EMPTY}
+    Click Element    //button[@type='submit']
+    Comment    Error Message for the Relationship and Core ID
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Residence \ Type name validation message not appear on the Manage Residence \ Type \ page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Residence \ type name \ has invalid characters on the Manage Residence \ Page
+    Comment    Error Message for the Core Code Drop down List
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Core Code \ validation message not appear on the Manage Residence \ Type \ page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Residence \ Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Empty Residence \ Type name validation message not appear on the Manage Residence \ Type \ page    This field is required. message for the Empty Residence \ type name \ has invalid characters on the Manage Residence \ Page    Empty Core Code \ validation message not appear on the Manage Residence \ Type \ page    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Residence \ Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editRelationshipTypeCancelButton
+    [Documentation]    This script verifies the Cancel button functionality of edit mode on Manage Application Relationship Types Page.
+    goToManageApplicantRelationshipTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${ExistingName}=    Get Text    //tr[1]/td
+    ${ExistingCoreCode}=    Get Text    //tr[1]/td[2]
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    ${RelationshipTypeName}=    Generate Random String    7    [LETTERS]
+    ${CoreCode}=    Generate Random String    3    [NUMBERS]
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened on Manage Residence Types page
+    Focus    name=name
+    Input Text    name=name    ${RelationshipTypeName}
+    Focus    name=core_code
+    Input Text    name=core_code    ${CoreCode}
+    Focus    xpath=(//button[@type='button'])[2]
+    Click Element    xpath=(//button[@type='button'])[2]
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values not saved properly
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${ExistingName}    Cancel button click update the Applicant Relationship Type name value
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td[2]    ${ExistingCoreCode}    Cancel button click update the Applicant Relationship Type Core Code value
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    Save link present on the Applicant Relationship Type \ page after clicking on the Cancel Edit button
+    ${V4}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    Close link present on the Applicant Relationship Type \ page after clicking on the Cancel Edit button
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Cancel button click update the Applicant Relationship Type name value    Cancel button click update the Applicant Relationship Type Core Code value    Save link present on the Applicant Relationship Type \ page after clicking on the Cancel Edit button    Close link present on the Applicant Relationship Type \ page after clicking on the Cancel Edit button
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editRelationshipTypeNameUniqueValidation
+    [Documentation]    This script verifies the unique Relationship Type Name validation of Edit mode on Manage Application Relationship Types Page.
+    goToManageApplicantRelationshipTypesPage
+    ${SecondName}=    Get Text    //tr[2]/td
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened on Manage Applicant Relationship Types page
+    Focus    name=name
+    Input Text    name=name    ${SecondName}
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    2
+    Page Should Contain Element    css=small.error    Unique name validation message not appear on the Page
+    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+
+verifyAddedEnabledTypeInApplicationPage
+    [Documentation]    This script adds the new Relationship Type with enable status and verifies the added relationship type on New Application page.
+    goToManageApplicantRelationshipTypesPage
+    ${RelationshipTypeName}=    Generate Random String    7    [LETTERS]
+    addNewApplicantRelationshipTypeName    ${RelationshipTypeName}    2    Enabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${RelationshipTypeName}']    Could not add New Relationship \ Type
+    fillApplicationForm
+    Execute Javascript    window.focus();
+    Focus    id=unique1
+    fillRequiredFieldsOnPrimaryApplicant
+    Execute Javascript    window.focus();
+    Focus    id=unique1
+    fillCurrentAddress&EmploymentDetails
+    Comment    Add Co-Applicant
+    Focus    name=more_applicants
+    Click Element    name=more_applicants
+    Sleep    2
+    Focus    xpath=(//button[@name='continue'])[2]
+    Click Element    xpath=(//button[@name='continue'])[2]
+    Sleep    2
+    @{AllTypes}=    Get List Items    id=applicant_relationship_type_
+    ${V2}=    Run Keyword And Return Status    Should Contain    ${AllTypes}    ${RelationshipTypeName}    Added Enabled Applicant \ Relationship \ \ Type name is not displayed on the Additional Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${RelationshipTypeName}    1    Added Applicant \ Relationship \ \ Type name is displayed \ more than one time on the Additional Applicant page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Could not add New Residence Type    Added Enabled Applicant Type name is not displayed on the Additional Applicant page    Added Applicant Type name is displayed \ more than one time on the Additional Applicant page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedDisabledTypeInApplicationPage
+    [Documentation]    This script adds the new Relationship Type with disable status and verifies the added relationship type on New Application page.
+    goToManageApplicantRelationshipTypesPage
+    ${ResidenceTypeName}=    Generate Random String    7    [LETTERS]
+    addNewApplicantRelationshipTypeName    ${ResidenceTypeName}    2    Disabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${ResidenceTypeName}']    Could not add New Residence Type
+    fillApplicationForm
+    Execute Javascript    window.focus();
+    Focus    id=unique1
+    fillRequiredFieldsOnPrimaryApplicant
+    Execute Javascript    window.focus();
+    Focus    id=unique1
+    fillCurrentAddress&EmploymentDetails
+    Comment    Add Co-Applicant
+    Focus    name=more_applicants
+    Click Element    name=more_applicants
+    Sleep    2
+    Focus    xpath=(//button[@name='continue'])[2]
+    Click Element    xpath=(//button[@name='continue'])[2]
+    Sleep    2
+    @{AllTypes}=    Get List Items    id=applicant_relationship_type_
+    ${V2}=    Run Keyword And Return Status    Should Not Contain    ${AllTypes}    ${ResidenceTypeName}    Added Disabled Applicant Type name is displayed on the Additional Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${ResidenceTypeName}    0    Added \ Disabled Applicant Type name is displayed \ one time on the Additional Applicant page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Could not add New Residence Type    Added Disabled Applicant Type name is displayed on the Additional Applicant page    Added Applicant Type name is displayed \ one time on the Additional Applicant page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+goToManageApplicantRelationshipTypesPage
+    [Documentation]    This keyword use to navigate to Manage Applicant Relationship Types \ Page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_app_config']/div/a[2]/i    ${Timeout}    Administration Panel not loaded properly
+    Click Element    //div[@id='controller_app_config']/div/a[2]/i
+    Sleep    1
+    Wait Until Page Contains Element    link=Relationship Types    ${Timeout}    Relationship Types \ link not diaplyed
+    Click Element    link=Relationship Types
+    Sleep    1
+
+addNewApplicantRelationshipTypeName
+    [Arguments]    ${Name}    ${CoreCodeNumber}    ${Status}
+    [Documentation]    This keyword add new Applicant Type
+    ...
+    ...    Please provide the arguments as
+    ...    Name = "Name"
+    ...    Core Code = must be greater than 1
+    ...    Status = Enabled Or Disabled
+    Focus    id=new_relationship_type_name
+    Input Text    id=new_relationship_type_name    ${Name}
+    Focus    id=new_relationship_type_core_code
+    Input Text    id=new_relationship_type_core_code    ${CoreCodeNumber}
+    Run Keyword If    '${Status}'=='Disabled'    Unselect Checkbox    id=new_relationship_type_enabled
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    1
+
+fillApplicationForm
+    [Documentation]    This script fill the Primary applicant form under New Application Page.
+    sleep    1
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    sleep    1
+    Page Should Contain Element    link=New Application    New Application link is not present.
+    Click Element    link=New Application
+    Sleep    2
+    Page Should Contain Element    name=loan_type    Loan Type drop down is not present on first page of New application.
+    @{LoanType}=    Get List Items    name=loan_type
+    Select From List    name=loan_type    @{LoanType}[1]
+    Page Should Contain Element    id=request_amount    Request Amount text box is not present on first page of New Application.
+    Input Text    id=request_amount    100
+    Page Should Contain Textfield    id=request_term    Request Term text box is not present on first page of New Application.
+    Focus    id=request_term
+    Input Text    id=request_term    1
+    Click Element    name=continue
+    Sleep    1
+    Wait Until Page Contains Element    id=search_ssn    ${Timeout}    Primary Applicant Page not loaded properly
+
+fillRequiredFieldsOnPrimaryApplicant
+    [Documentation]    This keword is used to fill required fileds on Page
+    Execute Javascript    window.focus();
+    Focus    id=first_name_
+    ${FirstName}=    Generate Random String    5    [LETTERS]
+    Input Text    id=first_name_    QA_${FirstName}
+    ${LastName}=    Generate Random String    5    [LETTERS]
+    Input Text    id=last_name_    ${LastName}
+    ${NN}=    Generate Random String    2    [NUMBERS]
+    Input Text    id=dob_    10/10/1999
+    ${SSN}=    Generate Random String    10    [NUMBERS]
+    Input Text    id=ssn_    ${SSN}
+    Select From List    id=identification_type_    US Passport
+    Select From List    id=id_issuer_    AL
+    ${Number}=    Generate Random String    10    [NUMBERS]
+    ${SSN}=    Get Value    id=ssn_
+    Focus    id=id_number_
+    Input Text    id=id_number_    ${Number}
+    Focus    id=id_expire_dt_
+    Input Text    id=id_expire_dt_    10/10/2020
+    Focus    id=main_phone_
+    Input Text    id=main_phone_    9999999999
+    Sleep    1
+    Set Global Variable    ${SSN}    ${SSN}
+
+fillCurrentAddress&EmploymentDetails
+    [Documentation]    This keyword is used to fill Address and Employment details on page
+    Sleep    1
+    Execute Javascript    window.focus();
+    Focus    id=unique1
+    ${Address}=    Generate Random String    7    [LETTERS]
+    Input Text    id=unique1    ${Address}
+    Input Text    id=unique2    ${Address}
+    Input Text    id=unique4    11211
+    Focus    id=unique6
+    Comment    Input Text    id=unique6    Brooklyn
+    Comment    Focus    id=unique7
+    Comment    Select From List    id=unique7    NY
+    Comment    Focus    id=unique8
+    Focus    id=unique6
+    Sleep    2
+    Focus    id=unique7
+    Select Checkbox    id=unique7
+    @{Residence}=    Get List Items    id=unique8
+    Focus    id=unique8
+    Select From List    id=unique8    @{Residence}[2]
+    Execute Javascript    window.focus();
+    Focus    id=unique9
+    Input Text    id=unique9    100
+    Focus    id=unique10
+    Input Text    id=unique10    3
+    @{EmploymentType}=    Get List Items    id=unique23
+    Select From List    id=unique23    @{EmploymentType}[2]
+    Execute Javascript    window.focus();
+    ${Random}=    Generate Random String    6    [LETTERS]
+    Focus    id=unique24
+    Input Text    id=unique24    ${Random}
+    Focus    id=unique25
+    Input Text    id=unique25    ${Random}
+    Focus    id=unique31
+    Input Text    id=unique31    ${Random}
+    Focus    id=unique26
+    Input Text    id=unique26    8484845987
+    Focus    id=unique28
+    Input Text    id=unique28    10
+    Sleep    1
+    Focus    id=unique29
+    Input Text    id=unique29    3
+    Sleep    2

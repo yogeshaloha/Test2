@@ -1,0 +1,193 @@
+*** Settings ***
+Documentation     Application Settings
+...
+...               Description:
+...
+...               In the Admin | Application Settings
+...
+...               Please remove references to "Manage Loan Fields", \ "Manage Prefix", "Manage Phone Numbers" from the left nav and the main page
+...
+...               Please order remaining entries in order of use as follows:
+...
+...
+...               Identification Types
+...               Phone Numbers (change label to Manage Phone Types)
+...               Residence Types
+...               Employment Types
+...               Income Sources
+...               Income Frequencies
+...               Applicant Types
+...
+...               Please move Payment Frequencies to the Loan Configuration Section.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyApplicationSettingsTabLink
+    [Documentation]    This script verifies below links are present in Application Setting Tab.
+    ...
+    ...    Manage Identification Types
+    ...    Manage Phone Types
+    ...    Manage Residence Types
+    ...    Manage Employment Types
+    ...    Manage Income Sources
+    ...    Manage Income Frequencies
+    ...    Manage Applicant Types
+    ...    Manage Prefix Types
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab is not present on left menu.
+    Click Element    //div[@id='controller_app_config']/div/a[2]
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/ul/li/a    Identification Types    Identification Types link under Application Settings Tab has invalid text or Sequence of the links are changed
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/ul/li[2]/a    Residence Types    Residence Types link under Application Settings Tab has invalid text or Sequence of the links are changed
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/ul/li[3]/a    Employment Types    Employment Types link under Application Settings Tab has invalid text or Sequence of the links are changed
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/ul/li[4]/a    Additional Income Sources    Additional Income Sources \ link under Application Settings Tab has invalid text or Sequence of the links are changed
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/ul/li[5]/a    Income Frequencies    Income Frequencies link under Application Settings Tab has invalid text or Sequence of the links are changed
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/ul/li[6]/a    Asset Types    Asset Types link under Application Settings Tab has invalid text or Sequence of the links are changed
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/ul/li[7]/a    Applicant Types    Applicant Types link under Application Settings Tab has invalid text or Sequence of the links are changed
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/ul/li[8]/a    Prefix Types    Prefix Types link under Application Settings Tab has invalid text or Sequence of the links are chnaged
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/ul/li[9]/a    Relationship Types    Relationship Types \ link under Application Settings Tab has invalid text or Sequence of the links are chnaged
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/ul/li[10]/a    Debt Types    Debt Types link under Application Settings Tab has invalid text or Sequence of the links are chnaged
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}
+    @{Messages}=    Create List    Identification Types link under Application Settings Tab has invalid text or Sequence of the links are changed    Residence Types link under Application Settings Tab has invalid text or Sequence of the links are changed    Employment Types link under Application Settings Tab has invalid text or Sequence of the links are changed    Additional Income Sources \ link under Application Settings Tab has invalid text or Sequence of the links are changed    Income Frequencies link under Application Settings Tab has invalid text or Sequence of the links are changed
+    ...    Asset Types link under Application Settings Tab has invalid text or Sequence of the links are changed    Applicant Types link under Application Settings Tab has invalid text or Sequence of the links are chnaged    Prefix Types link under Application Settings Tab has invalid text or Sequence of the links are chnaged    Relationship Types \ link under Application Settings Tab has invalid text or Sequence of the links are chnaged    Debt Types link under Application Settings Tab has invalid text or Sequence of the links are chnaged
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyApplicationSettingDashboardPage
+    [Documentation]    This script verifies below sections with Buttons are present in Application Setting Page
+    ...
+    ...    Manage Identification Types
+    ...    Manage Phone Types
+    ...    Manage Residence Types
+    ...    Manage Employment Types
+    ...    Manage Income Sources
+    ...    Manage Income Frequencies
+    ...    Manage Applicant Types
+    ...    Manage Prefix Types
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Admin page is not displayed.
+    Click Element    link=Application Settings
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Application Settings Dashboard    Application Settings Dashboard page has invalid header text
+    Comment    Identification Types
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/div/div/h3    Identification Types    Identification Types section header has invalid characters on Application settings Dashboard page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Identification Types')]    Manage Identification Types button not present in Identification Types section on Application settings Dashboard page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Identification Types')]    Manage Identification Types    Manage Identification Types \ button text has invalid text \ in Identification Types section on Application settings Dashboard page
+    Comment    Residence Types
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/div[2]/div/h3    Residence Types    Residence Types section header has invalid characters on Application settings Dashboard page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Residence Types')]    Manage Residence Types button not present in Residence Types \ section on Application settings Dashboard page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Residence Types')]    Manage Residence Types    Manage Residence Types button text has invalid text \ in Residence Types section on Application settings Dashboard page
+    Comment    Employment Types
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/div[3]/div/h3    Employment Types    Employment Types section header has invalid characters on Application settings Dashboard page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Employment Types')]    Manage Employment Types button not present in Employment Types \ section on Application settings Dashboard page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Employment Types')]    Manage Employment Types    Manage Employment Types \ button text has invalid text \ in Employment Types section on Application settings Dashboard page
+    Comment    Income Sources
+    ${V11}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/div[4]/div/h3    Income Sources    Income Sources section header has invalid characters on Application settings Dashboard page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Income Sources')]    Manage Income Sources button not present in Income Sources section on Application settings Dashboard page
+    ${V13}=    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Income Sources')]    Manage Income Sources    Manage Income Sources \ button text has invalid text \ in Income Sources section on Application settings Dashboard page
+    Comment    Income Frequencies
+    ${V14}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/div[5]/div/h3    Income Frequencies    Income Frequencies section header has invalid characters on Application settings Dashboard page
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Income Frequencies')]    Manage Income Frequencies button not present in Income Frequencies \ section on Application settings Dashboard page
+    ${V16}    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Income Frequencies')]    Manage Income Frequencies    Manage Income Frequencies \ button text has invalid text \ in Income Frequencies \ section on Application settings Dashboard page
+    Comment    Asset Types
+    ${V17}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/div[6]/div/h3    Asset Types    Asset Types section header has invalid characters on Application settings Dashboard page
+    ${V18}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Asset Types')]    Manage Asset Types button not present in Income Frequencies \ section on Application settings Dashboard page
+    ${V19}=    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Asset Types')]    Manage Asset Types    Manage Asset Types button text has invalid text \ in Income Frequencies \ section on Application settings Dashboard page
+    Comment    Applicant Types
+    ${V20}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/div[7]/div/h3    Applicant Types    Applicant Types section header has invalid characters on Application settings Dashboard page
+    ${V21}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Applicant Types')]    Manage Applicant Types button not present in Applicant Types \ section on Application settings Dashboard page
+    ${V22}=    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Applicant Types')]    Manage Applicant Types    Manage Applicant Types \ button text has invalid text \ in Applicant Types \ section on Application settings Dashboard page
+    Comment    Prefix Types
+    ${V23}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/div[8]/div/h3    Prefix Types    Prefix Types \ section header has invalid characters on Application settings Dashboard page
+    ${V24}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Prefix Types')]    Manage Prefix Types button not present in Prefix Types section on Application settings Dashboard page
+    ${V25}=    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Prefix Types')]    Manage Prefix Types    Manage Prefix Types button text has invalid text \ in Prefix Types section on Application settings Dashboard page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}    ${V21}    ${V22}    ${V23}
+    ...    ${V24}    ${V25}
+    @{Messages}=    Create List    Application Settings Dashboard page has invalid header text    Identification Types section header has invalid characters on Application settings Dashboard page    Manage Identification Types button not present in Identification Types section on Application settings Dashboard page    Manage Identification Types \ button text has invalid text \ in Identification Types section on Application settings Dashboard page    Residence Types section header has invalid characters on Application settings Dashboard page
+    ...    Manage Residence Types button not present in Residence Types \ section on Application settings Dashboard page    Manage Residence Types button text has invalid text \ in Residence Types section on Application settings Dashboard page    Employment Types section header has invalid characters on Application settings Dashboard page    Manage Employment Types button not present in Employment Types \ section on Application settings Dashboard page    Manage Employment Types \ button text has invalid text \ in Employment Types section on Application settings Dashboard page    Income Sources section header has invalid characters on Application settings Dashboard page
+    ...    Manage Income Sources button not present in Income Sources section on Application settings Dashboard page    Manage Income Sources \ button text has invalid text \ in Income Sources section on Application settings Dashboard page    Income Frequencies section header has invalid characters on Application settings Dashboard page    Manage Income Frequencies button not present in Income Frequencies \ section on Application settings Dashboard page    Manage Income Frequencies \ button text has invalid text \ in Income Frequencies \ section on Application settings Dashboard page    Asset Types section header has invalid characters on Application settings Dashboard page
+    ...    Manage Asset Types button not present in Income Frequencies \ section on Application settings Dashboard page    Manage Asset Types button text has invalid text \ in Income Frequencies \ section on Application settings Dashboard page    Applicant Types section header has invalid characters on Application settings Dashboard page    Manage Applicant Types button not present in Applicant Types \ section on Application settings Dashboard page    Manage Applicant Types \ button text has invalid text \ in Applicant Types \ section on Application settings Dashboard page    Prefix Types \ section header has invalid characters on Application settings Dashboard page
+    ...    Manage Prefix Types button not present in Applicant Types \ section on Application settings Dashboard page    Manage Prefix Types button text has invalid text \ in Prefix Types section on Application settings Dashboard page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyLoanConfigurationTab
+    [Documentation]    This script verifies below links are present in Loan Configuration \ Tab.
+    ...
+    ...    Manage Loan Types
+    ...    Manage Loan Purposes
+    ...    Manage Collateral Types
+    ...    Manage Credit Tier Sets
+    ...    Manage Payment Frequencies
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Admin page is not displayed.
+    Click Element    //div[@id='controller_loan_config']/div/a[2]/i
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_config']/ul/li/a    Loan Types    Loan Types link under Loan Configuration Tab has invalid text or Sequence of the links are changed
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_config']/ul/li[2]/a    Loan Purposes    Loan Purposes link under Loan Configuration Tab has invalid text or Sequence of the links are changed
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_config']/ul/li[3]/a    Collateral Types    Collateral Types link under Loan Configuration Tab has invalid text or Sequence of the links are changed
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_config']/ul/li[4]/a    Core Codes    Core Codes link under Loan Configuration Tab has invalid text or Sequence of the links are changed
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_config']/ul/li[5]/a    Payment Frequencies    Payment Frequencies link under Loan Configuration Tab has invalid text or Sequence of the links are changed
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_config']/ul/li[6]/a    Supporting Documentation Types    Supporting Documentation Types link under Loan Configuration Tab has invalid text or Sequence of the links are changed
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}
+    @{Messages}=    Create List    Loan Types link under Loan Configuration Tab has invalid text or Sequence of the links are changed    Loan Purposes link under Loan Configuration Tab has invalid text or Sequence of the links are changed    Collateral Types link under Loan Configuration Tab has invalid text or Sequence of the links are changed    Core Codes link under Loan Configuration Tab has invalid text or Sequence of the links are changed    Payment Frequencies link under Loan Configuration Tab has invalid text or Sequence of the links are changed
+    ...    Supporting Documentation Types link under Loan Configuration Tab has invalid text or Sequence of the links are changed
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyLoanConfigurationDashboardPage
+    [Documentation]    This script verifies below sections with Buttons are present in \ Loan Configuration \ Tab.
+    ...
+    ...    Manage Loan Types
+    ...    Manage Loan Purposes
+    ...    Manage Collateral Types
+    ...    Manage Credit Tier Sets
+    ...    Manage Payment Frequencies
+    Click Element    link=Admin
+    Sleep    1
+    Click Element    link=Loan Configuration
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Loan Configuration Dashboard    Loan Configuration Dashboard \ \ page has invalid header text
+    Comment    Loan Types
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_config']/div/div/h3    Loan Types    Loan Types \ section header has invalid characters \ on Loan Configuration Dashboard page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Loan Types')]    Manage Loan Types \ button not present in Loan Types section on Loan Configuration Dashboard page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Loan Types')]    Manage Loan Types    Manage Loan Types \ button text has invalid characters \ in Loan Types section on Loan Configuration Dashboard page
+    Comment    Purposes Codes
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_config']/div[2]/div/h3    Loan Purposes    Loan Purposes section header has invalid characters \ on Loan Configuration Dashboard page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Purpose Codes')]    Manage Loan Purposes \ button not present in Phone Types section on Loan Configuration Dashboard page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Purpose Codes')]    Manage Purpose Codes    Manage Purposes Codes button text has invalid characters \ in Loan Purposes \ section on Loan Configuration Dashboard page
+    Comment    Collateral Types
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_config']/div[3]/div/h3    Collateral Types    Collateral Types section header has invalid characters \ on Loan Configuration Dashboard page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Collateral Types')]    Manage Collateral Types \ button not present in Residence Types \ section on Loan Configuration Dashboard page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Collateral Types')]    Manage Collateral Types    Manage Collateral Types button text has invalid characters \ in Collateral Types section on Loan Configuration Dashboard page
+    Comment    Payment Frequencies
+    ${V11}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_config']/div[5]/div/h3    Payment Frequencies    Payment Frequencies section header has invalid characters \ on Loan Configuration Dashboard page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Payment Frequencies')]    Manage Payment Frequencies \ button not present in Employment Types \ section on Loan Configuration Dashboard page
+    ${V13}=    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Payment Frequencies')]    Manage Payment Frequencies    Manage Payment Frequencies \ button text has invalid characters \ in Employment Types \ section on Loan Configuration Dashboard page
+    Comment    Supporting Document Types
+    ${V14}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_config']/div[6]/div/h3    Supporting Document Types    Supporting Document Types \ section header has invalid characters \ on Loan Configuration Dashboard page
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Supporting Documentation Types')]    Manage Supporting Documentation Types button not present in Employment Types \ section on Loan Configuration Dashboard page
+    ${V16}=    Run Keyword And Return Status    Element Text Should Be    //a[contains(text(),'Manage Supporting Documentation Types')]    Manage Supporting Documentation Types    Manage Supporting Documentation Types button text has invalid characters \ in Employment Types \ section on Loan Configuration Dashboard page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}
+    @{Messages}=    Create List    Loan Configuration Dashboard \ \ page has invalid header text    Loan Types \ section header has invalid characters \ on Loan Configuration Dashboard page    Manage Loan Types \ button not present in Loan Types section on Loan Configuration Dashboard page    Manage Loan Types \ button text has invalid characters \ in Loan Types section on Loan Configuration Dashboard page    Loan Purposes section header has invalid characters \ on Loan Configuration Dashboard page
+    ...    Manage Purposes Codes \ button not present in Phone Types section on Loan Configuration Dashboard page    Manage Loan Purposes button text has invalid characters \ in Loan Purposes \ section on Loan Configuration Dashboard page    Collateral Types section header has invalid characters \ on Loan Configuration Dashboard page    Manage Collateral Types \ button not present in Residence Types \ section on Loan Configuration Dashboard page    Manage Collateral Types button text has invalid characters \ in Collateral Types section on Loan Configuration Dashboard page    Payment Frequencies section header has invalid characters \ on Loan Configuration Dashboard page
+    ...    Manage Payment Frequencies \ button not present in Employment Types \ section on Loan Configuration Dashboard page    Manage Payment Frequencies \ button text has invalid characters \ in Employment Types \ section on Loan Configuration Dashboard page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}

@@ -1,0 +1,319 @@
+*** Settings ***
+Documentation     This suite contains the scripts related to the Manage Income Sources
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyAdditionalIncomeSourcesLink
+    [Documentation]    This script verifies "Manage Income Sources " link under Application Settings tab and whether it displays the respective page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings Tab is not present on left menu.
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Additional Income Sources    ${Timeout}    Additional \ Income Sources tab is not present under Application Settings tab.
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    link=Additional Income Sources    Additional \ Income Sources Link is not present in under Application Settings tab.
+    Sleep    1
+    Click Element    link=Additional Income Sources
+    Sleep    2
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage Additional Income Sources    Manage Additional Income Sources page heading text is not correct. Either has missing characters or different text.
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Additional \ Income Sources Link is not present in under Application Settings tab.    Manage Additional Income Sources page heading text is not correct. Either has missing characters or different text.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAdditionalIncomeSourcesButton
+    [Documentation]    This script verifies "Manage Income Sources " button under Application Settings dashboard page and whether it displays the respective page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings Tab is not present on left menu.
+    Click Element    link=Application Settings
+    Sleep    2
+    Wait Until Page Contains Element    //a[contains(text(),'Manage Income Sources')]    ${Timeout}    Application Settings Dashboard page is not displayed.
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='app_config']/div[4]/div/h3    Income Sources section header is not present on Application Settings page.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='app_config']/div[4]/div/h3    Income Sources    Income Sources header has invalid text on Application Settings Dashboard page.
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Income Sources')]    Manage Income Sources \ button is not present on Application Settings page.
+    Sleep    1
+    Focus    //a[contains(text(),'Manage Income Sources')]
+    Click Element    //a[contains(text(),'Manage Income Sources')]
+    Sleep    4
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage Additional Income Sources    Manage Additional Income Sources page heading text is not correct. Either has missing characters or different text.
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Income Sources section header is not present on Application Settings page.    Income Sources header has invalid text on Application Settings Dashboard page.    Manage Income Sources \ button is not present on Application Settings page.    Manage Additional Income Sources page heading text is not correct. Either has missing characters or different text.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAdditionalIncomeSourcesPageUI
+    [Documentation]    This script verfies the Manage Income Sources page.
+    navigateToIncomeSourcesPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=h1.subheading    Page heading on Manage Income Sources page is not present.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage Additional Income Sources    Page heading text is not correct. Either has missing characters or spelling mistakes.
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    id=last_updated    Last Updated label above the table is not present on Manage Income Sources page.
+    ${getLabel}=    Get Text    id=last_updated
+    ${V4}=    Run Keyword And Return Status    Should Contain    ${getLabel}    LAST UPDATED:    Last Updated label text is not correct.Either has missing characters or spelling mistakes.
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    id=core_system_connection    Income Sources table is not present on Manage Income Sources.
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    css=th.firstCol    Income Source column is not present in the table on Manage Income Sources page.
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    css=th.firstCol    Income source    Income Sources column name is not present on column header.
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='core_system_connection']/table/thead/tr/th[2]    Status column is not present in the table on Manage Income Sources page.
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='core_system_connection']/table/thead/tr/th[2]    Status    Status column name is not present on column header.
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    id=new_income_source_name    Income Sources text field is not present on Manage Income Sources page.
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    id=new_income_source_enabled    Enable checkbox is not present on Manage Income Sources page.
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add button is not present on Manage Income Sources page.
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='button']    Edit icon is not present on Manage Income Sources page.
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}
+    @{Messages}=    Create List    Page heading on Manage Income Sources page is not present.    Page heading text is not correct. Either has missing characters or spelling mistakes.    Last Updated label above the table is not present on Manage Income Sources page.    Last Updated label text is not correct.Either has missing characters or spelling mistakes.    Income Sources table is not present on Manage Income Sources.
+    ...    Income Source column is not present in the table on Manage Income Sources page.    Income Sources column name is not present on column header.    Status column is not present in the table on Manage Income Sources page.    Status column name is not present on column header.    Income Sources text field is not present on Manage Income Sources page.    Enable checkbox is not present on Manage Income Sources page.
+    ...    Add button is not present on Manage Income Sources page.    Edit icon is not present on Manage Income Sources page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+defaultValuesOnAdditionalIncomeSourcesPage
+    [Documentation]    This script verifies the Tool tip, Watermark and check box default state.
+    navigateToIncomeSourcesPage
+    Sleep    1
+    ${EditBUttonToolTip}=    Get Element Attribute    //tr[@id='view_income_source_row_1']/td[3]/form/button@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal    ${EditBUttonToolTip}    Edit Income Source    Edit icon has invalid tool tip on Manage Income Sources page.
+    ${WaterMarkText}=    Get Element Attribute    id=new_income_source_name@placeholder
+    ${V2}=    Run Keyword And Return Status    Should Be Equal    ${WaterMarkText}    Income Source    Income Source text box has invalid water mark text.
+    ${V3}=    Run Keyword And Return Status    Checkbox Should Be Selected    id=new_income_source_enabled
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Edit icon has invalid tool tip on Manage Income Sources page.    Income Source text box has invalid water mark text.    Enable check box not checked by default on Manage Income Sources page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addIncomeSource
+    [Documentation]    This script verifies the add functionality on Manage Income Sources Page.
+    navigateToIncomeSourcesPage
+    ${incomeSourceName}=    Generate Random String    5    [LETTERS]
+    addIncome    Enabled    ${incomeSourceName}
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${incomeSourceName}']
+    Comment    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${incomeSourceName}']//td[2]    Enabled
+    @{Verification}=    Create List    ${V1}
+    @{Messages}=    Create List    New Income Source is not added.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+requiredFieldsOnAdd
+    [Documentation]    This script verifies the required field error messages on Manage Income Sources Page.
+    navigateToIncomeSourcesPage
+    Click Element    name=submit-add
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Required field error message for Income Source text field is not present on Manage Income Sources page.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    Required field error message text is not correct. Either has missing characters or spelling mistakes.
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Required field error message for Income Source text field is not present on Manage Income Sources page.    Required field error message text is not correct. Either has missing characters or spelling mistakes.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+enabledIncomeSource
+    [Documentation]    This script verifies the Enabled status for Income sources on Manage Income Sources Page.
+    navigateToIncomeSourcesPage
+    ${incomeSourceName}=    Generate Random String    5    [LETTERS]
+    addIncome    Enabled    ${incomeSourceName}
+    Sleep    3
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${incomeSourceName}']    New Income Source not added successfully.
+    Comment    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${incomeSourceName}']//td[2]    Enabled    Added Income Source displays status as Disabled instead of Enabled.
+    navigateToPrimaryApplicantPage
+    Focus    //input[@value=' Additional Income']
+    Click Element    //input[@value=' Additional Income']
+    Sleep    3
+    ${IncomeSourceList}=    Get List Items    name=-1_source
+    ${V3}=    Run Keyword And Return Status    Should Contain    ${IncomeSourceList}    ${incomeSourceName}
+    @{Verification}=    Create List    ${V1}    ${V3}
+    @{Messages}=    Create List    New Income Source not added successfully.    Added Income Source is not displayed in Source drop down on Primary applicant page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+disabledIncomeSource
+    [Documentation]    This script verifies the Disabled status for Income sources on Manage Income Sources Page.
+    navigateToIncomeSourcesPage
+    ${incomeSourceName}=    Generate Random String    5    [LETTERS]
+    addIncome    Disabled    ${incomeSourceName}
+    Sleep    3
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${incomeSourceName}']    New Income Source not added successfully.
+    Comment    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${incomeSourceName}']//td[2]    Disabled    Added Income Source displays status as Enabled instead of Disabled.
+    navigateToPrimaryApplicantPage
+    Focus    //input[@value=' Additional Income']
+    Click Element    //input[@value=' Additional Income']
+    Sleep    3
+    ${IncomeSourceList}=    Get List Items    name=-1_source
+    ${V3}=    Run Keyword And Return Status    Should Not Contain    ${IncomeSourceList}    ${incomeSourceName}
+    @{Verification}=    Create List    ${V1}    ${V3}
+    @{Messages}=    Create List    New Income Source not added successfully.    Added Income Source is displayed in Source drop down on Primary applicant page even if it is disabled.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+uniqueIncomeSourceNameOnAdd
+    [Documentation]    This script verifies the unique source name functionality on Manage Income Sources Page.
+    navigateToIncomeSourcesPage
+    ${incomeSourceName}=    Generate Random String    5    [LETTERS]
+    addIncome    Enabled    ${incomeSourceName}
+    Sleep    3
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${incomeSourceName}']    New Income Source not added successfully.
+    Focus    id=new_income_source_name
+    Input Text    id=new_income_source_name    ${incomeSourceName}
+    Click Element    name=submit-add
+    Sleep    4
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Unique field error message for Income Source text field is not present on Manage Income Sources page.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    Unique field error message text is not correct. Either has missing characters or spelling mistakes.
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique field error message for Income Source text field is not present on Manage Income Sources page.    Unique field error message text is not correct. Either has missing characters or spelling mistakes.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyEditButtonClick
+    [Documentation]    This script verifies Save and X controls appear on page after clicking on Edit button.
+    navigateToIncomeSourcesPage
+    Sleep    1
+    Focus    //tr[1]/td[3]/form/button
+    Click Element    //tr[1]/td[3]/form/button
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]    ${Timeout}    Save and X links are not displayed.
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]    Save link is not displayed on edit for first row.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]    Save    Save link has invalid text on Manage Income Sources page at edit mode
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button    Close (X) link is not displayed after clicking on Edit link on first row
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button    X    Close (X) link has invalid text on Manage Manage Income Sources page at edit mode
+    ${V5}=    Run Keyword And Return Status    Element Should Be Visible    name=name    Income Source name text box not appear after clicking on Edit link on first row
+    ${V6}=    Run Keyword And Return Status    Element Should Be Visible    name=enabled    Enabled Check box not \ appear after clicking on Edit link on first row
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}
+    @{Messages}=    Create List    Save link is not displayed on edit for first row.    Save link has invalid text on Manage Income Sources page at edit mode    Close (X) link is not displayed after clicking on Edit link on first row    Close (X) link has invalid text on Manage Manage Income Sources page at edit mode    Income Source name text box not appear after clicking on Edit link on first row
+    ...    Enabled Check box not \ appear after clicking on Edit link on first row
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}    \    \    \ at edit mode
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editModeDefaultValues
+    [Documentation]    This script verifies Tool tip, watermark text on Edit Income Source.
+    navigateToIncomeSourcesPage
+    Sleep    1
+    Focus    //tr[1]/td[3]/form/button
+    Click Element    //tr[1]/td[3]/form/button
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]    ${Timeout}    Save and X links are not displayed.
+    ${SaveToolTip}=    Get Element Attribute    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]@title
+    ${CloseToolTip}=    Get Element Attribute    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button@title
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Sleep    1
+    ${NameWaterMark}=    Get Element Attribute    name=name@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal    ${SaveToolTip}    Update Income Source    Save link has invalid tool tip on Manage Income Sources page.
+    ${V2}=    Run Keyword And Return Status    Should Be Equal    ${CloseToolTip}    Cancel    Close link has invalid tool tip on Manage Income Sources page.
+    ${V3}=    Run Keyword And Return Status    Should Be Equal    ${NameWaterMark}    Income Source    Decline Reason text box has invalid water mark text on Manage Income Sources page on edit.
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Save link has invalid tool tip on Manage Income Sources page.    Close link has invalid tool tip on Manage Income Sources page.    Decline Reason text box has invalid water mark text on Manage Income Sources page on edit.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+requiredFieldsOnEdit
+    [Documentation]    This script verifies the required field error messages on Edit Income Sources.
+    navigateToIncomeSourcesPage
+    Page Should Contain Element    //tr[1]/td[3]/form/button    Edit icon for income source is not present.
+    Focus    //tr[1]/td[3]/form/button
+    Click Element    //tr[1]/td[3]/form/button
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]    ${Timeout}    Save and X links are not displayed.
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Click Element    //button[@type='submit']
+    Sleep    3
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Required field error message on edit is not displayed on Manage Income Sources page.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    Required field error message on edit text is not correct. Either has missing characters or spelling mistakes.
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Required field error message on edit is not displayed on Manage Income Sources page.    Required field error message on edit text is not correct. Either has missing characters or spelling mistakes.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+uniqueIncomeSourceNameOnEdit
+    [Documentation]    This script verifies the Unique source name on Edit Income Sources.
+    navigateToIncomeSourcesPage
+    ${getExistingName}=    Get Text    //tr[2]/td
+    Page Should Contain Element    //tr[1]/td[3]/form/button    Edit icon for income source is not present.
+    Focus    //tr[1]/td[3]/form/button
+    Click Element    //tr[1]/td[3]/form/button
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]    ${Timeout}    Save and X links are not displayed.
+    Focus    name=name
+    Input Text    name=name    ${getExistingName}
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    3
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Unique name error message on edit is not displayed on Manage Income Sources page.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    Unique name error message on edit text is not correct. Either has missing characters or spelling mistakes.
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique name error message on edit is not displayed on Manage Income Sources page.    Unique name error message on edit text is not correct. Either has missing characters or spelling mistakes.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyCancelLinkOnEdit
+    [Documentation]    This script verifies the Cancel link functionality on Edit Income Sources. The changes performed should not be saved.
+    navigateToIncomeSourcesPage
+    ${Name}=    Get Text    //tr[1]/td
+    Page Should Contain Element    //tr[1]/td[3]/form/button    Edit icon for income source is not present.
+    Focus    //tr[1]/td[3]/form/button
+    Click Element    //tr[1]/td[3]/form/button
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]    ${Timeout}    Save and X links are not displayed.
+    Focus    name=name
+    Input Text    name=name    test
+    Focus    xpath=(//button[@type='button'])[2]
+    Click Element    xpath=(//button[@type='button'])[2]
+    Sleep    3
+    Element Text Should Be    //tr[1]/td    ${Name}    On cancel icon click, changes are saved in Manage Income Sources page.
+
+*** Keywords ***
+navigateToIncomeSourcesPage
+    [Documentation]    This keyword is used to navigate to Income source page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_app_config']/div/a[2]/i    ${Timeout}    Application Settings Tab is not present on left menu.
+    Click Element    //div[@id='controller_app_config']/div/a[2]/i
+    Sleep    1
+    Wait Until Page Contains Element    link=Additional Income Sources    ${Timeout}    Additonal \ Income Sources tab is not present under Application Settings tab.
+    Click Element    link=Additional Income Sources
+    Sleep    2
+    Wait Until Page Contains Element    name=submit-add    ${Timeout}    Manage Additional Income Sources page is not displayed.
+    Sleep    2
+
+navigateToPrimaryApplicantPage
+    [Documentation]    This keyword is used to navigate to Primary applicant page of New application.
+    Focus    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Sleep    2
+    Click Element    link=New Application
+    Sleep    2
+    Wait Until Page Contains Element    id=request_amount    ${Timeout}    Request Amount text field is not present on the Application Setup page.
+    Select From List By Index    name=loan_type    1
+    Focus    id=request_amount
+    Input Text    id=request_amount    1000
+    Click Element    name=continue
+    Sleep    1
+    Wait Until Page Contains Element    //fieldset/div/div[2]/input    ${Timeout}    Primary Applicant page is not loaded successfully.
+
+addIncome
+    [Arguments]    ${Status}    ${incomeSourceName}
+    [Documentation]    This keyword is used to add a new Income Source.
+    Focus    id=new_income_source_name
+    Input Text    id=new_income_source_name    ${incomeSourceName}
+    ${getName}=    Get Value    id=new_income_source_name
+    Run Keyword If    '${Status}'=='Disabled'    Click Element    id=new_income_source_enabled
+    Sleep    1
+    Click Element    name=submit-add
+    Sleep    3

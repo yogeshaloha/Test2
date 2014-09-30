@@ -1,0 +1,600 @@
+*** Settings ***
+Documentation     Supporting Documentation
+...
+...
+...               Description:
+...
+...               Supporting Documentation Types
+...
+...               Add new manage documentation types option to the admin loan configuration menu drop down. When clicked show screen allowing the loan officer to create supporting documentation types with the following functions.
+...
+...               Lender creates a supporting documentation type selecting to either display the user with defined text next to the select file option in the loan application upload supporting documentation screen. User should have the ability to set the status of the supporting documentation type to enabled or disabled by checking a check box.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyManageSupportingDocumentationTypesLinkUnderLoanConfigurationTab
+    [Documentation]    This script verifies "Manage Supporting Documentation Types" link under Loan Configuration Tab
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Loan Configuration Tab not appeared on page
+    Click Element    link=Loan Configuration
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    link=Supporting Documentation Types    Supporting Documentation Types \ Link not present in Loan Configuration tab \ On Admin Page
+    Sleep    1
+    Focus    link=Supporting Documentation Types
+    Click Element    link=Supporting Documentation Types
+    Sleep    2
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage Supporting Documentation Types    Manage Supporting Documentation Types \ link not functioning properly or Manage Supporting Documentation Types page has invalid header text
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Supporting Documentation Types \ Link not present in Loan Configuration tab \ On Admin Page    Manage Supporting Documentation Types \ link not functioning properly or Manage Supporting Documentation Types page has invalid header text
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyManageSupportingDocumentationTypesButtonUnderLoanConfigurationDashboardPage
+    [Documentation]    This script verifies "Manage Supporting Documentation Types" button under Loan Configuration Dashboard page
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Loan Configuration Tab not appeared on page
+    Click Element    link=Loan Configuration
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_config']/div[6]/div/h3    Supporting Document Types \ section not present \ on Loan Configuration Dashboard page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_config']/div[6]/div/h3    Supporting Document Types    Supporting Document Types \ section has invalid text on Loan Configuration Dashboard page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Manage Supporting Documentation Types')]    Manage Supporting Documentation Types \ button not present \ on Loan Configuration Dashboard page
+    Sleep    1
+    Focus    //a[contains(text(),'Manage Supporting Documentation Types')]
+    Click Element    //a[contains(text(),'Manage Supporting Documentation Types')]
+    Sleep    2
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage Supporting Documentation Types    Manage Supporting Documentation Types \ button not functioning properly or Manage Supporting Documentation Types page has invalid header text
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Supporting Document Types \ section not present \ on Loan Configuration Dashboard page    Supporting Document Types \ section has invalid text on Loan Configuration Dashboard page    Manage Supporting Documentation Types \ button not present \ on Loan Configuration Dashboard page    Manage Supporting Documentation Types \ button not functioning properly or Manage Supporting Documentation Types page has invalid header text
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDefaltValuesOnPage
+    [Documentation]    This script verifies :
+    ...    1. Tool tip.
+    ...    2. Watermark text
+    ...    3. Default values
+    goToManageSupportingDocTypePage
+    Sleep    1
+    ${EditBUttonToolTip}=    Get Element Attribute    id=edit_button_1@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal    ${EditBUttonToolTip}    Edit Supporting Document Type    Edit button has invalid tool tip on Manage Supporting Document Types page
+    ${docTypeWaterMarkText}=    Get Element Attribute    id=documentation_type_name@placeholder
+    ${V2}=    Run Keyword And Return Status    Should Be Equal    ${docTypeWaterMarkText}    Documentation Type    Document Type name \ text box has invalid water mark text on \ Manage Supporting Document Types page
+    ${V3}=    Run Keyword And Return Status    Checkbox Should Be Selected    id=prompt_user
+    ${V4}=    Run Keyword And Return Status    Checkbox Should Be Selected    id=documentation_type_enabled
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Edit button has invalid tool tip on Manage Supporting Document Types page    Document Type name \ text box has invalid water mark text on Manage Supporting Document Types page    Prompt User \ check box not checked by default on Manage Supporting Document Types page \    Enable check box not checked by default on Manage Supporting Document Types page \
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyRequiredFields
+    [Documentation]    This script verifies required field message
+    goToManageSupportingDocTypePage
+    Sleep    1
+    Focus    id=documentation_type_name
+    Click Element    name=submit-add
+    Sleep    2
+    Focus    id=documentation_type_name
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    This field is required. message for Required field not appeared on Manage Supporting Document Types page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for Required field has invalid text on Manage Supporting Document Types page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    This field is required. message for Required field not appeared on Manage Supporting Document Types page    This field is required. message for Required field has invalid text on Manage Supporting Document Types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUniqueNameValidation
+    [Documentation]    Tis script verifies Unique name validation
+    goToManageSupportingDocTypePage
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${PromptText}=    Generate Random String    7    [LETTERS]
+    addSupportDocType    ${Name}    ${PromptText}    Yes    Enabled
+    Sleep    3
+    Page Should Contain Element    //table[@id='supporting_docs_type_table']/tbody/tr[td/text()='${Name}']    Could not add New Support Document
+    addSupportDocType    ${Name}    ${PromptText}    Yes    Enabled
+    Sleep    3
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    This field must be unique. message for unique name not appeared \ on Manage Supporting Document Types page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. \ message for unique name has invalid text on Manage Supporting Document Types page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    This field must be unique. message for unique name not appeared \ on Manage Supporting Document Types page    This field must be unique. \ message for unique name has invalid text on Manage Supporting Document Types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyEditButtonClick
+    [Documentation]    This script verifies controls appeared on page after clicking on Edit button
+    goToManageSupportingDocTypePage
+    Sleep    1
+    Focus    id=edit_button_1
+    Click Element    id=edit_button_1
+    Sleep    3
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button[2]    Save link not appear after clicking on Edit link on first row
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button[2]    Save    Save link has invalid text on Manage Supporting Document Types page \ at edit mode
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button    Close (X) link not appear after clicking on Edit link on first row
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button    X    Close (X) link has invalid text on Manage Supporting Document Types page \ at edit mode
+    ${V5}=    Run Keyword And Return Status    Element Should Be Visible    name=name    Support Document \ name text box not appear after clicking on Edit link on first row
+    ${V6}=    Run Keyword And Return Status    Element Should Be Visible    name=prompt    Prompt User ? check box not \ appear after clicking on Edit link on first row
+    ${V7}=    Run Keyword And Return Status    Element Should Be Visible    name=prompt_text    Prompt Text text box not appear after clicking on Edit link on first row
+    ${V8}=    Run Keyword And Return Status    Element Should Be Visible    name=enabled    Enabled Check box not \ appear after clicking on Edit link on first row
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}
+    @{Messages}=    Create List    Save link not appear after clicking on Edit link on first row    Save link has invalid text on Manage Supporting Document Types page \ at edit mode    Close (X) link not appear after clicking on Edit link on first row    Close (X) link has invalid text on Manage Supporting Document Types page \ at edit mode    Support Document \ name text box not appear after clicking on Edit link on first row
+    ...    Prompt User ? check box not \ appear after clicking on Edit link on first row    Prompt Text text box not appear after clicking on Edit link on first row    Enabled Check box not \ appear after clicking on Edit link on first row
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editModeDefaultValues
+    [Documentation]    This script verifies Tool tip , watermark text on Edit Stipulation mode
+    goToManageSupportingDocTypePage
+    Sleep    1
+    Click Element    id=edit_button_1
+    Sleep    2
+    Wait Until Page Contains Element    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button[2]    ${Timeout}    Edit Page not loaded properly
+    ${SaveToolTip}=    Get Element Attribute    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button[2]@title
+    ${CloseToolTip}=    Get Element Attribute    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button@title
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Sleep    1
+    Focus    name=prompt_text
+    Input Text    name=prompt_text    ${EMPTY}
+    Sleep    1
+    ${NameWaterMark}=    Get Element Attribute    name=name@placeholder
+    ${PromptTextBox}    Get Element Attribute    name=prompt_text@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal    ${SaveToolTip}    Update Supporting Document Type    Save link has invalid tool tip on Manage Supporting Document Types page \ at edit mode
+    ${V2}=    Run Keyword And Return Status    Should Be Equal    ${CloseToolTip}    Cancel    Close link has invalid tool tip on Manage Supporting Document Types page \ at edit mode
+    ${V3}=    Run Keyword And Return Status    Should Be Equal    ${NameWaterMark}    Document Type    Document Type name \ text box has invalid water mark text on Manage Supporting Document Types page \ at edit mode
+    ${V4}=    Run Keyword And Return Status    Should Be Equal    ${PromptTextBox}    Prompt Text    Prompt Text text box has invalid water mark text on Manage Supporting Document Types page \ at edit mode
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Save link has invalid tool tip on Manage Supporting Document Types page \ at edit mode    Close link has invalid tool tip on Manage Supporting Document Types page \ at edit mode    Document Type name \ text box has invalid water mark text on Manage Supporting Document Types page \ at edit mode    Prompt Text text box has invalid water mark text on Manage Supporting Document Types page \ at edit mode
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editModeRequiredfieldValidation
+    [Documentation]    This script \ verifies required field validation at edit mode
+    goToManageSupportingDocTypePage
+    Sleep    1
+    Click Element    id=edit_button_1
+    Sleep    2
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Sleep    1
+    Focus    name=prompt_text
+    Input Text    name=prompt_text    ${EMPTY}
+    Focus    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button[2]
+    Click Element    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button[2]
+    Sleep    2
+    Focus    name=name
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    This field is required. message for Required field not appeared on Manage Supporting Document Types page at Edit mode
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for Required field has invalid text on Manage Supporting Document Types page at Edit mode
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    This field is required. message for Required field not appeared on Manage Supporting Document Types page at Edit mode    This field is required. message for Required field has invalid text on Manage Supporting Document Types page at Edit mode
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editUniqueNameValidation
+    [Documentation]    This script verifies Unique name validation message at Edit mode
+    goToManageSupportingDocTypePage
+    Sleep    1
+    ${SecondName}=    Get Text    //tr[2]/td
+    Click Element    id=edit_button_1
+    Sleep    2
+    Focus    name=name
+    Input Text    name=name    ${SecondName}
+    Sleep    1
+    Focus    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button[2]
+    Click Element    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button[2]
+    Sleep    2
+    Focus    name=name
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    This field must be unique. message for unique name not appeared \ on Manage Supporting Document Types page at edit mode
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. \ message for unique name has invalid text on Manage Supporting Document Types page at edit mode
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    This field must be unique. message for unique name not appeared \ on Manage Supporting Document Types page at edit mode    This field must be unique. \ message for unique name has invalid text on Manage Supporting Document Types page at edit mode
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifySaveButtonFunctionality
+    [Documentation]    This script verifies Save link functionality
+    goToManageSupportingDocTypePage
+    Sleep    2
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${PromptText}=    Generate Random String    7    [LETTERS]
+    Click Element    id=edit_button_1
+    Sleep    2
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit Page not laoded properly
+    Focus    name=name
+    Input Text    name=name    ${Name}
+    Sleep    1
+    Focus    name=prompt_text
+    Input Text    name=prompt_text    ${PromptText}
+    Sleep    1
+    Focus    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button[2]
+    Click Element    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button[2]
+    Sleep    4
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[@id='supporting_document_type_row_1']/td    ${Name}    After \ Clicking on Save button , Document Type \ name not updated on Manage Supporting Document Types \ Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //tr[@id='supporting_document_type_row_1']/td[3]    ${PromptText}    After \ Clicking on Save button , Prompt Text \ not updated on Manage Supporting Document Types \ Page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    After \ Clicking on Save button , Document Type \ name not updated on Manage Supporting Document Types \ Page    After \ Clicking on Save button , Prompt Text \ not updated on Manage Supporting Document Types \ Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyCancelButtonFunctionality
+    [Documentation]    This script verifies Cancel link functionality
+    goToManageSupportingDocTypePage
+    Sleep    2
+    ${Name}=    Get Text    //tr[@id='supporting_document_type_row_1']/td
+    Click Element    id=edit_button_1
+    Sleep    2
+    Sleep    2
+    ${String}=    Generate Random String    10    [LETTERS]
+    Focus    name=name
+    Input Text    name=name    ${String}
+    Sleep    1
+    Click Element    //table[@id='supporting_docs_type_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button
+    Sleep    2
+    Element Text Should Be    //tr[@id='supporting_document_type_row_1']/td    ${Name}    After Clicking on Cancel \ button \ , Document Type \ name updated on Manage Supporting Document Types \ Page
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyNewSectionForDocumentOnLoanTypePage
+    [Documentation]    This script verifies "Supporting Document Types" section added on Loan Type Page
+    goManageLoanTypePage
+    Sleep    1
+    Click Element    link=Add Loan Type
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[19]/div/label    Supporting Document Types section not appeared on Loan Type Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[19]/div/label    Supporting Document Types    Supporting Document Types section has invalid header text on Loan Type page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='supportingDocTypes']/thead/tr/th    Document Type    Document Type column name has invalid text on Loan Type page under Supporting Document Types section
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='supportingDocTypes']/thead/tr/th[2]    Required    Required \ column name has invalid text on Loan Type page under Supporting Document Types section
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    id=add_entry    Add New Entry button not \ present on Loan Type page under Supporting Document Types section
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='supportingDocTypes']/tbody/tr/td    None.    Default Text in \ Supporting Document Types grid on Loan Type page has invalid text
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}
+    @{Messages}=    Create List    Supporting Document Types section not appeared on Loan Type Page    Supporting Document Types section has invalid header text on Loan Type page    Document Type column name has invalid text on Loan Type page under Supporting Document Types section    Required \ column name has invalid text on Loan Type page under Supporting Document Types section    Add New Entry button not \ present on Loan Type page under Supporting Document Types section
+    ...    Default Text in \ Supporting Document Types grid on Loan Type page has invalid text
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddAndDeleteRowFunctionality
+    [Documentation]    This script verifies Add and Delete Row functionality
+    goManageLoanTypePage
+    Sleep    1
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Focus    id=add_entry
+    Click Element    id=add_entry
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //table[@id='supportingDocTypes']/tbody[2]/tr/td/select    After Clicking on Add New Entry button , New Row not added on Supporting Document Type Grid
+    Focus    xpath=(//button[@type='button'])[2]
+    Click Element    xpath=(//button[@type='button'])[2]
+    ${V2}=    Run Keyword And Return Status    Element Should Not Be Visible    //table[@id='supportingDocTypes']/tbody[2]/tr/td/select    After Clicking on Delete \ button , Row not removed \ on Supporting Document Type Grid
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    After Clicking on Add New Entry button , New Row not added on Supporting Document Type Grid    After Clicking on Delete \ button , Row not removed \ on Supporting Document Type Grid
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedEnabledDocumentTypeDisplayedOnAddNewLoanTypePage
+    [Documentation]    This script verifies added enabled document type displayed on Loan Type Page
+    goToManageSupportingDocTypePage
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${PromptText}=    Generate Random String    7    [LETTERS]
+    addSupportDocType    ${Name}    ${PromptText}    Yes    Enabled
+    Sleep    4
+    Page Should Contain Element    //table[@id='supporting_docs_type_table']/tbody/tr[td/text()='${Name}']    Could not add New Support Document
+    Reload Page
+    goManageLoanTypePage
+    Sleep    1
+    Click Element    link=Add Loan Type
+    Focus    id=add_entry
+    Click Element    id=add_entry
+    Sleep    2
+    Focus    //table[@id='supportingDocTypes']/tbody[2]/tr/td/select
+    Sleep    2
+    @{AllDocs}=    Get List Items    //table[@id='supportingDocTypes']/tbody[2]/tr/td/select
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Select From List By Label    //table[@id='supportingDocTypes']/tbody[2]/tr/td/select    ${Name}
+    @{Verification}=    Create List    ${V1}
+    @{Messages}=    Create List    Added Document Type not displayed on Loan Type page under Supporting Dcoument Type Section
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedDisabledDocumentTypeDisplayedOnAddNewLoanTypePage
+    [Documentation]    This script verifies added disabled document type not displayed on Loan Type Page
+    goToManageSupportingDocTypePage
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${PromptText}=    Generate Random String    7    [LETTERS]
+    addSupportDocType    ${Name}    ${PromptText}    Yes    Disabled
+    Sleep    2
+    Page Should Contain Element    //table[@id='supporting_docs_type_table']/tbody/tr[td/text()='${Name}']    Could not add New Support Document
+    goManageLoanTypePage
+    Sleep    1
+    Click Element    link=Add Loan Type
+    Focus    id=add_entry
+    Click Element    id=add_entry
+    Sleep    2
+    Focus    //table[@id='supportingDocTypes']/tbody[2]/tr/td/select
+    @{AllDocTypes}=    Get List Items    //table[@id='supportingDocTypes']/tbody[2]/tr/td/select
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Select From List    id=unique1    ${Name}    Added Disabled Document Type displayed on Loan Type page under Supporting Dcoument Type Section
+    Run Keyword If    '${V1}'=='True'    Fail    Added Disabled Document Type displayed on Loan Type page under Supporting Dcoument Type Section
+
+verifyEnableAndDisableFunctionalityForPromptTextboxAdd
+    [Documentation]    This script verifies "Prompt Text" text box enable and Disable feature depend on Prompt check box at Add Mode
+    goToManageSupportingDocTypePage
+    Sleep    1
+    Comment    Verify Disable Feature
+    Unselect Checkbox    id=prompt_user
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Should Be Disabled    name=prompt_text
+    Sleep    1
+    Comment    Verify Enable Feature
+    Select Checkbox    id=prompt_user
+    Sleep    1
+    ${V2}=    Run Keyword And Return Status    Element Should Be Enabled    name=prompt_text
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Prompt Text box not get disabled when user uncheck Prompt Check Box    Prompt Text box not get enabled when user uncheck Prompt Check Box
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+goToManageSupportingDocTypePage
+    [Documentation]    This keyword is used to navigate to Manage Stipulation page
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Loan Configuration Tab not appeared on page
+    Click Element    link=Loan Configuration
+    Sleep    2
+    Focus    link=Supporting Documentation Types
+    Click Element    link=Supporting Documentation Types
+    Sleep    2
+    Wait Until Page Contains Element    id=documentation_type_name    ${Timeout}    Manage Supporting Documentation Types page not loaded properly
+
+addSupportDocType
+    [Arguments]    ${Name}    ${PromptText}    ${IsPrompt}    ${IsEnabled}
+    [Documentation]    This keyword is used to add new stipulation
+    Focus    id=documentation_type_name
+    Input Text    id=documentation_type_name    ${Name}
+    Focus    id=prompt_user
+    Run Keyword If    '${IsPrompt}'=='No'    Unselect Checkbox    id=prompt_user
+    Run Keyword If    '${IsPrompt}'=='Yes'    Focus    name=prompt_text
+    Run Keyword If    '${IsPrompt}'=='Yes'    Input Text    name=prompt_text    ${PromptText}
+    Focus    id=documentation_type_enabled
+    Run Keyword If    '${IsEnabled}'=='Disabled'    Unselect Checkbox    id=documentation_type_enabled
+    Sleep    2
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    1
+
+goToSubmittedApplicationListPage
+    [Documentation]    This \ keyword is used to Navigate to Submitted application underwritting page
+    Sleep    2
+    Wait Until Page Contains Element    link=Queues
+    Sleep    1
+    Click Element    link=Queues
+    Sleep    2
+    Wait Until Page Contains Element    link=Submitted    ${Timeout}    Queues page not loaded properly
+    Focus    link=Submitted
+    Click Element    link=Submitted
+    Sleep    2
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Wait Until Page Contains Element    link=Additional Documents    ${Timeout}    Application View Page not loaded properly
+    Sleep    1
+
+goManageLoanTypePage
+    [Documentation]    This keyword is used to Navigate to Manage Loan Type Page
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_loan_config']/div/a[2]/i    ${Timeout}    Loan Configuration Tab not appeared on page
+    Click Element    //div[@id='controller_loan_config']/div/a[2]/i
+    Sleep    2
+    Click Element    link=Manage Loan Types
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Loan Type    ${Timeout}    Manage Loan Type Page Not loaded properly or Add New Type Link not displayed on page
+
+addNewLoanTypeWithDocuments
+    [Arguments]    ${LoanTypeName}    ${Doc1}    ${Doc2}    ${Required}
+    [Documentation]    This keyword is used to add New Loan Type
+    goManageLoanTypePage
+    Focus    link=Add Loan Type
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New Type page not loaded properly
+    Sleep    1
+    Focus    id=name
+    Input Text    id=name    ${LoanTypeName}
+    Focus    id=enabled
+    Select Checkbox    id=enabled
+    Sleep    1
+    @{AppControl}=    Get List Items    id=application_control
+    Select From List    id=application_control    @{AppControl}[1]
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    id=core_cde
+    Run Keyword If    '${V1}'=='True'    Focus    id=core_cde
+    Run Keyword If    '${V1}'=='True'    Input Text    id=core_cde    1
+    Sleep    1
+    Focus    id=selected_purposes1
+    Click Element    id=selected_purposes1
+    Sleep    1
+    @{InitialRole}=    Get List Items    id=initial_rule
+    Select From List    id=initial_rule    @{InitialRole}[1]
+    Sleep    1
+    Focus    id=default_term
+    Input Text    id=default_term    10
+    Focus    id=add_entry
+    Click Element    id=add_entry
+    Sleep    2
+    Focus    id=unique1
+    Sleep    2
+    Select From List    id=unique1    ${Doc1}
+    Click Element    id=add_entry
+    Sleep    2
+    Focus    id=unique2
+    Sleep    2
+    Select From List    id=unique2    ${Doc2}
+    Run Keyword If    '${Required}'=='Yes'    Click Element    //table[@id='supportingDocTypes']/tbody[2]/tr/td[2]/input
+    Focus    id=min_loan_amount
+    Input Text    id=min_loan_amount    1
+    Focus    id=max_loan_amount
+    Input Text    id=max_loan_amount    999999
+    @{Score}=    Get List Items    id=active_score_model
+    Select From List    id=active_score_model    @{Score}[1]
+    @{Model}=    Get List Items    id=active_score_model_option_id
+    Select From List    id=active_score_model_option_id    @{Model}[1]
+    @{Tier}=    Get List Items    id=credit_tier_set
+    Select From List    id=credit_tier_set    @{Tier}[1]
+    @{Rate}=    Get List Items    id=rate_table
+    Select From List    id=rate_table    @{Rate}[1]
+    Sleep    1
+    Focus    css=a.btn.btn-success
+    Click Element    css=a.btn.btn-success
+    Sleep    2
+
+addApplicationWithLoanTypeUsed
+    [Arguments]    ${LoanType}
+    [Documentation]    This keyword add New Application
+    applicationSetupPage    ${LoanType}
+    fillRequiredFieldsOnPrimaryApplicant
+    fillCurrentAddress&EmploymentDetails
+    Comment    Add GMI for Primary Applicant
+    Focus    id=unique34
+    Page Should Contain Textfield    id=unique34    Gross monthy income text field is not present on the primary applicant page.
+    ${GMIPrimary}=    Generate Random String    3    [NUMBERS]
+    Focus    id=unique34
+    Input Text    id=unique34    1${GMIPrimary}
+    ${GMIPrimary}=    Set Variable    1${GMIPrimary}
+    Focus    id=unique35
+    Click Element    xpath=(//button[@name='continue'])[2]
+    Sleep    1
+    Sleep    2
+    Click Element    xpath=(//button[@name='continue'])[2]
+    Sleep    2
+    Click Element    xpath=(//button[@name='continue'])[2]
+    Sleep    2
+    ${URL}=    Get Location
+    ${AppID}=    String.Fetch From Right    ${URL}    /
+    Set Global Variable    ${AppID}    ${AppID}
+    Focus    xpath=(//button[@name='continue'])[2]
+    Click Element    xpath=(//button[@name='continue'])[2]
+    Sleep    15
+    Click Element    link=Admin
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='controller_loan_config']/div/a[2]/i    ${Timeout}    Loan Configuration Tab not appeared on page
+    Focus    name=quicksearch
+    Input Text    name=quicksearch    ${SSN}
+    Sleep    2
+    Press Key    name=quicksearch    \\13
+    Sleep    4
+    Focus    name=search_apps_length
+    Sleep    1
+    Select From List    name=search_apps_length    View All
+    Sleep    2
+    Click Element    link=${AppID}
+    Sleep    2
+
+fillRequiredFieldsOnPrimaryApplicant
+    [Documentation]    This keyword is used to Fill Primary Applicant Page
+    Execute Javascript    window.focus();
+    Focus    id=first_name_
+    ${FirstName}    Generate Random String    7    [LOWER]
+    Input Text    id=first_name_    ${FirstName}
+    Focus    id=last_name_
+    ${LastName}    Generate Random String    7    [LOWER]
+    Input Text    id=last_name_    ${LastName}
+    ${NN}=    Generate Random String    2    [NUMBERS]
+    Input Text    id=dob_    10/10/1999
+    ${SSN}=    Generate Random String    10    [NUMBERS]
+    Input Text    id=ssn_    ${SSN}
+    Select From List    id=identification_type_    US Passport
+    Select From List    id=id_issuer_    AL
+    ${SSN}=    Get Value    id=ssn_
+    ${Number}=    Generate Random String    10    [NUMBERS]
+    Focus    id=id_number_
+    Input Text    id=id_number_    ${Number}
+    Focus    id=id_expire_dt_
+    Input Text    id=id_expire_dt_    10/10/2020
+    Focus    id=main_phone_
+    Input Text    id=main_phone_    9999999999
+    Sleep    1
+    Set Global Variable    ${SSN}    ${SSN}
+
+fillCurrentAddress&EmploymentDetails
+    [Documentation]    This keyword is used to fill Employment and Current Address section
+    Sleep    1
+    Execute Javascript    window.focus();
+    Focus    id=unique1
+    ${Address}=    Generate Random String    7    [LETTERS]
+    Input Text    id=unique1    ${Address}
+    Input Text    id=unique2    ${Address}
+    Focus    id=unique7
+    Sleep    1
+    Select Checkbox    id=unique7
+    Sleep    2
+    Input Text    id=unique4    11211
+    Focus    id=unique5
+    Sleep    2
+    @{Residence}=    Get List Items    id=unique8
+    Focus    id=unique8
+    Select From List    id=unique8    @{Residence}[2]
+    ${Residence}    Set Variable    @{Residence}[2]
+    Set Global Variable    ${Residence}    @{Residence}[2]
+    Execute Javascript    window.focus();
+    Focus    id=unique9
+    Input Text    id=unique9    100
+    Focus    id=unique10
+    Input Text    id=unique10    3
+    @{EmploymentType}=    Get List Items    id=unique23
+    Select From List    id=unique23    @{EmploymentType}[2]
+    ${Employement}=    Set Variable    @{EmploymentType}[2]
+    Set Global Variable    ${Employement}    @{EmploymentType}[2]
+    Execute Javascript    window.focus();
+    ${Random}=    Generate Random String    6    [LETTERS]
+    Focus    id=unique24
+    Input Text    id=unique24    ${Random}
+    Focus    id=unique31
+    Input Text    id=unique31    ${Random}
+    Focus    id=unique32
+    Input Text    id=unique32    8484845987
+    Focus    id=unique34
+    Input Text    id=unique34    10
+    Sleep    1
+    Input Text    id=unique35    3
+    Sleep    2
+
+applicationSetupPage
+    [Arguments]    ${LoanType}
+    [Documentation]    This keyword is used to fill Application Setup Page
+    Page Should Contain Element    //div[@id='navHeader']/div[2]/div/ul/li[2]/a/i
+    Click Element    //div[@id='navHeader']/div[2]/div/ul/li[2]/a/i
+    Click Element    link=New Application
+    Sleep    4
+    Select From List    name=loan_type    ${LoanType}
+    ${Amount}=    Generate Random String    4    [NUMBERS]
+    Input Text    id=request_amount    ${Amount}
+    Set Global Variable    ${Amount}    ${Amount}
+    ${Term}=    Generate Random String    1    [NUMBERS]
+    Sleep    1
+    Focus    id=request_term
+    Input Text    id=request_term    1${Term}
+    Set Global Variable    ${Term}    1${Term}
+    Click Element    name=continue
+    Wait Until Page Contains Element    id=search_ssn
+    Sleep    2

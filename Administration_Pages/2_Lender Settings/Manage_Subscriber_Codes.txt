@@ -1,0 +1,360 @@
+*** Settings ***
+Documentation     This suite contains the scenarios of Manage Subscriber Codes under lender settings.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyManageSubscriberCodesLink
+    [Documentation]    This script verifies the Manage Subscriber Codes link.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Subscriber Codes    ${Timeout}    Manage Subscriber Codes link not present under Lender Settings tab
+    Element Text Should Be    link=Subscriber Codes    Subscriber Codes    Subscriber Codes libk has invalid text in Lender Settings Tab
+
+verifyManageSubscriberCodesButton
+    [Documentation]    This script verifies \ Manage Subscriber Codes button under lender settings tab.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Page Should Contain Element    link=Manage Subscriber Codes    Manage Subscriber Codes \ button not present under Lender Settings Dashboard Page
+
+verifyManageSubscriberCodesLinkRedirection
+    [Documentation]    This script navigates to \ Manage Subscriber Codes page.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Focus    link=Lender Settings
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Subscriber Codes    ${Timeout}    Subscriber Codes link not present under Lender Settings tab
+    Focus    link=Subscriber Codes
+    Click Element    link=Subscriber Codes
+    Sleep    2
+    Page Should Contain Textfield    id=code    ${Timeout}    Subscriber Codes link not functioning properly
+
+verifyTheUIOfManageSubscriberCodesPage
+    [Documentation]    This script verifies all UI elements of \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Manage Subscriber Codes header not present on Manage Subscriber Codes page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Subscriber Codes    Manage Subscriber Codes header has invalid text on Manage Subscriber Codes page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='core_system_connection']/table/thead/tr/th    Subscriber Code column not present on Manage Subscriber Codes page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='core_system_connection']/table/thead/tr/th    Subscriber Code    Subscriber Code column has invalid text on Manage Subscriber Codes page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='core_system_connection']/table/thead/tr/th[2]    Description column not present on Manage Subscriber Codes page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='core_system_connection']/table/thead/tr/th[2]    Description    Description column has invalid text on Manage Subscriber Codes page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='core_system_connection']/table/thead/tr/th[3]    Status column not present on Manage Subscriber Codes page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='core_system_connection']/table/thead/tr/th[3]    Status    Status column has invalid text on Manage Subscriber Codes page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    //span[@id='last_updated']/small    LAST UPDATED label not present on Manage Subscriber Codes page
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Textfield    id=code    Code text field not present on Manage Subscriber Codes page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Textfield    id=description    Description text field not present on Manage Subscriber Codes page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    id=enabled    Enabled checkbox not present \ on Manage Subscriber Codes page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add button not present on Manage Subscriber Codes page
+    ${V14}=    Run Keyword And Return Status    Element Text Should Be    name=submit-add    Add    Add button has invalid text on Manage Subscriber Codes page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}
+    @{Messages}=    Create List    Manage Subscriber Codes header not present on Manage Subscriber Codes page    Manage Subscriber Codes header has invalid text on Manage Subscriber Codes page    Subscriber Code column not present on Manage Subscriber Codes page    Subscriber Code column has invalid text on Manage Subscriber Codes page    Description column not present on Manage Subscriber Codes page
+    ...    Description column has invalid text on Manage Subscriber Codes page    Status column not present on Manage Subscriber Codes page    Status column has invalid text on Manage Subscriber Codes page    LAST UPDATED label not present on Manage Subscriber Codes page    Code text field not present on Manage Subscriber Codes page    Description text field not present on Manage Subscriber Codes page
+    ...    Enabled checkbox not present \ onManage Subscriber Codes page    Add button not present on Manage Subscriber Codes page    Add button has invalid text on Manage Subscriber Codes page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDefaultValues
+    [Documentation]    This script verifies default values on \ \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    ${CodeWaterMarkText}=    Get Element Attribute    id=code@placeholder
+    ${DescriptionWaterMarkText}=    Get Element Attribute    id=description@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Code    ${CodeWaterMarkText}    Code text box has invalid watermark text on manage subscriber codes page
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    Description    ${DescriptionWaterMarkText}    Description text box has invalid watermark text on manage subscriber codes page
+    ${V3}=    Run Keyword And Return Status    Checkbox Should Be Selected    id=enabled
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Code text box has invalid watermark text on manage subscriber codes page    Description text box has invalid watermark text on manage subscriber codes page    Enabled check box not selected by default on manage subscriber codes page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewSubscriberCodeEnabled
+    [Documentation]    This script add new Subscriber code with enabled status on \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    Sleep    1
+    ${Code}=    Generate Random String    8    [LETTERS]
+    ${Description}=    Generate Random String    8    [LETTERS]
+    addSubscriberCode    ${Code}    ${Description}    Enabled
+    Sleep    1
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Code}']    Could not add New subscriber Code on manage subscriber code page
+
+addNewSubscriberCodeDisabled
+    [Documentation]    This script add new Subscriber code with disabled status on \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    Sleep    1
+    ${Code}=    Generate Random String    8    [LETTERS]
+    ${Description}=    Generate Random String    8    [LETTERS]
+    addSubscriberCode    ${Code}    ${Description}    Disabled
+    Sleep    1
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Code}']    Could not add New subscriber Code on manage subscriber code page
+
+verifyBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation on \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    addSubscriberCode    ${EMPTY}    ${EMPTY}    Enabled
+    Comment    Error Message for the Code and Description
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Empty Code validation message not appear on manage subscriber codes page.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message has invalid characters \ on manage subscriber codes page.
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Empty Code validation message not appear on manage subscriber codes page.    This field is required. message has invalid characters \ on manage subscriber codes page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addCodeUniqueNameValidation
+    [Documentation]    This script verifies the unique subscriber code validation on \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    ${Code}=    Generate Random String    8    [LETTERS]
+    ${Description}=    Generate Random String    8    [LETTERS]
+    addSubscriberCode    ${Code}    ${Description}    Enabled
+    Sleep    1
+    addSubscriberCode    ${Code}    ${Description}    Enabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Unique name validation message not appear on manage subscriber codes page.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters on manage subscriber codes page.
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique name validation message not appear on manage subscriber codes page.    This field must be unique. message has invalid characters on manage subscriber codes page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyTheEditButtonClick
+    [Documentation]    This script verifies the Edit button functionality on \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    Sleep    1
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=code    ${Timeout}    Edit page not found for the first row in the grid
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    name=code    Code text box not present for the edited record
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    name=description    Description text box not present for the edited record
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/label    Status check box not present for edited record
+    ${V4}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    Save link not appear on the Edited record
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    Save link not present on the Edited record
+    ${V6}=    Run Keyword And Return Status    Element Should Be Visible    id=cancel_edit_1    X("Cancel") \ link not appear on the Edited record
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    id=cancel_edit_1    X("Cancel") link not present on the Edited record
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}
+    @{Messages}=    Create List    Code text box not present for the edited record    Description text box not present for the edited record    Status check box not present for edited record    Save link not appear on the Edited record    Save link not present on the Edited record
+    ...    X("Cancel") \ link not appear on the Edited record    X("Cancel") link not present on the Edited record
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editSubscriberCodeToolTipsOnControls
+    [Documentation]    This script verifies tool tips on all controls of edit functionality on \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${EditButtonToolTip}=    Get Element Attribute    //tr[@id='view_subscriber_code_row_1']/td[4]/form/button@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${EditButtonToolTip}    Edit Subscriber Code    Edit \ button has invalid tool tip
+    Mouse Over    //tr[1]/td[4]/form/button
+    Sleep    2
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=code    ${Timeout}    Edit page not found for the first row in the grid
+    ${SaveButtonToolTip}=    Get Element Attribute    //button[@type='submit']@title
+    ${CancelButtonToolTip}=    Get Element Attribute    id=cancel_edit_1@title
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${SaveButtonToolTip}    Update Subscriber Codes    Save button has invalid tool tip
+    Mouse Over    //button[@type='submit']
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CancelButtonToolTip}    Cancel    Cancel \ button has invalid tool tip
+    Mouse Over    id=cancel_edit_1
+    Sleep    2
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Edit \ button has invalid tool tip    Save button has invalid tool tip    Cancel \ button has invalid tool tip
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editSubscriberCodeWaterMarkText
+    [Documentation]    This script verifies water mark text on edit functionality of \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=code    ${Timeout}    Edit mode of subscriber code not opened
+    Focus    name=code
+    Input Text    name=code    ${EMPTY}
+    ${CodeWaterMarkText}=    Get Element Attribute    name=code@placeholder
+    Focus    name=description
+    Input Text    name=description    ${EMPTY}
+    ${DescriptionWaterMarkText}=    Get Element Attribute    name=description@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CodeWaterMarkText}    Subscriber Code    Subscriber Code text box has invalid watermark text on edit mode
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${DescriptionWaterMarkText}    Description    Description text box has invalid watermark text on edit mode
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Subscriber Code text box has invalid watermark text on edit mode    Description text box has invalid watermark text on edit mode
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editBlankFieldValidation
+    [Documentation]    This script verifies blank field validation of edit functionality on \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=code    ${Timeout}    Edit mode of subscriber code not opened
+    Focus    name=code
+    Input Text    name=code    ${EMPTY}
+    Focus    name=description
+    Input Text    name=description    ${EMPTY}
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    //td/small    ${Timeout}    Subscriber code saved without giving \ value in Code field
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //td/small    Empty Code validation message not appear on edited manage subscriber codes page.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //td/small    This field is required.    This field is required. message has invalid characters on edited manage subscriber codes page.
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Empty Code validation message not appear on edited manage subscriber codes page.    This field is required. message has invalid characters on edited manage subscriber codes page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editSubscriberCodeCancelButton
+    [Documentation]    This script verifies Cancel button functionality on \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    Sleep    1
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${ExistingCode}=    Get Text    //tr[1]/td
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=code    ${Timeout}    Edit mode of subscriber code not opened
+    Comment    Enter the New Details
+    ${Code}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    Focus    name=code
+    Input Text    name=code    ${Code}
+    Focus    name=description
+    Input Text    name=description    ${Description}
+    Focus    id=cancel_edit_1
+    Click Element    id=cancel_edit_1
+    Sleep    2
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Edit mode of record not closed after clicking on Cancel button
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${ExistingCode}    Cancel button click update the Subscriber Code value
+    ${V2}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    Save link still present after clicking on Cancel button
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    Cancel link still present after clicking on Cancel button
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Cancel button click update the Subscriber Code value    Save link still present after clicking on Cancel button    Cancel link still present after clicking on Cancel button
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editUniqueSubscriberCodeValidation
+    [Documentation]    This script verifies Unique subscriber code validation on edit functionality on \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    Sleep    1
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${SecondName}=    Get Text    //tr[2]/td
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=code    ${Timeout}    Edit mode of subscriber code not opened
+    Comment    Enter the New Details
+    Sleep    1
+    Focus    name=code
+    Input Text    name=code    ${SecondName}
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    //td/small    ${Timeout}    Duplicate Subscriber code saved without any validation message
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //td/small    Unique name validation message not appear on the Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //td/small    This field must be unique.    This field must be unique. message has invalid characters
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique name validation message not appear on the Page    This field must be unique. message has invalid characters
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editSubscriberCodeDetails
+    [Documentation]    This script update the details of subscriber code and verifies the details on \ Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${Code}=    Generate Random String    8    [LETTERS]
+    ${Description}=    Generate Random String    8    [LETTERS]
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=code    ${Timeout}    Edit mode of subscriber code not opened
+    Focus    name=code
+    Input Text    name=code    ${Code}
+    Focus    name=description
+    Input Text    name=description    ${Description}
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    2
+    Element Text Should Be    //tr[1]/td    ${Code}    Updated Subscriber Code not displayed correctly
+
+enableAndDisableSubscriberCode
+    [Documentation]    This script verifies the updated Status of Subscriber Code on Manage Subscriber Codes page.
+    goToManageSubscriberCodesPage
+    Sleep    1
+    ${Code}=    Generate Random String    8    [LETTERS]
+    ${Description}=    Generate Random String    8    [LETTERS]
+    addSubscriberCode    ${Code}    ${Description}    Enabled
+    Sleep    3
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Code}']    Could not add New subscriber Code on manage subscriber code page
+    Sleep    1
+    Comment    Click on edit for added code
+    Click Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Code}']//td[4]/form/button
+    Sleep    1
+    Comment    Disable the subscriber code
+    Wait Until Page Contains Element    name=enabled    ${Timeout}    Edit subscriber code page not loaded properly
+    Sleep    2
+    Focus    name=enabled
+    Click Element    name=enabled
+    Comment    Click on the Save button
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    2
+    Comment    Update to Enabled State
+    Click Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Code}']//td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=enabled    ${Timeout}    Edit subscriber code page not loaded properly
+    Sleep    2
+    Focus    name=enabled
+    Click Element    name=enabled
+    Comment    Click on the Save button
+    Sleep    1
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    2
+
+*** Keywords ***
+goToManageSubscriberCodesPage
+    [Documentation]    This keyword navigates to Manage Subscriber Codes page.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    2
+    Wait Until Page Contains Element    link=Subscriber Codes    ${Timeout}    Subscriber Codes link not present under Lender Settings tab
+    Focus    link=Subscriber Codes
+    Click Element    link=Subscriber Codes
+    Sleep    1
+    Wait Until Page Contains Element    id=code    ${Timeout}    Manage Subscriber Codes \ page not loaded properly
+
+addSubscriberCode
+    [Arguments]    ${Code}    ${Description}    ${Status}
+    [Documentation]    This keyword add a subscriber code on \ Manage Subscriber Codes page.
+    Sleep    1
+    Focus    id=code
+    Input Text    id=code    ${Code}
+    Sleep    1
+    Focus    id=description
+    Input Text    id=description    ${Description}
+    Sleep    1
+    Run Keyword If    '${Status}'=='Disabled'    Unselect Checkbox    id=enabled
+    Sleep    1
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    2

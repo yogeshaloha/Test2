@@ -1,0 +1,235 @@
+*** Settings ***
+Documentation     This suite contais the scripts related to Manage User Role Page
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+userRolesPageUI
+    [Documentation]    This script verifies the Add User Role page UI.
+    navigateToUserRolesPage
+    Click Element    link=Add User Role
+    Sleep    1
+    Wait Until Page Contains Element    id=subbutton    ${Timeout}    Add User Role page is not displayed.
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=h1.subheading    Add User Role header not appear on Add User Role Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Add User Role    Add User Role Page Has invalid Header Name
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    link=Manage User Roles & Permissions    Manage User Roles & Permissions \ link not appear on Add User Role Page
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    css=legend    Role Details label not appear on Add User Role Page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    css=legend    Role Details    Add User Role Page has invalid Panel name
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    css=label.control-label    Role* field \ label not appear on Add User Role Page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    css=label.control-label    Role*    Role label has invalid text on Add User Role Page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    css=label.control-labe    Description field label not appear on Add User Role Page
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    css=label.control-labe    Description    Description label has invalid text on Add User Role Page
+    Comment    Removed on 16 July
+    Comment    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    id=admin    Admin Role check box not appear on Add User Role Page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    id=cancel    Cancel    Cancel button not appear on Add User Role Page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    id=subbutton    Save    Save button not appear on Add User Role Page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Element    link=Cancel    Cancel    Cancel link button not appear on Add User Role Page
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    id=add_user_role_save    Save    Save link button not appear on Add User Role Page
+    Comment    Added Section Text Verifications and New Controls on the page : 16 July 2014
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='roleDetails']/fieldset/div[3]/div/label    Landing Page field label not appear on Add User Role Page
+    ${V16}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='roleDetails']/fieldset/div[3]/div/label    Landing Page    Landing Page \ label has invalid text on Add User Role Page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain List    name=landing_page    Landing Page drop down not appear on the Add New Role Page
+    @{AllLandingPage}=    Get List Items    name=landing_page
+    ${AllLandingPage}=    Evaluate    ' '.join(@{AllLandingPage})
+    ${V18}=    Run Keyword And Return Status    Should Be Equal    ${AllLandingPage}    Select landing page New Loan Queues landing page Admin landing page    Landing Page drop down has invalid values on Add User Role Page
+    ${V19}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='groupUpdate_filter']/label/input    Search Text box not appear on the Add New Role Page
+    ${V20}=    Run Keyword And Return Status    Page Should Contain List    name=groupUpdate_length    Per page drop down not appear on the Add New Role Page
+    @{AllPerPage}=    Get List Items    name=groupUpdate_length
+    ${AllPerPage}=    Evaluate    ' '.join(@{AllPerPage})
+    ${V21}=    Run Keyword And Return Status    Should Be Equal    ${AllPerPage}    10 25 50 100 View All    Per Page Page drop down has invalid values on Add User Role Page
+    ${V22}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/thead/tr/th    Permission    Permission \ column name has invalid text on the Add New Role Page
+    ${V23}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/thead/tr/th[2]    Grant Permission    Grant Permission column name has invalid text on the Add New Role Page
+    Comment    ${V24}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr/td/b    Administration - Application Settings    Administration - Application Settings role section header has invalid text on the Add New Role Page
+    Comment    ${V25}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr[8]/td/b    Administration - Lender Settings    Administration - Lender Settings role section header has invalid text on the Add New Role Page
+    Comment    ${V26}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr[21]/td/b    Administration - Loan Configuration    Administration - Loan Configuration role section header has invalid text on the Add New Role Page
+    Comment    ${V27}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr[28]/td/b    Administration - System Integration    Administration - System Integration role section header has invalid text on the Add New Role Page
+    Comment    ${V28}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr[35]/td/b    Administration - Underwriting Configuration    Administration - Underwriting Configuration role section header has invalid text on the Add New Role Page
+    Comment    ${V29}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr[66]/td/b    Administration - User Administration    Administration - User Administration role section header has invalid text on the Add New Role Page
+    Comment    ${V30}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr[91]/td/b    Application    Application role section header has invalid text on the Add New Role Page
+    Comment    ${V31}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr[134]/td/b    Application - HMDA    Application - HMDA role section header has invalid text on the Add New Role Page
+    Comment    ${V32}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr[141]/td/b    Application - Private    Application - Private role section header has invalid text on the Add New Role Page
+    Comment    ${V33}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr[154]/td/b    Application Process - Booking    Application Process - Booking role section header has invalid text on the Add New Role Page
+    Comment    ${V34}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr[167]/td/b    Application Process - Contracting    Application Process - Contracting role section header has invalid text on the Add New Role Page
+    Comment    ${V35}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr[180]/td/b    Application Process - Credit Review    Application Process - Credit Review role section header has invalid text on the Add New Role Page
+    Comment    ${V36}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='groupUpdate']/tbody/tr[193]/td/b    Application Process - Underwriting    Application Process - Underwriting role section header has invalid text on the Add New Role Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V11}    ${V12}
+    ...    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}    ${V18}
+    ...    ${V19}    ${V20}    ${V21}    ${V22}    ${V23}
+    @{Messages}=    Create List    Add User Role header not appear on Add User Role Page    Add User Role Page has invalid Header Name    Manage User Roles link not appear on Add User Role Page    Role Details label not appear on Add User Role Page    Add User Role Page has invalid Panel name
+    ...    Role* field \ label not appear on Add User Role Page    Role label has invalid text on Add User Role Page    Description field not appear on Add User Role Page    Description label has invalid text on Add User Role Page    Cancel button not appear on Add User Role Page    Save button not appear on Add User Role Page
+    ...    Cancel link button not appear on Add User Role Page    Save link button not appear on Add User Role Page    Landing Page field label not appear on Add User Role Page    Landing Page \ label has invalid text on Add User Role Page    Landing Page drop down not appear on the Add New Role Page    Landing Page drop down has invalid values on Add User Role Page
+    ...    Search Text box not appear on the Add New Role Page    Per page drop down not appear on the Add New Role Page    Per Page Page drop down has invalid values on Add User Role Page    Privilege column name has invalid text on the Add New Role Page    Grant Privilege \ column name has invalid text on the Add New Role Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDuplicateRolesOnAdd&Edit
+    [Documentation]    This script verifies the Error message displayed on Update and Add User Role pages for duplicate Role name.
+    navigateToUserRolesPage
+    ${RoleName}=    Generate Random String    5    [LETTERS]
+    ${Desc}=    Generate Random String    10    [LETTERS]
+    addNewUserRole    ${RoleName}    ${Desc}    1
+    Set Global Variable    ${RoleName}    ${RoleName}
+    Comment    Check on new user role page.
+    ${FirstName}=    Get Text    //tr[1]/td/a
+    ${SecondName}=    Get Text    //tr[2]/td/a
+    Focus    link=Add User Role
+    Click Element    link=Add User Role
+    Sleep    2
+    Wait Until Page Contains Element    id=subbutton    ${Timeout}    Add User Role page is not displayed.
+    Sleep    4
+    Focus    id=group
+    Input Text    id=group    ${RoleName}
+    Sleep    2
+    Focus    id=subbutton
+    Sleep    1
+    Click Element    id=subbutton
+    Sleep    2
+    Focus    id=group
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This role name is unavailable
+    Comment    Now check on edit user role page.
+    Focus    link=Cancel
+    Sleep    1
+    Click Element    link=Cancel
+    Sleep    1
+    Wait Until Page Contains Element    link=Add User Role    ${Timeout}    Manage User Roles page is not displayed.
+    Click Element    link=${RoleName}
+    Sleep    2
+    Wait Until Page Contains Element    id=group    ${Timeout}    Update User Role page is not displayed.
+    Focus    id=group
+    Input Text    id=group    System Admin
+    Focus    id=description
+    Sleep    2
+    Click Element    id=subbutton
+    Sleep    3
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This role name is unavailable
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Error message text for duplicate Role name is not correct on Add New User Role page.    Error message text for duplicate Role name is not correct on edit user Role page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyRequiredFieldsMessageOnAdd&Edit
+    [Documentation]    This script verifies the Required field error message displayed on Update and Add User Role pages for Role name.
+    navigateToUserRolesPage
+    Comment    Verify required field message on Add New User Role page.
+    Click Element    link=Add User Role
+    Sleep    1
+    Wait Until Page Contains Element    id=add_user_role_save    ${Timeout}    Add User Role page is not displayed.
+    Click Element    id=add_user_role_save
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.
+    Comment    Verify required field message on Edit User Role page.
+    Focus    link=Manage User Roles & Permissions
+    Click Element    link=Manage User Roles & Permissions
+    Sleep    2
+    Wait Until Page Contains Element    link=Add User Role    ${Timeout}    Manage User Roles page is not displayed.
+    Focus    link=${RoleName}
+    Click Element    link=${RoleName}
+    Sleep    1
+    Wait Until Page Contains Element    id=group    ${Timeout}
+    Focus    id=group
+    Input Text    id=group    ${EMPTY}
+    Click Element    id=subbutton
+    Sleep    1
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field cannot be blank
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Required field error message is not present on Add New User Role page or is not correct.    Required field error message is not present on edit user Role page or is not correct.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUIOf ManageUserRolePage
+    [Documentation]    This script use to Verify the all UI element of Manage User Roles Page.
+    navigateToUserRolesPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=h1.subheading    Manage User Roles page does not have titile header
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage User Roles & Permissions    Manage User Roles & Permissions \ \ page has Invalid Header Text
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    link=Add User Role    Add User Role link not present on the Manage USer Role Page
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='userGrp']/thead/tr/th    Role column not appear on the Manage User Role Page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='userGrp']/thead/tr/th    Role    Role column name has invalid text on the Manage USer Role Page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='userGrp']/thead/tr/th[2]    Description column not appear on the Manage User Role Page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='userGrp']/thead/tr/th[2]    Description    Description column name has invalid text on the Manage User Role Page
+    Comment    Updated for Name Change 16 July : Admin to Super User
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='userGrp']/thead/tr/th[3]    SuperUser \ \ column not appear on the Manage User Role Page
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='userGrp']/thead/tr/th[3]    SuperUser    SuperUser \ column name has invalid text on the Manage User Role Page
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='userGrp']/thead/tr/th[4]    Updated On column not appear on the Manage User Role Page
+    ${V11}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='userGrp']/thead/tr/th[4]    Updated On    Updated On column name has invalid text on the Manage User Role Page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='userGrp']/thead/tr/th[5]    By column not appear on the Manage User Role Page
+    ${V13}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='userGrp']/thead/tr/th[5]    By    By column name has invalid text on Manage User Role Page
+    Comment    Commented on 16 July
+    Comment    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='userGrp']/thead/tr/th[6]    Privileges column not apear on the Manage User Role Page
+    Comment    ${V15}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='userGrp']/thead/tr/th[6]    Privileges    Privileges column has invalid text on the Manage User Role Page
+    ${V16}=    Run Keyword And Return Status    Page Should Contain Element    css=label > input[type="text"]    View All drop down not appear on Manage User Roles Page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Element    name=userGrp_length    Per Page Drop down not appear on Manage User Roles Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V16}    ${V17}
+    @{Messages}=    Create List    Manage User Roles page does not have titile header    Manage User role page has Invalid Header Text    Add User Role link not present on the Manage USer Role Page    Role column not appear on the Manage User Role Page    Role column name has invalid text on the Manage USer Role Page
+    ...    Description column not appear on the Manage User Role Page    Description column name has invalid text on the Manage User Role Page    Admin column not appear on the Manage User Role Page    Admin column name has invalid text on the Manage User Role Page    Updated On column not appear on the Manage User Role Page    Updated On column name has invalid text on the Manage User Role Page
+    ...    By column not apear on the Manage User Role Page    By column name has invalid text on Manage User Role Page    View All drop down not appear on Manage User Roles Page    Per Page Drop down not appear on Manage User Roles Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyValidAndInvalidSeach
+    [Documentation]    This script use to Search Valid and Invalid User Roles.
+    navigateToUserRolesPage
+    ${RoleName}=    Generate Random String    5    [LETTERS]
+    ${Desc}=    Generate Random String    10    [LETTERS]
+    addNewUserRole    ${RoleName}    ${Desc}    1
+    Sleep    1
+    Comment    Search Added Role
+    Input Text    css=label > input[type="text"]    ${RoleName}
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td/a    ${RoleName}    Search with Role name not working
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td[2]    ${Desc}    Search with Role name not working
+    Comment    Invalid Serach
+    ${InvalidString}    Generate Random String    10    [LETTERS]
+    Input Text    css=label > input[type="text"]    ${InvalidString}
+    Sleep    1
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='userGrp']/tbody/tr/td    No matching records found    Invalid Search Not Working
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Search with Role name not working    Search with Role name not working    Invalid Search Not Working
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+navigateToUserRolesPage
+    [Documentation]    This keyword is used to Navigate to the Manage User Account page
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=User Administration    ${Timeout}    User Administration tab is not present on left navigation menu.
+    Click Element    link=User Administration
+    Sleep    2
+    Wait Until Page Contains Element    link=User Roles & Permissions    ${Timeout}    User Roles tab is not present under User Administration on left navigation menu.
+    Click Element    link=User Roles & Permissions
+    Sleep    2
+    Wait Until Page Contains Element    link=Add User Role    ${Timeout}    Manage User Roles page is not displayed.
+
+addNewUserRole
+    [Arguments]    ${Name}    ${Desc}    ${LandingPage}
+    [Documentation]    This keyword is used to add new role type.
+    ...    Index for Landing Page
+    ...    1. New Loan
+    ...    2. Queues
+    ...    3. Admin
+    navigateToUserRolesPage
+    Focus    link=Add User Role
+    Click Element    link=Add User Role
+    Sleep    1
+    Wait Until Page Contains Element    css=legend    ${Timeout}    Add User Role Page not displayed.
+    Input Text    id=group    ${Name}
+    Focus    id=group
+    Input Text    id=description    ${Desc}
+    Focus    name=landing_page
+    Select From List By Index    name=landing_page    ${LandingPage}
+    Sleep    1
+    Click Element    id=add_user_role_save
+    Sleep    1
+    Wait Until Page Contains Element    css=div.alert.alert-info    ${Timeout}    Manage User Page not displayed
+    [Return]    ${RoleName}

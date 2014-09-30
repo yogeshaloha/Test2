@@ -1,0 +1,443 @@
+*** Settings ***
+Documentation     Stipulations
+...
+...
+...               Description:
+...
+...               New Admin Page to track stipulations to be used across the system.
+...
+...               Need new admin page under Loan Configuration, after supporting Documents "Manage Stipulations"
+...
+...               In line edit data grid that captures the stipulation reason, \ "always require for funding" and an enabled, disable value.
+...
+...               On edit, need to be able to edit these values.
+...               Name should always be unique.
+...               Enabled values will be available to the user on the decision page across all loan types.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyManageStipulationLinkUnderUnderwritingConfiguration
+    [Documentation]    This script verifies "Manage Stipulation" link under Loan Configuration tab and Its redirection page after click.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Underwriting Configuration    ${Timeout}    Underwriting Configuration \ Tab not appeared on page
+    Click Element    link=Underwriting Configuration
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    link=Stipulations    Stipulations Link not present in Loan Configuration tab \ On Admin Page
+    Sleep    1
+    Focus    link=Stipulations
+    Click Element    link=Stipulations
+    Sleep    2
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage Stipulations    Manage Stipulations link not functioning properly or Manage Stipulation page has invalid header text
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Stipulations Link not present in Loan Configuration tab \ On Admin Page    Manage Stipulations link not functioning properly or Manage Stipulation page has invalid header text
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUIOfManageStipulationPage
+    [Documentation]    This script verifies UI of Manage Stipulation Page
+    goToManageStipulationPage
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage Stipulations    Manage Stipulation page has invalid header text
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manageStipulations']/table/thead/tr/th    Stipulations    Stipulations column name has invalid text on Manage Stipulation page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manageStipulations']/table/thead/tr/th[2]    Always Require for Funding    Always Require for Funding column name has invalid text on Manage Stipulation page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manageStipulations']/table/thead/tr/th[3]    Status    Status column name has invalid text on Manage Stipulation page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Textfield    id=new_stipulation_name    Stipulation name text box not present on Manage Stipulation page.
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Checkbox    id=new_stipulation_required    Required Check-box not present on Manage Stipulation page.
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Checkbox    id=new_stipulation_enabled    Enabled Check-box not present on Manage Stipulation page.
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add Button not present on Manage Stipulation page.
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}
+    @{Messages}=    Create List    Manage Stipulation page has invalid header text    Stipulations column name has invalid text on Manage Stipulation page    Always Require for Funding column name has invalid text on Manage Stipulation page    Status column name has invalid text on Manage Stipulation page    Stipulation name text box not present on Manage Stipulation page.
+    ...    Required Check-box not present on Manage Stipulation page.    Enabled Check-box not present on Manage Stipulation page.    Add Button not present on Manage Stipulation page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDefaltValuesOnPage
+    [Documentation]    This script verifies :
+    ...    1. Tool tip.
+    ...    2. Watermark text
+    ...    3. Default values
+    goToManageStipulationPage
+    Sleep    1
+    ${EditBUttonToolTip}=    Get Element Attribute    //tr[@id='view_stipulation_row_1']/td[4]/form/button@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal    ${EditBUttonToolTip}    Edit Stipulation    Edit button has invalid tool tip on Manage Stipulation page
+    ${StipulationWaterMarkText}=    Get Element Attribute    id=new_stipulation_name@placeholder
+    ${V2}=    Run Keyword And Return Status    Should Be Equal    ${StipulationWaterMarkText}    Stipulations    Stipulations text box has invalid water mark text on Manage Stipulation page
+    ${V3}=    Run Keyword And Return Status    Checkbox Should Be Selected    id=new_stipulation_required
+    ${V4}=    Run Keyword And Return Status    Checkbox Should Be Selected    id=new_stipulation_enabled
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Edit button has invalid tool tip on Manage Stipulation page    Stipulations text box has invalid water mark text on Manage Stipulation page    Require check box not checked by default on Manage Stipulation page    Enable check box not checked by default on Manage Stipulation page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyRequiredFields
+    [Documentation]    This script verifies required field message
+    goToManageStipulationPage
+    Sleep    1
+    Focus    id=new_stipulation_name
+    Click Element    name=submit-add
+    Sleep    2
+    Focus    id=new_stipulation_name
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    This field is required. message for Required field not appeared \ on Manage Stipulation page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for Required field has invalid text on Manage Stipulation page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    This field is required. message for Required field not appeared \ on Manage Stipulation page    This field is required. message for Required field has invalid text on Manage Stipulation page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addStipulationEnabledRequired
+    [Documentation]    This scripts add New Enabled with Required stipulation to application.
+    goToManageStipulationPage
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    addStipulation    ${Name}    Yes    Enabled
+    Sleep    3
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']    Could not add New Stipulation
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[2]    Required    Added Stipulation \ displays invalid Always Require for Funding status
+    Comment    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[3]    Enabled    Added Stipulation \ \ \ displays invalid Status
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Could not add New Stipulation    Added Stipulation \ displays invalid Always Require for Funding status
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addStipulationDisabledRequired
+    [Documentation]    This scripts add New Disabled with Required stipulation to application.
+    goToManageStipulationPage
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    addStipulation    ${Name}    Yes    Disabled
+    Sleep    3
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']    Could not add New Stipulation
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[2]    Required    Added Stipulation \ displays invalid Always Require for Funding status
+    Comment    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[3]    Disabled    Added Stipulation \ \ \ displays invalid Status
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Could not add New Stipulation    Added Stipulation \ displays invalid Always Require for Funding status
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addStipulationEnabledNotRequired
+    [Documentation]    This scripts add New Enabled with Not Required stipulation to application.
+    goToManageStipulationPage
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    addStipulation    ${Name}    No    Enabled
+    Sleep    3
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']    Could not add New Stipulation
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[2]    Not Required    Added Stipulation \ displays invalid Always Require for Funding status
+    Comment    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[3]    Enabled    Added Stipulation \ \ \ displays invalid Status
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Could not add New Stipulation    Added Stipulation \ displays invalid Always Require for Funding status
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addStipulationDisabledNotRequired
+    [Documentation]    This scripts add New Disabled with Not Required stipulation to application.
+    goToManageStipulationPage
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    addStipulation    ${Name}    No    Disabled
+    Sleep    3
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']    Could not add New Stipulation
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[2]    Not Required    Added Stipulation \ displays invalid Always Require for Funding status
+    Comment    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[3]    Disabled    Added Stipulation \ \ \ displays invalid Status
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Could not add New Stipulation    Added Stipulation \ displays invalid Always Require for Funding status
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUniqueNameValidation
+    [Documentation]    Tis script verifies Unique name validation
+    goToManageStipulationPage
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    addStipulation    ${Name}    Yes    Enabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']    Could not add New Stipulation
+    addStipulation    ${Name}    Yes    Enabled
+    Sleep    4
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    This field must be unique. message for unique name not appeared \ on Manage Stipulation page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. \ message for unique name has invalid text on Manage Stipulation page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    This field must be unique. message for unique name not appeared \ on Manage Stipulation page    This field must be unique. \ message for unique name has invalid text on Manage Stipulation page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyEditButtonClick
+    [Documentation]    This script verifies controls appeared on page after clicking on Edit button
+    goToManageStipulationPage
+    Sleep    2
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    4
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='manageStipulations']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    Save link not appear after clicking on Edit link on first row
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manageStipulations']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    Save    Save link has invalid text on Manage Stipulation page at edit mode
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='manageStipulations']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    Close (X) link not appear after clicking on Edit link on first row
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manageStipulations']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    X    Close (X) link has invalid text on Manage Stipulation page at edit mode
+    ${V5}=    Run Keyword And Return Status    Element Should Be Visible    name=name    Stipulation name text box not \ appear after clicking on Edit link on first row
+    ${V6}=    Run Keyword And Return Status    Element Should Be Visible    name=required    Always Require for Funding check box not \ appear after clicking on Edit link on first row
+    ${V7}=    Run Keyword And Return Status    Element Should Be Visible    name=enabled    Enabled Check box not \ appear after clicking on Edit link on first row
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}
+    @{Messages}=    Create List    Save link not appear after clicking on Edit link on first row    Save link has invalid text on Manage Stipulation page at edit mode    Close (X) link not appear after clicking on Edit link on first row    Close (X) link has invalid text on Manage Stipulation page at edit mode    Stipulation name text box not \ appear after clicking on Edit link on first row
+    ...    Always Require for Funding check box not \ appear after clicking on Edit link on first row    Enabled Check box not \ appear after clicking on Edit link on first row
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editModeDefaultValues
+    [Documentation]    This script verifies Tool tip , watermark text on Edit Stipulation mode
+    goToManageStipulationPage
+    Sleep    1
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    4
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit Page not loaded properly
+    ${SaveToolTip}=    Get Element Attribute    //div[@id='manageStipulations']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]@title
+    ${CloseToolTip}=    Get Element Attribute    //div[@id='manageStipulations']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button@title
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Sleep    1
+    ${NameWaterMark}=    Get Element Attribute    name=name@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal    ${SaveToolTip}    Update Stipulation    Save link has invalid tool tip on Manage Stipulation page
+    ${V2}=    Run Keyword And Return Status    Should Be Equal    ${CloseToolTip}    Cancel    Close link has invalid tool tip on Manage Stipulation page
+    ${V3}=    Run Keyword And Return Status    Should Be Equal    ${NameWaterMark}    Stipulations    Stipulations text box has invalid water mark text on Manage Stipulation page at edit mode
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Save link has invalid tool tip on Manage Stipulation page    Close link has invalid tool tip on Manage Stipulation page    Stipulations text box has invalid water mark text on Manage Stipulation page at edit mode
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editModeRequiredfieldValidation
+    [Documentation]    This script \ verifies required field validation at edit mode
+    goToManageStipulationPage
+    Sleep    1
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    2
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit Page not loaded properly
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Sleep    1
+    Click Element    //div[@id='manageStipulations']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    This field is required. message for Required field not appeared \ on Manage Stipulation page at Edit mode
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for Required field has invalid text on Manage Stipulation page at Edit mode
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    This field is required. message for Required field not appeared \ on Manage Stipulation page at Edit mode    This field is required. message for Required field has invalid text on Manage Stipulation page at Edit mode
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editUniqueNameValidation
+    [Documentation]    This script verifies Unique name validation message at Edit mode
+    goToManageStipulationPage
+    Sleep    2
+    ${SecondName}=    Get Text    //tr[2]/td
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    2
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit Page not loaded properly
+    Focus    name=name
+    Input Text    name=name    ${SecondName}
+    Sleep    1
+    Click Element    //div[@id='manageStipulations']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    This field must be unique. message for unique name not appeared \ on Manage Stipulation page at Edit Mode
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. \ message for unique name has invalid text on Manage Stipulation page edit mode
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    This field must be unique. message for unique name not appeared \ on Manage Stipulation page at Edit Mode    This field must be unique. \ message for unique name has invalid text on Manage Stipulation page edit mode
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifySaveButtonFunctionality
+    [Documentation]    This script verifies Save link functionality
+    goToManageStipulationPage
+    Sleep    2
+    ${Name}=    Generate Random String    7    [LETTERS]
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    2
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit Page not loaded properly
+    Focus    name=name
+    Input Text    name=name    ${Name}
+    Sleep    1
+    Focus    //div[@id='manageStipulations']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]
+    Click Element    //div[@id='manageStipulations']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]
+    Sleep    4
+    Element Text Should Be    //tr[1]/td    ${Name}    After \ Clicking on Save button , Stipulation name not updated on Manage Stipulation Page
+
+verifyCancelButtonFunctionality
+    [Documentation]    This script verifies Cancel link functionality
+    goToManageStipulationPage
+    Sleep    2
+    ${Name}=    Get Text    //tr[1]/td
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    2
+    ${String}=    Generate Random String    10    [LETTERS]
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit Page not loaded properly
+    Focus    name=name
+    Input Text    name=name    ${String}
+    Sleep    1
+    Click Element    //div[@id='manageStipulations']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button
+    Sleep    2
+    Element Text Should Be    //tr[1]/td    ${Name}    After \ Clicking on Cancel \ button , Stipulation name \ updated on Manage Stipulation Page
+
+enableAndDisableStipulation
+    [Documentation]    This script verifies Enable to Disable and Disable to Enable with Required and Not required validation
+    goToManageStipulationPage
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    addStipulation    ${Name}    Yes    Enabled
+    Sleep    4
+    Comment    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[3]    Enabled    Added Enabled Stipulation displayed Invalid status on Manage Stipulation page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[2]    Required    Added Required Stipulation displayed Invalid Always Require for Funding \ on Manage Stipulation page
+    Comment    Edit and Disable
+    Click Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[4]/form/button
+    Sleep    2
+    Wait Until Page Contains Element    //input[3]    ${Timeout}    Edit Page not loaded when clicked on Edit Link
+    Focus    //input[3]
+    Sleep    1
+    Focus    //label/input
+    Click Element    //label/input
+    Focus    //td[3]/label/input
+    Click Element    //td[3]/label/input
+    Focus    //button[2]
+    Click Element    //button[2]
+    Sleep    4
+    Wait Until Page Contains Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[3]    ${Timeout}    After Updating status , Page not loaded properly or Application not updating the Stipulation
+    Comment    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[3]    Disabled    Updated Disabled Stipulation displayed Invalid status on Manage Stipulation page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[2]    Not Required    Updated Not Required Stipulation displayed Invalid Always Require for Funding \ on Manage Stipulation page
+    Comment    Edit and Enable
+    Click Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[4]/form/button
+    Sleep    2
+    Wait Until Page Contains Element    //input[3]    ${Timeout}    Edit Page not loaded when clicked on Edit Link
+    Sleep    1
+    Focus    //label/input
+    Click Element    //label/input
+    Focus    //td[3]/label/input
+    Click Element    //td[3]/label/input
+    Focus    //button[2]
+    Click Element    //button[2]
+    Sleep    4
+    Wait Until Page Contains Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[3]    ${Timeout}    After Updating status , Page not loaded properly or Application not updating the Stipulation
+    Sleep    2
+    Comment    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[3]    Enabled    Updated Enabled Stipulation displayed Invalid status on Manage Stipulation page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']//td[2]    Required    Updated \ Required Stipulation displayed Invalid Always Require for Funding \ on Manage Stipulation page
+    @{Verification}=    Create List    ${V2}    ${V4}    ${V6}
+    @{Messages}=    Create List    Added Required Stipulation displayed Invalid Always Require for Funding \ on Manage Stipulation page    Updated Not Required Stipulation displayed Invalid Always Require for Funding \ on Manage Stipulation page    Updated \ Required Stipulation displayed Invalid Always Require for Funding \ on Manage Stipulation page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyEnabledStipulationOnApplicationUnderWrittingPage
+    [Documentation]    This script verifies Added Enabled Stipulation displayed on Application Underwritting page
+    goToManageStipulationPage
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    addStipulation    ${Name}    Yes    Enabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']    Could not add New Stipulation
+    goToCreditPulledUnderwrittingPage
+    Sleep    2
+    Click Element    link=Stipulations
+    Sleep    1
+    ${Count}=    Set Variable    0
+    ${LocatorCount}=    Set Variable    1
+    ${Row}=    Get Matching Xpath Count    //div[@id='stipulations']/div/ul/li/label/span
+    : FOR    ${Count}    IN RANGE    ${Row}
+    \    Sleep    1
+    \    ${DisplayedName}=    Get Text    //div[@id='stipulations']/div/ul/li[${LocatorCount}]/label/span
+    \    Run Keyword If    '${DisplayedName}'=='${Name}'    Exit For Loop
+    \    ${LocatorCount}    Evaluate    ${LocatorCount}+1
+    \    ${Count}    Evaluate    ${Count}+1
+    \    Run Keyword If    ${Count}>${Row}    Fail    Added Enabled Stipulation not displayed on Application Underwritting page
+
+verifyDisabledStipulationOnApplicationUnderWrittingPage
+    [Documentation]    This script verifies Added Disabled Stipulation \ not displayed on Application Underwritting page
+    goToManageStipulationPage
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    addStipulation    ${Name}    Yes    Disabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${Name}']    Could not add New Stipulation
+    goToCreditPulledUnderwrittingPage
+    Sleep    2
+    Click Element    link=Stipulations
+    Sleep    1
+    ${Count}=    Set Variable    0
+    ${LocatorCount}=    Set Variable    1
+    ${Row}=    Get Matching Xpath Count    //div[@id='stipulations']/div/ul/li/label/span
+    : FOR    ${Count}    IN RANGE    ${Row}
+    \    Sleep    1
+    \    ${DisplayedName}=    Get Text    //div[@id='stipulations']/div/ul/li[${LocatorCount}]/label/span
+    \    Run Keyword If    '${DisplayedName}'=='${Name}'    Fail    Added Disabled Stipulation displayed on Application Underwritting page
+    \    ${LocatorCount}    Evaluate    ${LocatorCount}+1
+    \    ${Count}    Evaluate    ${Count}+1
+    \    Run Keyword If    ${Count}>${Row}    Exit For Loop
+
+*** Keywords ***
+goToManageStipulationPage
+    [Documentation]    This keyword is used to navigate to Manage Stipulation page
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Underwriting Configuration    ${Timeout}    Underwriting Configuration \ Tab not appeared on page
+    Click Element    link=Underwriting Configuration
+    Sleep    2
+    Focus    link=Stipulations
+    Click Element    link=Stipulations
+    Sleep    1
+    Wait Until Page Contains Element    id=new_stipulation_name    ${Timeout}    Manage Stipulation \ page not loaded properly
+
+addStipulation
+    [Arguments]    ${Name}    ${IsRequired}    ${IsEnabled}
+    [Documentation]    This keyword is used to add new stipulation
+    Focus    id=new_stipulation_name
+    Input Text    id=new_stipulation_name    ${Name}
+    Focus    id=new_stipulation_required
+    Run Keyword If    '${IsRequired}'=='No'    Unselect Checkbox    id=new_stipulation_required
+    Focus    id=new_stipulation_enabled
+    Run Keyword If    '${IsEnabled}'=='Disabled'    Unselect Checkbox    id=new_stipulation_enabled
+    Sleep    2
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    2
+
+goToCreditPulledUnderwrittingPage
+    [Documentation]    This \ keyword is used to Navigate to Submitted application underwritting page
+    Sleep    2
+    Wait Until Page Contains Element    xpath=(//a[contains(text(),'My Queues')])[2]    ${Timeout}    My Queues Link not appear on the Page
+    Sleep    1
+    Focus    xpath=(//a[contains(text(),'My Queues')])[2]
+    Click Element    xpath=(//a[contains(text(),'My Queues')])[2]
+    Sleep    2
+    Wait Until Page Contains Element    link=Credit Pulled    ${Timeout}    Queues page not loaded properly
+    Focus    link=Credit Pulled
+    Click Element    link=Credit Pulled
+    Sleep    2
+    Wait Until Page Contains Element    css=select.select_filter    ${Timeout}    Credit Pull application list page not loaded OR Filter drop down not present on the page
+    Focus    css=select.select_filter
+    Select From List    css=select.select_filter    Completed
+    Sleep    5
+    Page Should Contain Element    //tr[1]/td/a    There is not application present with Completed Status to check this functionality
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Wait Until Page Contains Element    link=Underwriting    ${Timeout}    Application View Page not loaded successfully.
+    Click Element    link=Underwriting
+    Sleep    2
+    Wait Until Page Contains Element    link=Stipulations    ${Timeout}    Underwritting Page not loaded properly
+    Sleep    2

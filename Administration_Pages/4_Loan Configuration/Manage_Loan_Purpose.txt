@@ -1,0 +1,397 @@
+*** Settings ***
+Documentation     This suite contains the scripts related to Loan Purposes.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyLoanPurpose
+    [Documentation]    This script verifies the Loan Purposes link under Loan Configuration tab.
+    Sleep    1
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Loan Configuration tab not displayed.
+    Focus    link=Loan Configuration
+    Click Element    link=Loan Configuration
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Purposes    ${Timeout}    Loan Purposes \ link not displayed under Loan Configuration Tab
+
+verifyManageLoanPurposeButton
+    [Documentation]    This script verifies the Manage Loan Purposes button on Loan Configuration dashboard page.
+    Sleep    1
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Loan Configuration tab not displayed.
+    Focus    link=Loan Configuration
+    Click Element    link=Loan Configuration
+    Sleep    1
+    Wait Until Page Contains Element    link=Manage Purpose Codes    ${Timeout}    Loan Configuration Dashboard page not loaded properly
+    Page Should Contain Element    link=Manage Purpose Codes    Manage Purpose Codes \ button \ not displayed on \ Loan Configuration Dashboard page
+
+verifyLoanPurposeLinkRedirection
+    [Documentation]    This script verifies the click navigation of Loan Purposes link.
+    Sleep    1
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Loan Configuration tab not displayed.
+    Focus    link=Loan Configuration
+    Click Element    link=Loan Configuration
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Purposes    ${Timeout}    Loan Purposes \ link not displayed under Loan Configuration Tab
+    Focus    link=Loan Purposes
+    Click Element    link=Loan Purposes
+    Sleep    2
+    Wait Until Page Contains Element    name=purpose    ${Timeout}    Manage Loan Purposes page not loaded properly
+
+verifyUIOfManageLoanTypesPage
+    [Documentation]    This script verifies the UI of Manage Loan Purposes page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Manage Loan Purposes header not present on Manage Loan Purposes page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Loan Purposes    Manage Loan Purposes header has invalid text \ on Manage Loan Purposes page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='purpose_code_table']/thead/tr/th    Purpose Code column not present on Manage Loan Purposes page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='purpose_code_table']/thead/tr/th    Purpose Code    Purpose Code column has invalid text \ on Manage Loan Purposes page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='purpose_code_table']/thead/tr/th[2]    Core ID \ column not present on Manage Loan Purposes page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='purpose_code_table']/thead/tr/th[2]    Core ID    Core ID \ column has invalid text \ on Manage Loan Purposes page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='purpose_code_table']/thead/tr/th[3]    Triggers HMDA \ column not present on Manage Loan Purposes page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='purpose_code_table']/thead/tr/th[3]    Triggers HMDA    Triggers HMDA \ column has invalid text \ on Manage Loan Purposes page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='purpose_code_table']/thead/tr/th[4]    Status \ column not present on Manage Loan Purposes page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='purpose_code_table']/thead/tr/th[4]    Status    Status \ column has invalid text \ on Manage Loan Purposes page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    //span[@id='last_updated']/small    LAST UPDATED label not present on Manage Loan Purposes page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Textfield    id=edit_purpose_code_purpose_    Purpose Code Name text box not present on Manage Loan Purposes page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Textfield    id=edit_core_id_    Core ID text box not present on Manage Loan Purposes page
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Checkbox    id=edit_purpose_code_hmda_    Trigger HMDE check box \ not present on Manage Loan Purposes page
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Checkbox    id=edit_purpose_code_enabled_    Enabled check box \ not present on Manage Loan Purposes page
+    ${V16}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add button not present on Manage Loan Purposes page
+    ${V17}=    Run Keyword And Return Status    Element Text Should Be    name=submit-add    Add    Add button has invalid text on Manage Loan Purposes page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    @{Messages}=    Create List    Manage Loan Purposes header not present on Manage Loan Purposes page    Manage Loan Purposes header has invalid text \ on Manage Loan Purposes page    Purpose Code column not present on Manage Loan Purposes page    Purpose Code column has invalid text \ on Manage Loan Purposes page    Core ID \ column not present on Manage Loan Purposes page
+    ...    Core ID \ column has invalid text \ on Manage Loan Purposes page    Triggers HMDA \ column not present on Manage Loan Purposes page    Triggers HMDA \ column has invalid text \ on Manage Loan Purposes page    Status \ column not present on Manage Loan Purposes page    Status \ column has invalid text \ on Manage Loan Purposes page    LAST UPDATED label not present on Manage Loan Purposes page
+    ...    Purpose Code Name text box not present on Manage Loan Purposes page    Core ID text box not present on Manage Loan Purposes page    Trigger HMDE check box \ not present on Manage Loan Purposes page    Enabled check box \ not present on Manage Loan Purposes page    Add button not present on Manage Loan Purposes page    Add button has invalid text on Manage Loan Purposes page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addEnabledLoanPurposeAndVerifyOnCreateNewLoanTypePage
+    [Documentation]    This script added an enabled \ loan purposes on Manage Loan Purposes page and verify it on Create New Loan Type page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    ${PurposeName}=    Generate Random String    7    [LETTERS]
+    ${CoreID}=    Generate Random String    4    [NUMBERS]
+    addLoanPurpose    ${PurposeName}    ${CoreID}    Enabled    Enabled
+    Sleep    2
+    Page Should Contain Element    //table[@id='purpose_code_table']/tbody/tr/td[contains(text(),'${PurposeName}')]    Newly added Purpose Code not displayed
+    navigateToAddNewLoanTypePage
+    Sleep    1
+    ${Count}=    Set Variable    0
+    ${LocatorCount}=    Set Variable    1
+    ${Row}=    Get Matching Xpath Count    //div[@id='loan_type_overview']/fieldset/div[9]/div[2]/div/div/div/ul/li/label
+    : FOR    ${Count}    IN RANGE    ${Row}
+    \    Sleep    1
+    \    ${DisplayedName}=    Get Text    //div[@id='loan_type_overview']/fieldset/div[9]/div[2]/div/div/div/ul/li[${LocatorCount}]/label
+    \    Run Keyword If    '${DisplayedName}'=='${PurposeName}'    Exit For Loop
+    \    ${LocatorCount}    Evaluate    ${LocatorCount}+1
+    \    ${Count}    Evaluate    ${Count}+1
+    \    Run Keyword If    ${Count}>${Row}    Fail    Added Enabled Purpose Code not displayed on Create Loan type Page
+
+addDisabledLoanPurposeAndVerifyOnCreateNewLoanTypePage
+    [Documentation]    This script added an disabled loan purposes on Manage Loan Purposes page \ and verify it on Create New Loan Type page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    ${PurposeName}=    Generate Random String    7    [LETTERS]
+    ${CoreID}=    Generate Random String    4    [NUMBERS]
+    addLoanPurpose    ${PurposeName}    ${CoreID}    Enabled    Disabled
+    Sleep    1
+    Page Should Contain Element    //table[@id='purpose_code_table']/tbody/tr/td[contains(text(),'${PurposeName}')]    \    Newly added Purpose Code not displayed
+    navigateToAddNewLoanTypePage
+    Sleep    1
+    ${Count}=    Set Variable    0
+    ${LocatorCount}=    Set Variable    1
+    ${Row}=    Get Matching Xpath Count    //div[@id='loan_type_overview']/fieldset/div[9]/div[2]/div/div/div/ul/li/label
+    : FOR    ${Count}    IN RANGE    ${Row}
+    \    Sleep    1
+    \    ${DisplayedName}=    Get Text    //div[@id='loan_type_overview']/fieldset/div[9]/div[2]/div/div/div/ul/li[${LocatorCount}]/label
+    \    Run Keyword If    '${DisplayedName}'=='${PurposeName}'    Fail    Added Disabled Purpose Code displayed on create new loan type page
+    \    ${LocatorCount}    Evaluate    ${LocatorCount}+1
+    \    ${Count}    Evaluate    ${Count}+1
+    \    Run Keyword If    ${Count}>${Row}    Exit For Loop
+
+verifyDefaultValues
+    [Documentation]    This script verifies the default values on Manage Loan Purposes page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    ${PurposeCodeWaterMarkText}=    Get Element Attribute    id=edit_purpose_code_purpose_@placeholder
+    ${CoreIDWaterMarkText}=    Get Element Attribute    id=edit_core_id_@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Purpose Code Name    ${PurposeCodeWaterMarkText}    Purpose Code Name \ text box has invalid watermark text
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    Core ID    ${CoreIDWaterMarkText}    Core ID text box has invalid watermark text
+    ${V3}=    Run Keyword And Return Status    Checkbox Should Not Be Selected    id=edit_purpose_code_hmda_
+    ${V4}=    Run Keyword And Return Status    Checkbox Should Be Selected    id=edit_purpose_code_enabled_
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Purpose Code Name \ text box has invalid watermark text    Core ID text box has invalid watermark text    Trigger HMDA check box is selected by default    Status check box is not selected by default
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation on Manage Loan Purposes page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    addLoanPurpose    ${EMPTY}    ${EMPTY}    ${EMPTY}    ${EMPTY}
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Purpose Code Name validation message not appear on Manage Loan Purposes page
+    @{Verification}=    Create List    ${V1}
+    @{Messages}=    Create List    Empty Purpose Code Name validation message not appear on Manage Loan Purposes page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUniqueNameValidation
+    [Documentation]    This script verifies the unique field name validation on Manage Loan Purposes page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    ${PurposeName}=    Generate Random String    7    [LETTERS]
+    ${CoreID}=    Generate Random String    4    [NUMBERS]
+    addLoanPurpose    ${PurposeName}    ${CoreID}    Enabled    Enabled
+    Sleep    1
+    addLoanPurpose    ${PurposeName}    ${CoreID}    Enabled    Enabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Unique Purpose Code Name validation message not present on Manage Loan Purpose page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    Message 'This field must be unique.' has invalid text on \ Manage Loan Purposes page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique Purpose Code Name validation message not present on Manage Loan Purpose page    Message 'This field must be unique.' has invalid text on \ Manage Loan Purposes page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyTheEditButtonClick
+    [Documentation]    This script verifies the Edit button functionality on Manage Loan Purposes page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //tr[1]/td[5]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[5]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=purpose    ${Timeout}    Edit mode of Loan Purpose not opened
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Textfield    name=purpose    Purpose Code text box not present for edit mode on Manage Loan Purposes page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Textfield    name=core_id    Core ID text box not present for edit mode on Manage Loan Purposes page
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    name=hmda    Trigger HMDA check box not present for edit mode on Manage Loan Purposes page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    name=enabled    Status checkbox not present for edit mode on Manage Loan Purposes page
+    ${V6}=    Run Keyword And Return Status    Element Should Be Visible    //button[@type='submit']    Save link button not visible for edit mode on Manage Loan Purposes page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='submit']    Save link button not present for edit mode on Manage Loan Purposes page
+    ${V8}=    Run Keyword And Return Status    Element Should Be Visible    xpath=(//button[@type='button'])[2]    X(Cancel) sign not visible \ for edit mode on Manage Loan Purposes page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    xpath=(//button[@type='button'])[2]    X(Cancel) sign \ not present for edit mode on Manage Loan Purposes page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}
+    @{Messages}=    Create List    Edit button not found for the first row in the grid    Purpose Code text box not present for edit mode on Manage Loan Purposes page    Core ID text box not present for edit mode on Manage Loan Purposes page    Trigger HMDA check box not present for edit mode on Manage Loan Purposes page    Status checkbox not present for edit mode on Manage Loan Purposes page
+    ...    Save link button not visible for edit mode on Manage Loan Purposes page    Save link button not present for edit mode on Manage Loan Purposes page    X(Cancel) sign not visible \ for edit mode on Manage Loan Purposes page    X(Cancel) sign \ not present for edit mode on Manage Loan Purposes page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyToolTipsOnEditControls
+    [Documentation]    This script verifies the tool tips of controls on Edit mode on Manage Loan Purposes page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    Page Should Contain Element    //tr[1]/td[5]/form/button    Edit button not found for the first row in the grid
+    Comment    Taking tool tip of Edit button
+    ${EditButtonToolTip}=    Get Element Attribute    //tr[1]/td[5]/form/button@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${EditButtonToolTip}    Edit Purpose Code    Edit button has invalid tool tip
+    Mouse Over    //tr[1]/td[5]/form/button
+    Focus    //tr[1]/td[5]/form/button
+    Sleep    2
+    Click Element    //tr[1]/td[5]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=purpose    ${Timeout}    Edit mode of Loan Purpose not opened
+    Comment    Taking Tool Tip of Save and Close button
+    ${SaveButtonToolTip}=    Get Element Attribute    //button[@type='submit']@title
+    ${CancelButtonToolTip}=    Get Element Attribute    xpath=(//button[@type='button'])[2]@title
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${SaveButtonToolTip}    Save Changes    Save button has invalid tool tip
+    Mouse Over    //button[@type='submit']
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CancelButtonToolTip}    Cancel    Cancel button has invalid tool tip
+    Mouse Over    xpath=(//button[@type='button'])[2]
+    Sleep    2
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Edit button has invalid tool tip    Save button has invalid tool tip    Cancel button has invalid tool tip
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyWaterMarkTextOnEditMode
+    [Documentation]    This script verifies the Watermark text on edit mode on Manage Loan Purposes page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    Page Should Contain Element    //tr[1]/td[5]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[5]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=purpose    ${Timeout}    Edit mode of Loan Purpose not opened
+    Input Text    name=purpose    ${EMPTY}
+    ${LoanPurposeWaterMarkText}=    Get Element Attribute    name=purpose@placeholder
+    ${CoreID}=    Get Element Attribute    name=core_id@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${LoanPurposeWaterMarkText}    Purpose Code Name    Purpose Code text box has invalid watermark text at edit mode
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CoreID}    Core ID    Core ID text box has invalid watermark text at edit mode
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Purpose Code text box has invalid watermark text at edit mode    Core ID text box has invalid watermark text at edit mode
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyTheUpdatedValuesOfLoanPurpose
+    [Documentation]    This script verifies the updated values of edit mode on Manage Loan Purposes page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    Page Should Contain Element    //tr[1]/td[5]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[5]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=purpose    ${Timeout}    Edit mode of Loan Purpose not opened
+    ${NewPurposeCodeName}=    Generate Random String    7    [LETTERS]
+    ${NewCoreID}=    Generate Random String    4    [NUMBERS]
+    Focus    name=purpose
+    Input Text    name=purpose    ${NewPurposeCodeName}
+    Sleep    1
+    Focus    name=core_id
+    Input Text    name=core_id    ${NewCoreID}
+    Sleep    1
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated Values not getting Saved
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${NewPurposeCodeName}    Updated Purpose Code not saved after editing
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td[2]    ${NewCoreID}    Updated Core ID not saved after editing
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Updated Purpose Code not saved after editing    Updated Core ID not saved after editing
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail
+
+verifyBlankFieldValidationOnEditMode
+    [Documentation]    This script verifies the blank field validation on edit mode on Manage Loan Purposes page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    Page Should Contain Element    //tr[1]/td[5]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[5]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=purpose    ${Timeout}    Edit mode of Loan Purpose not opened
+    Focus    name=purpose
+    Input Text    name=purpose    ${EMPTY}
+    Sleep    1
+    Focus    name=core_id
+    Input Text    name=core_id    ${EMPTY}
+    Sleep    1
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    name=purpose    ${Timeout}    Updated values saved properly without giving error messages
+    Comment    Error Message for the Purpose Code and Core ID fields
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //table[@id='purpose_code_table']/tbody/tr[2]/td/form/table/tbody/tr/td/small    Empty Purpose Code validation message not appear
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='purpose_code_table']/tbody/tr[2]/td/form/table/tbody/tr/td/small    This field is required.    This field is required. message for the Empty Purpose Code has invalid characters
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Empty Purpose Code validation message not appear    This field is required. message for the Empty Purpose Code has invalid characters
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+
+verifyCancelButtonFunctionality
+    [Documentation]    This script verifies the Cancel button functionality on Manage Loan Purposes page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    Page Should Contain Element    //tr[1]/td[5]/form/button    Edit button not found for the first row in the grid
+    ${ExistingPurposeCode}=    Get Text    //tr[1]/td
+    Click Element    //tr[1]/td[5]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=purpose    ${Timeout}    Edit mode of Loan Purpose not opened
+    ${NewPurposeCodeName}=    Generate Random String    7    [LETTERS]
+    ${NewCoreID}=    Generate Random String    4    [NUMBERS]
+    Focus    name=purpose
+    Input Text    name=purpose    ${NewPurposeCodeName}
+    Sleep    1
+    Focus    name=core_id
+    Input Text    name=core_id    ${NewCoreID}
+    Sleep    1
+    Focus    xpath=(//button[@type='button'])[2]
+    Click Element    xpath=(//button[@type='button'])[2]
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Cancel button functionality not working properly
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${ExistingPurposeCode}    Cancel button click update the Purpose Code value
+    ${V2}=    Run Keyword And Return Status    Element Should Not Be Visible    //table[@id='purpose_code_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button[2]    Save link present \ after clicking on the Cancel Edit button
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //table[@id='purpose_code_table']/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button    Cancel \ link present \ after clicking on the Cancel Edit button
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Cancel button click update the Purpose Code value    Save link present \ after clicking on the Cancel Edit button    Cancel \ link present \ after clicking on the Cancel Edit button
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUniqueNameValidationOnEditMode
+    [Documentation]    This script verifies the Unique Name valiadation on Edit mode on Manage Loan Purposes page.
+    navigateToManageLoanPurposePage
+    Sleep    1
+    Page Should Contain Element    //tr[1]/td[5]/form/button    Edit button not found for the first row in the grid
+    ${SecondName}=    Get Text    //tr[2]/td
+    Focus    //tr[1]/td[5]/form/button
+    Click Element    //tr[1]/td[5]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=purpose    ${Timeout}    Edit mode of Loan Purpose not opened
+    Focus    name=purpose
+    Input Text    name=purpose    ${SecondName}
+    Sleep    1
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    name=purpose    ${Timeout}    Values getting Saved without display unique Purpose Code validation message
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //table[@id='purpose_code_table']/tbody/tr[2]/td/form/table/tbody/tr/td/small    Unique name validation message not appear on the Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='purpose_code_table']/tbody/tr[2]/td/form/table/tbody/tr/td/small    This field must be unique.    This field must be unique. message has invalid characters
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique name validation message not appear on the Page    This field must be unique. message has invalid characters
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+
+*** Keywords ***
+navigateToManageLoanPurposePage
+    [Documentation]    This keyword navigates to Manage Loan Purposes page.
+    Sleep    1
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Loan Configuration tab not displayed.
+    Focus    link=Loan Configuration
+    Click Element    link=Loan Configuration
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Purposes    ${Timeout}    Loan Purposes \ link not displayed under Loan Configuration Tab
+    Focus    link=Loan Purposes
+    Click Element    link=Loan Purposes
+    Sleep    2
+    Wait Until Page Contains Element    name=purpose    ${Timeout}    Manage Loan Purposes page not loaded properly
+
+addLoanPurpose
+    [Arguments]    ${PurposeName}    ${CoreID}    ${HMDA}    ${Status}
+    [Documentation]    This keyword used to add loan purposes on Manage Loan Purposes page.
+    Sleep    1
+    Focus    id=edit_purpose_code_purpose_
+    Input Text    id=edit_purpose_code_purpose_    ${PurposeName}
+    Sleep    1
+    Focus    id=edit_core_id_
+    Input Text    id=edit_core_id_    ${CoreID}
+    Focus    id=edit_purpose_code_hmda_
+    Run Keyword If    '${HMDA}'=='Enabled'    Click Element    id=edit_purpose_code_hmda_
+    Focus    id=edit_purpose_code_enabled_
+    Run Keyword If    '${Status}'=='Enabled'    Click Element    id=edit_purpose_code_enabled_
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    1
+
+navigateToAddNewLoanTypePage
+    [Documentation]    This keyword navigates to Create Loan Type page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Loan Configuration
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Types    ${Timeout}    Loan Types link not present underLoan Configuration \ tab
+    Click Element    link=Loan Types
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Loan Type    ${Timeout}    Manage Loan Types Page not loaded properly
+    Sleep    1
+    Focus    link=Add Loan Type
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Create New Loan Type page not opened properly

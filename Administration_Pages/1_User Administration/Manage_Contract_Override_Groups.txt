@@ -1,0 +1,430 @@
+*** Settings ***
+Documentation     This suit covers all the scenarios on Manage Contract Override Groups Page. \
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyContractOverridelGroupLink
+    [Documentation]    This script verifyes the Manage Contract Override Groups link under User Administration Tab.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=User Administration    ${Timeout}    User Administration tab not loaded Properly
+    Click Element    link=User Administration
+    Sleep    1
+    Page Should Contain Element    link=Manage Contract Override Groups    Manage Contract Override Groups \ link under User Administration page not appeared on Admin Page
+    Element Text Should Be    link=Manage Contract Override Groups    Manage Contract Override Groups    Manage Contract Override Groups link under User Administration page has invalid text on Admin Page
+
+verifyContractOverrideGroupsLinkClick
+    [Documentation]    This script verifyes the Functionality of \ Manage Contract Override Groups link button under User Administration tab. \
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=User Administration    ${Timeout}    User Administration tab not loaded Properly
+    Click Element    link=User Administration
+    Sleep    1
+    Wait Until Page Contains Element    link=Contract Override Groups    ${Timeout}    Contract Override Groups link not loaded properly
+    Click Element    link=Contract Override Groups
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Contract Override Groups page not loaded properly
+    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Contract Override Groups    Contract Override Groups link not functioning properly
+
+verifyTheUIOfManageContarctOverrideGroupsPage
+    [Documentation]    This script verifyes all the UI element \ on Manage Contract Override Groups Page. \
+    goToManageContractOverrideGroupsPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    link=Add Contract Override Group    link=Add Contract Override Group link not present on Manage Contract Override Group page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    link=Add Contract Override Group    Add Contract Override Group    Add Contract Override Group link has invalid text \ on Manage Contract Override Group page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='manage_override_grps_table']/thead/tr/th    Contract Override Group Name column not present on on Manage Contract Override Group page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_override_grps_table']/thead/tr/th    Contract Override Group Name    Contract Override Group Name column has invalid text on Manage Contract Override Group page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='manage_override_grps_table']/thead/tr/th[2]    Description column not pesent on Manage Contract Override Group page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_override_grps_table']/thead/tr/th[2]    Description    Description column has invalid text on Manage Contract Override Group page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='manage_override_grps_table']/thead/tr/th[3]    Updated On column not present on Manage Contract Override Group page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_override_grps_table']/thead/tr/th[3]    Updated On    Updated On column has invalid text on Manage Contract Override Group page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='manage_override_grps_table']/thead/tr/th[4]    By column not present on Manage Contract Override Group page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_override_grps_table']/thead/tr/th[4]    By    By column has invalid text on Manage Contract Override Group page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='manage_override_grps_table']/thead/tr/th[5]    Status column not present on Manage Contract Override Group page
+    ${V12}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_override_grps_table']/thead/tr/th[5]    Status    Status column has invalid text on Manage Contract Override Group page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Textfield    //div[@id='manage_override_grps_table_filter']/label/input    Search Text box not present on Manage Contract Override Group page \ \
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_override_grps_table_length']/label/select    View All drop down not present on \ Manage Contract Override Group page
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_override_grps_table_length']/label    Per Page label not present on \ Manage Contract Override Group page
+    ${V16}=    Run Keyword And Return Status    Page Should Contain Element    link=← Previous    Previous link button not present on \ Manage Contract Override Group page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Element    link=Next →    Next link button not present on \ Manage Contract Override Group page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    @{Messages}=    Create List    link=Add Contract Override Group link not present on Manage Contract Override Group page    Add Contract Override Group link has invalid text \ on Manage Contract Override Group page    Contract Override Group Name column not present on on Manage Contract Override Group page    Contract Override Group Name column has invalid text on Manage Contract Override Group page    Description column not pesent on Manage Contract Override Group page
+    ...    Description column has invalid text on Manage Contract Override Group page    Updated On column not present on Manage Contract Override Group page    Updated On column has invalid text on Manage Contract Override Group page    By column not present on Manage Contract Override Group page    By column has invalid text on Manage Contract Override Group page    Status column not present on Manage Contract Override Group page
+    ...    Status column has invalid text on Manage Contract Override Group page    Search Text box not present on Manage Contract Override Group page    View All drop down not present on \ Manage Contract Override Group page    Per Page label not present on \ Manage Contract Override Group page    Previous link button not present on \ Manage Contract Override Group page    Next link button not present on \ Manage Contract Override Group page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+toVerifyAddContractOverrideGroupLink
+    [Documentation]    This script verifyes the link Add Contract Override Group \ on Manage Contract Override Groups Page. \
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    link=Add Contract Override Group
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='overrides']/thead/tr/th    ${Timeout}    Add Contract Override Group page not loaded properly
+
+verifyTheUIOfAddContarctOverrideGroupsPage
+    [Documentation]    This script verifyes all the UI elements on Add Contract Override Groups Page. \
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    link=Add Contract Override Group
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='overrides']/thead/tr/th    ${Timeout}    Add Contract Override Group page not loaded properly
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Add Contract Override Group header not present on Add Contract Override Group page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Add Contract Override Group    Add Contract Override Group header has invalid text on Add Contract Override Group Page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    link=Manage Contract Override Groups    Manage Contract Override Groups link not present on Add Contract Override Group Page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    link=Manage Contract Override Groups    Manage Contract Override Groups    Manage Contract Override Groups link has invalid text on Add Contract Override Group Page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Textfield    id=name    New Group Name text box not present on Add Contract Override Group Page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Textfield    name=description    This is the user-defined definition of this contract Override Group text box not present on \ Add Contract Override Group Page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    name=enabled    Enabled check box not present on Add Contract Override Group Page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='overrides']/thead/tr/th    Loan Type drop down not present on Add Contract Override Group Page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='overrides']/thead/tr/th[2]    Ocerride Type drop down not present on Add Contract Override Group Page
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='overrides']/thead/tr/th[3]    Override limit drop down \ not present on Add Contract Override Group Page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    id=add_entry    Add button not present on Add Contract Override Group Page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='overrides']/tbody/tr/td[4]/button    Delete button not present on Add Contract Override Group Page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Element    //form[@id='main_form']/div[4]/div/a/i    Question Mark not present on Add Contract Override Group Page
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='actionButtons']/div/button    Cancel button not present on Add Contract Override Group Page
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='submit']    Save button not present on Add Contract Override Group Page
+    ${V16}=    Run Keyword And Return Status    Page Should Contain Element    link=Cancel    Cancel link button not present on Add Contract Override Group Page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Element    link=Save    Save link button not present on Add Contract Override Group Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    @{Messages}=    Create List    Add Contract Override Group header not present on Add Contract Override Group page    Add Contract Override Group header has invalid text on Add Contract Override Group Page    Manage Contract Override Groups link not present on Add Contract Override Group Page    Manage Contract Override Groups link has invalid text on Add Contract Override Group Page    New Group Name text box not present on Add Contract Override Group Page
+    ...    This is the user-defined \ definition of this contract Override Group text box not present on \ Add Contract Override Group Page    Enabled check box not present on Add Contract Override Group Page    Loan Type drop down not present on Add Contract Override Group Page    Ocerride Type drop down not present on Add Contract Override Group Page    Override limit drop down \ not present on Add Contract Override Group Page    Add button not present on Add Contract Override Group Page
+    ...    Delete button not present on Add Contract Override Group Page    Question Mark not present on Add Contract Override Group Page    Cancel button not present on Add Contract Override Group Page    Save button not present on Add Contract Override Group Page    Cancel link button not present on Add Contract Override Group Page    Save link button not present on Add Contract Override Group Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyWaterMarkText
+    [Documentation]    This script verifyes all the water mark text on Add Contract Override Group Page. \ \
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    link=Add Contract Override Group
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='overrides']/thead/tr/th    ${Timeout}    Add Contract Override Group page not loaded properly
+    ${GroupName}=    Get Element Attribute    id=name@placeholder
+    ${Description}=    Get Element Attribute    name=description@placeholder
+    ${OverridelLimit}=    Get Element Attribute    id=0_approval@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal    New Group Name    ${GroupName}    Group Name text box has invalid water mark text on Add Contract Override Group page
+    ${V2}=    Run Keyword And Return Status    Should Be Equal    This is the user-defined definition of this contract override group.    ${Description}    Group Description text box has invalid water mark text on Add Contract Override Group page
+    ${V3}=    Run Keyword And Return Status    Should Be Equal    Override Limit    ${OverridelLimit}    Override limit water mark text has invalid text in Override Limit text box on Add Contract Override Group page \
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Group Name text box has invalid water mark text on Add Contract Override Group page    Group Description text box has invalid water mark text on Add Contract Override Group page    Override limit water mark text has invalid text in Override Limit text box on Add Contract Override Group page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+toVerifyLoanTypeRowRequired
+    [Documentation]    This script verifyes the validation of Loan Type Row on Add Contract Override Group Page. \ \
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    link=Add Contract Override Group
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='overrides']/thead/tr/th    ${Timeout}    Add Contract Override Group page not loaded properly
+    ${String}=    Generate Random String    10    [LETTERS]
+    Focus    id=name
+    Input Text    id=name    ${String}
+    Focus    name=description
+    Input Text    name=description    ${String}
+    Focus    //table[@id='overrides']/tbody/tr/td[4]/button
+    Click Element    //table[@id='overrides']/tbody/tr/td[4]/button
+    Sleep    1
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Alert Should Be Present    At least one override entry must exist.
+    Run Keyword If    '${V1}'=='False'    At least one override entry must exist. validation pop up not displayed on Add Contract Override Group page
+
+verifyAddandDeleteRowButton
+    [Documentation]    This script verifyes the Add and Delete Row button for loan type on Add Contract Override Group Page. \ \
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    link=Add Contract Override Group
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='overrides']/thead/tr/th    ${Timeout}    Add Contract Override Group page not loaded properly
+    Comment    Delete Row
+    Click Element    //table[@id='overrides']/tbody/tr/td[4]/button
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Should Not Be Visible    id=0_loan_type    Clicking on Delete button, Row not deleted on Add Contract Override Group page
+    Comment    Add Row
+    Click Element    id=add_entry
+    Sleep    2
+    ${V2}=    Run Keyword And Return Status    Element Should Be Visible    id=-1_loan_type    Clicking on Add button, Row not added on Add Contract Override Group page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Clicking on Delete button, Row not deleted on Add Contract Override Group page    Clicking on Add button, Row not added on Add Contract Override Group page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewEnabledContractOverrideGroup
+    [Documentation]    This script add new Enabled Contract Override Group.
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    link=Add Contract Override Group
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='overrides']/thead/tr/th    ${Timeout}    Add Contract Override Group page not loaded properly
+    ${NewGroupName}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    ${OverrideLimit}=    Generate Random String    4    [NUMBERS]
+    addNewContractOverrideGroup    ${NewGroupName}    ${Description}    Enabled    ${OverrideLimit}
+    Sleep    1
+    Element Text Should Be    //div[@id='mainContent']/div[3]/div/span/b    ${NewGroupName} Contract Overrides Group    Cant add New Contract Override Group
+
+addNewDisabledContractOverrideGroup
+    [Documentation]    This script add new Disabled Contract Override Group.
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    link=Add Contract Override Group
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='overrides']/thead/tr/th    ${Timeout}    Add Contract Override Group page not loaded properly
+    ${NewGroupName}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    ${OverrideLimit}=    Generate Random String    4    [NUMBERS]
+    addNewContractOverrideGroup    ${NewGroupName}    ${Description}    Disabled    ${OverrideLimit}
+    Sleep    1
+    Element Text Should Be    //div[@id='mainContent']/div[3]/div/span/b    ${NewGroupName} Contract Overrides Group    Cant add New Contract Override \ Group
+
+verifyCancelButtonFunctionality
+    [Documentation]    This script verifyes the Cancel button functionality on Add Contract Override Group page.
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    link=Add Contract Override Group
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='overrides']/thead/tr/th    ${Timeout}    Add Contract Override Group page not loaded properly
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    15    [LETTERS]
+    Focus    id=name
+    Input Text    id=name    ${Name}
+    Focus    name=description
+    Input Text    name=description    ${Description}
+    Sleep    4
+    Click Element    //div[@id='actionButtons']/div/button
+    Sleep    2
+    Wait Until Page Contains Element    link=Add Contract Override Group    ${Timeout}    Manage Contract Override Group \ page not loaded properly
+
+addNewContractOverrideGroupAndVerifyDetails
+    [Documentation]    This script add new Contract Override Group and verifyes the details.
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    link=Add Contract Override Group
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='overrides']/thead/tr/th    ${Timeout}    Add Contract Override Group page not loaded properly
+    ${NewGroupName}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    ${OverrideLimit}=    Generate Random String    4    [NUMBERS]
+    addNewContractOverrideGroup    ${NewGroupName}    ${Description}    Enabled    ${OverrideLimit}
+    Sleep    1
+    Element Text Should Be    //div[@id='mainContent']/div[3]/div/span/b    ${NewGroupName} Contract Overrides Group    Cant add New Contract Override Group
+    Click Element    //div[@id='mainContent']/div/div/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Contract Override Group    ${Timeout}    Manage Contract Override Group page not loaded
+    Focus    link=${NewGroupName}
+    Click Element    link=${NewGroupName}
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    Group View Page not loaded properly
+    ${getAmount}=    Get Text    //div[@id='manage_contract_overrides']/table/tbody/tr/td[3]
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='mainContent']/div[3]/div/span    ${NewGroupName} Contract Overrides Group - ${Description}    Added Contract Override \ Group name and \ Description not displayed correctly on view Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='mainContent']/div[3]/div/span[2]/em    (Enabled)    Added Group Status not displayed correctly on view Page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_contract_overrides']/table/tbody/tr/td    ${LoanType}    Loan Type not displayed correctly \ on view Page for Added Group
+    ${V4}=    Run Keyword And Return Status    Should Be Equal    ${getAmount.replace(",","")}    $${OverrideLimit}    Override Limit Amount not displayed correctly \ on view Page for Added Group
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Added Contract Override \ Group name and \ Description not displayed correctly on view Page    Added Group Status not displayed correctly on view Page    Loan Type not displayed correctly \ on view Page for Added Group    Override Limit Amount not displayed correctly \ on view Page for Added Group
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyLinksOnViewPage
+    [Documentation]    This script verifyes all the link which present on View Page of Contract Override group.
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    //tr[1]/td/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    View the Group page not loaded properly
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='mainContent']/div/div/a    Manage Contract Override Groups \ link not present on Group View Page
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    link=Edit    Edit link not present on Group View Page
+    Comment    Verify Manage Contract Override Groups link
+    Click Element    //div[@id='mainContent']/div/div/a
+    Sleep    2
+    Wait Until Page Contains Element    link=Add Contract Override Group    ${Timeout}    Manage Contract Override Groups page not loaded properly
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Contract Override Groups    Manage Contract Override Groups link not working properly
+    Click Element    //tr[1]/td/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    View the Group page not loaded properly
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Edit page of Added group not opened properly
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Edit Contract Override Group    Edit link not working properly
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Manage Contract Override Groups \ link not present on Group View Page    Edit link not present on Group View Page    Manage Contract Override Groups link not working properly    Edit link not working properly
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUpdateFunctionality
+    [Documentation]    This script update the details of existing group and verifyes the updated details.
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    link=Add Contract Override Group
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='overrides']/thead/tr/th    ${Timeout}    Add Contract Override Group page not loaded properly
+    ${NewGroupName}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    ${OverrideLimit}=    Generate Random String    4    [NUMBERS]
+    addNewContractOverrideGroup    ${NewGroupName}    ${Description}    Enabled    1${OverrideLimit}
+    Sleep    1
+    Element Text Should Be    //div[@id='mainContent']/div[3]/div/span/b    ${NewGroupName} Contract Overrides Group    Cant add New Contract Override Group
+    Click Element    //div[@id='mainContent']/div/div/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Contract Override Group    ${Timeout}    Manage Contract Override Group page not loaded
+    Click Element    link=${NewGroupName}
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    Group View Page not loaded properly
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Edit Contract Override Group Page not loaded properly
+    ${UpdateGroupName}=    Generate Random String    7    [LETTERS]
+    ${UpdateDescription}=    Generate Random String    7    [LETTERS]
+    ${UpdateOverrideLimit}=    Generate Random String    4    [NUMBERS]
+    addNewContractOverrideGroup    ${UpdateGroupName}    ${UpdateDescription}    Enabled    1${UpdateOverrideLimit}
+    Sleep    1
+    Click Element    //div[@id='mainContent']/div/div/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Contract Override Group    ${Timeout}    Manage Contract Override Groups Page not loaded properly
+    Click Element    link=${UpdateGroupName}
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    Group View Page not loaded properly
+    ${getAmount}=    Get Text    //div[@id='manage_contract_overrides']/table/tbody/tr/td[3]
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='mainContent']/div[3]/div/span    ${UpdateGroupName} Contract Overrides Group - ${UpdateDescription}    Added Contract Override \ Group name and \ Description not displayed correctly on view Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='mainContent']/div[3]/div/span[2]/em    (Enabled)    Added Group Status not displayed correctly on view Page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_contract_overrides']/table/tbody/tr/td    ${LoanType}    Loan Type not displayed correctly \ on view Page for Added Group
+    ${V4}=    Run Keyword And Return Status    Should Be Equal    ${getAmount.replace(",","")}    $1${UpdateOverrideLimit}    Override Limit Amount not displayed correctly \ on view Page for Added Group
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Added Contract Override \ Group name and \ Description not displayed correctly on view Page    Added Group Status not displayed correctly on view Page    Loan Type not displayed correctly \ on view Page for Added Group    Override Limit Amount not displayed correctly \ on view Page for Added Group
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyEditPageCancelButton
+    [Documentation]    This script verifyes the Cancel button functionality on Edit page of \ Contract Override Group page.
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    //tr[1]/td/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    View the Group Details page not loaded properly
+    Click Element    link=Edit
+    Sleep    2
+    Wait Until Page Contains Element    id=name    ${Timeout}    Edit Contract Override Group page not loaded properly
+    Focus    id=name
+    Input Text    id=name    Test Contract Override Group
+    Focus    name=description
+    Input Text    name=description    Contract Override Group \ Description
+    Sleep    4
+    Click Element    link=Cancel
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Contract Override Group    ${Timeout}    Manage Approval Limit Groups page not loaded properly OR Cancel button updated the details
+
+verifySelectedLoanTypeNotDisplayedInSecondRowAddPage
+    [Documentation]    This script verifyes the already selected loan type in Second row of Loan type on Add Contract Override Group page.
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    link=Add Contract Override Group
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='overrides']/thead/tr/th    ${Timeout}    Add Contract Override Group page not loaded properly
+    @{AllLoanType}=    Get List Items    id=0_loan_type
+    Select From List    id=0_loan_type    @{AllLoanType}[1]
+    Sleep    2
+    Click Element    id=add_entry
+    Sleep    1
+    Focus    id=-1_loan_type
+    @{UpdatedLoanType}=    Get List Items    id=-1_loan_type
+    Should Not Contain    ${UpdatedLoanType}    @{AllLoanType}[1]    Selected Loan type displayed in Added New Row on Add Contract Override Group page Page
+    Should Contain X Times    ${UpdatedLoanType}    @{AllLoanType}[1]    0    Selected Loan type displayed once in Added New Row on Add Contract Override Group page
+
+verifySelectedLoanTypeNotDisplayedInSecondRowEditPage
+    [Documentation]    This script verifyes the already selected loan type in Second row of Loan type on Edit page of Add Contract Override Group.
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Edit Contract Override Group page not loaded properly
+    @{AllLoanType}=    Get List Items    //table[@id='overrides']/tbody/tr[1]/td/select
+    Select From List    //table[@id='overrides']/tbody/tr[1]/td/select    @{AllLoanType}[1]
+    Sleep    2
+    Click Element    id=add_entry
+    Sleep    1
+    Focus    //table[@id='overrides']/tbody/tr[2]/td/select
+    @{UpdatedLoanType}=    Get List Items    //table[@id='overrides']/tbody/tr[2]/td/select
+    Should Not Contain    ${UpdatedLoanType}    @{AllLoanType}[1]    Selected Loan type displayed in Added New Row on Edit Contract Override Group Page
+    Should Contain X Times    ${UpdatedLoanType}    @{AllLoanType}[1]    0    Selected Loan type displayed once \ in Added New Row on Edit Contract Override Group page
+
+validSearchOnManageContractOverrideGroupsPage
+    [Documentation]    This script verifyes the valid search on Manage Contract Override Groups page.
+    goToManageContractOverrideGroupsPage
+    Sleep    1
+    Focus    link=Add Contract Override Group
+    Click Element    link=Add Contract Override Group
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='overrides']/thead/tr/th    ${Timeout}    Add Contract Override Group page not loaded properly
+    ${NewGroupName}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    ${OverrideLimit}=    Generate Random String    4    [NUMBERS]
+    addNewContractOverrideGroup    ${NewGroupName}    ${Description}    Enabled    ${OverrideLimit}
+    Sleep    1
+    Click Element    //div[@id='mainContent']/div/div/a
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='manage_override_grps_table_filter']/label/input    ${Timeout}    Manage Contract Override Groups Page not loaded properly and Search text box not present
+    Focus    //div[@id='manage_override_grps_table_filter']/label/input
+    Input Text    //div[@id='manage_override_grps_table_filter']/label/input    ${NewGroupName}
+    Sleep    1
+    Element Text Should Be    //tr[1]/td/a    ${NewGroupName}    Searched Group name not found ion manage Contract Override group page
+
+invalidSearchOnManageContractOverrideGroupPage
+    [Documentation]    This script verifyes the Invalid search on Manage Contract Override Groups page.
+    goToManageContractOverrideGroupsPage
+    Page Should Contain Element    xpath=(//input[@type='text'])[2]    Search Text field is not present on Manage Contract Override Groups page
+    ${GroupName}=    Generate Random String    8    [LETTERS]
+    Focus    xpath=(//input[@type='text'])[2]
+    Input Text    xpath=(//input[@type='text'])[2]    ${GroupName}
+    Sleep    1
+    Element Text Should Be    //table[@id='manage_override_grps_table']/tbody/tr/td    No matching records found    For invalid search "No matching records found" message is not displayed on on Manage Contract Override Groups page
+
+*** Keywords ***
+goToManageContractOverrideGroupsPage
+    [Documentation]    This keyword navigate to \ Manage Contract Override Groups page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=User Administration    ${Timeout}    User Administration tab not loaded Properly
+    Click Element    link=User Administration
+    Sleep    1
+    Wait Until Page Contains Element    link=Contract Override Groups    ${Timeout}    Contract Override Groups link not loaded properly
+    Click Element    link=Contract Override Groups
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Contract Override Groups page not loaded properly
+
+addNewContractOverrideGroup
+    [Arguments]    ${GroupName}    ${Description}    ${Status}    ${OverrideLimit}
+    [Documentation]    This keyword use to add New Contract Override group on Manage Contract Override Groups page.
+    Focus    id=name
+    Input Text    id=name    ${GroupName}
+    Focus    name=description
+    Input Text    name=description    ${Description}
+    Run Keyword If    '${Status}'=='Enabled'    Select Checkbox    id=enabled
+    Sleep    1
+    Select From List    //table[@id='overrides']/tbody/tr/td/select    1
+    Sleep    1
+    ${LoanType}=    Get Selected List Label    //table[@id='overrides']/tbody/tr/td/select
+    Set Global Variable    ${LoanType}    ${LoanType}
+    Focus    //table[@id='overrides']/tbody/tr/td[3]/input
+    Input Text    //table[@id='overrides']/tbody/tr/td[3]/input    ${OverrideLimit}
+    Sleep    1
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='mainContent']/div/div/a    ${Timeout}    Review page for added new group not loaded properly

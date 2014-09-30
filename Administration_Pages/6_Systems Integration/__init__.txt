@@ -1,0 +1,6 @@
+*** Settings ***
+Documentation     \ \ Manage Core Integration
+...               \ Manage DMS Integration
+...               Manage NADA Integration
+...               Manage Amazon S3 Integration
+...               Manage Carleton Calculator Integration

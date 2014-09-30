@@ -1,0 +1,529 @@
+*** Settings ***
+Documentation     ID: US568
+...               Name: Support "Application Control" for each Loan Type
+...
+...
+...               Description:
+...
+...               An application control drives the type of calculator that is used when making a decision. \ There are two different types of calculators that are used for "open ended" and "closed ended" loans. \ Some core systems further divide this concept into different types of open ended and closed ended loans. \ Within out system, we need to know how to manage an open ended and closed ended loan AND how to send it to the core system.
+...
+...               Need new field "Application Control" that is core system specific:
+...               For Non-Symitar systems the options should be Open ended or closed ended
+...
+...               For Symitar, need an additional layer:
+...               (0) Closed Ended (system will treat same as closed ended)
+...               (1) Open Ended (system will treat same as open ended)
+...               (2) Line of Credit (system will treat same as open ended)
+...               (3) Credit Card (system will treat same as open ended)
+...
+...               These selection values will be system defined and will not be editable by an administrator.
+...
+...               Field should be first after the name, insert before the HMDA setting.
+...
+...               When the setting is open ended, do not ask for term on the loan application.
+...
+...               Acceptance:
+...               New field on Loan Type configuration
+...               Settings change based on core system configuration.
+...               Settings for Symitar include the core code in the drop down (use the numbers as listed on the story).
+...               When an "open ended" type selection is made for Symitar, the application does not ask for term. \ When an "open ended" type selection is made for non-Symitar, the applicatoin does not ask for term.
+...               When a loan type is changed from closed ended to open ended type, the term information is removed from t he loan.
+...               When a loan type is changed from closed ended to open ended loan type before submit, the term is enforced.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+toVerifyApplicationControlDropDownOnPage
+    [Documentation]    This script verifies "Application Control" drop down with label appeared on Add New Loan Type page
+    goToManageLoanTypePage
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Comment    Verify Drop down Present \ on Page
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[2]/div/label    Application Control* label not appear on Add New Loan Type page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[2]/div/label    Application Control*    Application Control* label has invalid text on Add New Loan Type Page.
+    ${V3}=    Run Keyword And Return Status    Page Should Contain List    id=application_control    Application Control drop down not appeared on Add New Type Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Application Control* label not appear on Add New Loan Type page    Application Control* label has invalid text on Add New Loan Type Page.    Application Control drop down not appeared on Add New Type Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyRequestTermVisibleOnPage
+    [Documentation]    This script verifies Request Term text box by default appear on Application Setup page
+    Sleep    1
+    Page Should Contain Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    link=New Application
+    Sleep    4
+    Comment    Verify Default State
+    Wait Until Page Contains Element    name=loan_type    ${Timeout}    Application Setup page not loaded properly
+    Sleep    2
+    Element Should Be Visible    id=request_term    By Default Request Term not appeared on New Application Setup Page
+
+verifyRequestTermAppearedFor(1)OpenEndedControlType-Symitar
+    [Documentation]    This script verifies "Request Term" text box should not \ appear for "(1) Open Ended " application control type on Application setup page.
+    Comment    Add New Loan Type as Open \ Ended
+    goToManageLoanTypePage
+    ${Name}=    Generate Random String    7    [LETTERS]
+    Click Element    link=Add Loan Type
+    Sleep    1
+    fillLoanInformation    ${Name}    (1) Open Ended    1    100    Enabled
+    Sleep    1
+    Comment    Go to New Application Page
+    Page Should Contain Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    link=New Application
+    Sleep    4
+    Select From List    name=loan_type    ${Name}
+    Sleep    5
+    Element Should Not Be Visible    id=request_term    Request Term Text box appeared on Application Setup page for (1) Open Ended \ \ control type
+
+verifyRequestTermAppearedFor(2)LineofCreditControlType-Symitar
+    [Documentation]    This script verifies "Request Term" text box should not \ appear for "(2) Line of Credit " application control type on Application setup page.
+    Comment    Add New Loan Type as (2) Line of Credit
+    goToManageLoanTypePage
+    ${Name}=    Generate Random String    7    [LETTERS]
+    Click Element    link=Add Loan Type
+    Sleep    1
+    fillLoanInformation    ${Name}    (2) Line of Credit    1    100    Enabled
+    Sleep    1
+    Comment    Go to New Application Page
+    Page Should Contain Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    link=New Application
+    Sleep    4
+    Select From List    name=loan_type    ${Name}
+    Sleep    5
+    Element Should Not Be Visible    id=request_term    Request Term Text box appeared on Application Setup page for (2) Line of Credit \ control type
+
+verifyRequestTermAppearedFor(3)CreditCardControlType-Symitar
+    [Documentation]    This script verifies "Request Term" text box should not \ appear for "(3) Credit Card" application control type on Application setup page.
+    Comment    Add New Loan Type as (3) Credit Card
+    goToManageLoanTypePage
+    ${Name}=    Generate Random String    7    [LETTERS]
+    Click Element    link=Add Loan Type
+    Sleep    2
+    fillLoanInformation    ${Name}    (3) Credit Card    1    100    Enabled
+    Sleep    2
+    Comment    Go to New Application Page
+    Page Should Contain Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    link=New Application
+    Sleep    4
+    Select From List    name=loan_type    ${Name}
+    Sleep    5
+    Element Should Not Be Visible    id=request_term    Request Term Text box appeared on Application Setup page for (3) Credit Card \ control type
+
+verifyApprovalLimitFields
+    [Documentation]    This scripts verifies the Loan Values section present on page with Minimum and Maximum text box
+    goToManageLoanTypePage
+    Sleep    1
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New Type page not loaded properly
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[5]/div/label    Loan Values section not appear on Add New Loan Type page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div/label    Loan Values**    Loan Values label has invalid characters on Add New Loan Type page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Textfield    id=min_loan_amount    Minimum value text box in Loan Values section not present on Add New Loan Type page
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Textfield    id=max_loan_amount    Maximum value text box in Loan Values section not present on Add New Loan Type page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/div/span[2]    Min    Min label on Minimun text box has invalid text on Add New Loan Type page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div[2]/div/div/span[2]    Max    Max label on Maximun text box has invalid text on Add New Loan Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}
+    @{Messages}=    Create List    Loan Values section not appear on Add New Loan Type page    Loan Values label has invalid characters on Add New Loan Type page    Minimum value text box in Loan Values section not present on Add New Loan Type page    Maximum value text box in Loan Values section not present on Add New Loan Type page    Min label on Minimun text box has invalid text on Add New Loan Type page
+    ...    Max label on Maximun text box has invalid text on Add New Loan Type page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyMinValueGreaterThanMaxValueValidation
+    [Documentation]    This script verifies "Enter a minimum amount less than or equal to the maximum amount." error message for Approval Limi fields
+    goToManageLoanTypePage
+    Sleep    1
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New Type page not loaded properly
+    ${MinValue}=    Generate Random String    2    [NUMBERS]
+    ${MaxValue}=    Generate Random String    4    [NUMBERS]
+    Focus    id=min_loan_amount
+    Input Text    id=min_loan_amount    ${MaxValue}
+    Focus    id=max_loan_amount
+    Input Text    id=max_loan_amount    ${MinValue}
+    Sleep    1
+    Focus    id=active_score_model
+    Click Element    css=a.btn.btn-success
+    Sleep    2
+    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/small    Minimum amount less than or equal to the maximum amount validation message not appear on Add New Loan Type Page
+    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/small    Minimum amount must be less than or equal to maximum amount.    "Minimum amount must be less than or equal to maximum amount." validation message has invalid characters on Add New Loan Type Page
+
+verifyApprovalLimitFieldNotAcceptCharacters
+    [Documentation]    This scripts verifies error message for Approval Limit when user enter non numeric values
+    goToManageLoanTypePage
+    Sleep    1
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New Type page not loaded properly
+    ${NonNumericValue}=    Generate Random String    4    [LETTERS]
+    Focus    id=min_loan_amount
+    Input Text    id=min_loan_amount    ${NonNumericValue}
+    Focus    id=max_loan_amount
+    Input Text    id=max_loan_amount    ${NonNumericValue}
+    Sleep    1
+    Focus    id=active_score_model
+    Click Element    css=a.btn.btn-success
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/small    Digit Validation message for Min value not appear on Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/small    Please enter only digits.    Please enter only digits. message of Min text box has invalid text
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div[2]/div/small    Digit Validation message for Max \ value not appear on Page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div[2]/div/small    Please enter only digits.    Please enter only digits. message of Max text box has invalid text
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Digit Validation message for Min value not appear on Page    Please enter only digits. message of Min text box has invalid text    Digit Validation message for Max \ value not appear on Page    Please enter only digits. message of Max text box has invalid text
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyMinAndMaxFieldRequiredOnAddNewLoanTypePage
+    [Documentation]    This script verifies Min and Max fields in Loan Values section are required to fill on Create button click
+    goToManageLoanTypePage
+    Sleep    1
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New Type page not loaded properly
+    Sleep    1
+    Focus    id=name
+    Click Element    id=enabled
+    Sleep    2
+    Click Element    css=a.btn.btn-success
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/small    Required field validation message for Minimun text box not appeared on Add New Loan Type Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/small    This field is required.    This field is required. message for Minimum loan type has invalid text on Add New Loan Type page
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div[2]/div/small    Required field validation message for Maximum text box not appeared on Add New Loan Type Page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div[2]/div/small    This field is required.    This field is required. message for Maximum \ loan type has invalid text on Add New Loan Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Required field validation message for Minimun text box not appeared on Add New Loan Type Page    This field is required. message for Minimum loan type has invalid text on Add New Loan Type page    Required field validation message for Maximum text box not appeared on Add New Loan Type Page    This field is required. message for Maximum \ loan type has invalid text on Add New Loan Type page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyMinAndMaxFieldRequiredOnEditLoanTypePage
+    [Documentation]    This script verifies Min and Max fields in Loan Values section are required to fill on Edit Loan Type page
+    goToManageLoanTypePage
+    Sleep    2
+    Wait Until Page Contains Element    //tr[1]/td/a    ${Timeout}    Loan Type List not loaded properly
+    Click Element    //tr[1]/td/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    View Loan Type page not loaded properly
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Edit loan type page is not displayed.
+    Focus    id=name
+    Select Checkbox    id=enabled
+    Sleep    2
+    Focus    id=min_loan_amount
+    Input Text    id=min_loan_amount    ${EMPTY}
+    Sleep    1
+    Focus    id=max_loan_amount
+    Input Text    id=max_loan_amount    ${EMPTY}
+    Sleep    1
+    Click Element    link=Save
+    Sleep    4
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/small    Required field validation message for Minimun text box not appeared on Edit Loan Type Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/small    This field is required.    This field is required. message for Minimum loan type has invalid text on Edit \ Loan Type page
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div[2]/div/small    Required field validation message for Maximum text box not appeared on Edit \ \ Loan Type Page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div[2]/div/small    This field is required.    This field is required. message for Maximum \ loan type has invalid text on Edit \ Loan Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Required field validation message for Minimun text box not appeared on Edit Loan Type Page    This field is required. message for Minimum loan type has invalid text on Edit \ Loan Type page    Required field validation message for Maximum text box not appeared on Edit \ \ Loan Type Page    This field is required. message for Maximum \ loan type has invalid text on Edit \ Loan Type page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedLoanEnabledTypeAndValuesDisplayedOnApprovalLimitGroupPage
+    [Documentation]    This script verifies Added Enabled loan type displayed on Add New Approval Limit group page
+    goToManageLoanTypePage
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${Min}=    Generate Random String    2    [NUMBERS]
+    ${Max}=    Generate Random String    3    [NUMBERS]
+    Click Element    link=Add Loan Type
+    Sleep    1
+    fillLoanInformation    ${Name}    1    ${Min}    ${Max}    Enabled
+    Sleep    2
+    goApprovalLimitGroupPage
+    Sleep    1
+    Focus    link=Add Approval Limit Group
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    Wait Until Page Contains Element    id=unique1    ${Timeout}    Add New Group page not loaded properly
+    Focus    id=unique1
+    @{AllLoanType}=    Get List Items    id=unique1
+    ${V1}=    Run Keyword And Return Status    Should Contain    ${AllLoanType}    ${Name}    Enabled Loan Type \ not displayed on Add New Approval limit group page in Loan Type Drop down
+    ${V2}=    Run Keyword And Return Status    Should Contain X Times    ${AllLoanType}    ${Name}    1    Enabled Loan Type \ displayed multiple times \ on Add New Approval limit group page in Loan Type Drop down
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Enabled Loan Type \ not displayed on Add New Approval limit group page in Loan Type Drop down    Enabled Loan Type \ displayed multiple times \ on Add New Approval limit group page in Loan Type Drop down
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedLoanDisabledTypeAndValuesDisplayedOnApprovalLimitGroupPage
+    [Documentation]    This script verifies Added Disabled loan type displayed on Add New Approval Limit group page
+    goToManageLoanTypePage
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${Min}=    Generate Random String    2    [NUMBERS]
+    ${Max}=    Generate Random String    3    [NUMBERS]
+    Click Element    link=Add Loan Type
+    Sleep    1
+    fillLoanInformation    ${Name}    1    ${Min}    ${Max}    Disabled
+    Sleep    2
+    goApprovalLimitGroupPage
+    Sleep    1
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    Wait Until Page Contains Element    id=unique1    ${Timeout}    Add New Group page not loaded properly
+    Focus    id=unique1
+    @{AllLoanType}=    Get List Items    id=unique1
+    ${V1}=    Run Keyword And Return Status    Should Not Contain    ${AllLoanType}    ${Name}    Disabled Loan Type \ not displayed on Add New Approval limit group page in Loan Type Drop down
+    ${V2}=    Run Keyword And Return Status    Should Contain X Times    ${AllLoanType}    ${Name}    0    Disabled Loan Type \ displayed multiple times \ on Add New Approval limit group page in Loan Type Drop down
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Disabled Loan Type \ not displayed on Add New Approval limit group page in Loan Type Drop down    Disabled Loan Type \ displayed multiple times \ on Add New Approval limit group page in Loan Type Drop down
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyMinandMaxValuesOnApprovalLimitGroupPage
+    [Documentation]    This script verifies Minimum and Maximum values of Added Loan Type on Add New Approval Limit group
+    goToManageLoanTypePage
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${Min}=    Generate Random String    2    [NUMBERS]
+    ${Max}=    Generate Random String    3    [NUMBERS]
+    Click Element    link=Add Loan Type
+    Sleep    1
+    fillLoanInformation    ${Name}    1    1${Min}    1${Max}    Enabled
+    Sleep    2
+    goApprovalLimitGroupPage
+    Sleep    1
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    Wait Until Page Contains Element    id=unique1    ${Timeout}    Add New Group page not loaded properly
+    Select From List    id=unique1    ${Name}
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //td[2]    $1${Min}    Loan Type Minimum Approval Limit value not displayed correctly on Add New Approval Limit Group Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //td[3]    $1,${Max}    Loan Type Maximum Approval Limit value not displayed correctly on Add New Approval Limit Group Page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Loan Type Minimum Approval Limit value not displayed correctly on Add New Approval Limit Group Page    Loan Type Maximum Approval Limit value not displayed correctly on Add New Approval Limit Group Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyMaxandMinLimitFieldValidationOnAddNewGroupPage
+    [Documentation]    This script verifies "Limit must be between minimum and maximum values." message appeared for
+    ...    1. Minimum limit less than its defined value
+    ...    2. Maximum limit greater than it defined value
+    ...    on Add New Approval Limt group page
+    goToManageLoanTypePage
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${Min}=    Generate Random String    2    [NUMBERS]
+    ${Max}=    Generate Random String    3    [NUMBERS]
+    Click Element    link=Add Loan Type
+    Sleep    1
+    fillLoanInformation    ${Name}    1    1${Min}    1${Max}    Enabled
+    Set Global Variable    ${Min}    1${Min}
+    Set Global Variable    ${Max}    1${Max}
+    Sleep    2
+    ${Max}    Set Variable    1${Max}
+    goApprovalLimitGroupPage
+    Sleep    1
+    Click Element    link=Add Approval Limit Group
+    Sleep    2
+    Wait Until Page Contains Element    id=unique1    ${Timeout}    Add New Group page not loaded properly
+    Select From List    id=unique1    ${Name}
+    Sleep    2
+    ${Min}    Evaluate    ${Min}-1
+    Input Text    id=unique3    ${Min}
+    Sleep    2
+    ${String}=    Generate Random String    7    [LETTERS]
+    Focus    id=name
+    Input Text    id=name    ${String}
+    Focus    name=description
+    Input Text    name=description    ${String}
+    Sleep    1
+    Focus    id=unique1
+    Click Element    css=button.btn.btn-primary
+    Sleep    4
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Aproval Limit less than Minimum Approval Amount error message not appeared on Add New Approval limt Group
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    Limit must be between min and max values.    Limit must be between min and max values. message has invalid text for Aproval Limit less than Minimum Approval Amount
+    Focus    id=unique1
+    Focus    id=unique3
+    Input Text    id=unique3    ${Max}
+    ${Max}    Evaluate    ${Max}+1
+    Input Text    id=unique3    ${Max}
+    Sleep    1
+    Focus    id=unique1
+    Click Element    css=button.btn.btn-primary
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Aproval Limit greater \ than Maximum Approval Amount error message not appeared on Add New Approval limt Group
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    Limit must be between min and max values.    Limit must be between min and max values. \ message has invalid text for Aproval Limit greater \ than Maximum \ Approval Amount
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Aproval Limit less than Minimum Approval Amount error message not appeared on Add New Approval limt Group    Limit must be between min and max values. message has invalid text for Aproval Limit less than Minimum Approval Amount    Aproval Limit greater \ than Maximum Approval Amount error message not appeared on Add New Approval limt Group    Limit must be between min and max values. \ message has invalid text for Aproval Limit greater \ than Maximum \ Approval Amount
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyMaxandMinLimitFieldValidationOnEditGroupPage
+    [Documentation]    This script verifies "Limit must be between minimum and maximum values." message appeared for
+    ...    1. Minimum limit less than its defined value
+    ...    2. Maximum limit greater than it defined value
+    ...    on Edit Approval Limt group page
+    goToManageLoanTypePage
+    ${Name}=    Generate Random String    7    [LETTERS]
+    ${Min}=    Generate Random String    2    [NUMBERS]
+    ${Max}=    Generate Random String    3    [NUMBERS]
+    Click Element    link=Add Loan Type
+    Sleep    1
+    fillLoanInformation    ${Name}    1    1${Min}    1${Max}    Enabled
+    ${Min}    Set Variable    1${Min}
+    ${Max}    Set Variable    1${Max}
+    Sleep    2
+    goApprovalLimitGroupPage
+    Sleep    1
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    id=unique1    ${Timeout}    Edit \ Group page not loaded properly
+    Select From List    id=unique1    ${Name}
+    Sleep    2
+    ${Min}=    Evaluate    ${Min}-1
+    Input Text    id=unique3    ${Min}
+    Sleep    2
+    Focus    id=unique1
+    Click Element    css=button.btn.btn-primary
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Aproval Limit less than Minimum Approval Amount error message not appeared on Add New Approval limt Group
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    Limit must be between min and max values.    Limit must be between min and max values. \ message has invalid text for Aproval Limit less than Minimum Approval Amount
+    Focus    id=unique1
+    Focus    id=unique3
+    Input Text    id=unique3    ${Max}
+    ${Max}=    Evaluate    ${Max}+1
+    Input Text    id=unique3    ${Max}
+    Sleep    1
+    Focus    id=unique1
+    Click Element    css=button.btn.btn-primary
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Aproval Limit greater \ than Maximum Approval Amount error message not appeared on Add New Approval limt Group
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    Limit must be between min and max values.    Limit must be between min and max values. \ message has invalid text for Aproval Limit greater \ than Maximum \ Approval Amount
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Aproval Limit less than Minimum Approval Amount error message not appeared on Add New Approval limt Group    Limit must be between min and max values. \ message has invalid text for Aproval Limit less than Minimum Approval Amount    Aproval Limit greater \ than Maximum Approval Amount error message not appeared on Add New Approval limt Group    Limit must be between min and max values. \ message has invalid text for Aproval Limit greater \ than Maximum \ Approval Amount
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+setSymitarYesNO
+    [Arguments]    ${Value}
+    [Documentation]    This Keyword is used to set "Symitar" option Yes or No
+    Sleep    1
+    Click Element    link=POC
+    Sleep    1
+    Wait Until Page Contains Element    link=Toggle Core System    ${Timeout}    POC page not loaded properly
+    Click Element    link=Toggle Core System
+    Run Keyword If    '${Value}'=='Yes'    Click Element    name=core_enabled
+    Sleep    1
+    Run Keyword If    '${Value}'=='Yes'    Click Element    name=core_type
+    Sleep    1
+    Run Keyword If    '${Value}'!='Yes'    Click Element    xpath=(//input[@name='core_enabled'])[2]
+    Sleep    1
+    Click Element    name=submit
+    Sleep    2
+
+goToManageLoanTypePage
+    [Documentation]    This keyword is used to Navigate to Manage Loan Type Page
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_loan_config']/div/a[2]    ${Timeout}    Loan Configuration Tab not appeared on page
+    Click Element    //div[@id='controller_loan_config']/div/a[2]
+    Sleep    2
+    Wait Until Page Contains Element    link=Loan Types    ${Timeout}    Manage Loan Type Tab is not displayed on the page.
+    Click Element    link=Loan Types
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Loan Type    ${Timeout}    Manage Loan Type Page not loaded
+    Sleep    1
+
+fillLoanInformation
+    [Arguments]    ${Name}    ${LoanType}    ${Min}    ${Max}    ${Status}
+    [Documentation]    This keyword is used to fill required fields on Add New Loan Page
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New Type page not loaded properly
+    Sleep    1
+    Focus    id=name
+    Input Text    id=name    ${Name}
+    Focus    id=enabled
+    Run Keyword If    '${Status}'=='Enabled'    Select Checkbox    id=enabled
+    Sleep    2
+    Focus    id=application_control
+    Run Keyword If    '${LoanType}'=='1'    Select From List By Index    id=application_control    1
+    Run Keyword If    '${LoanType}'!='1'    Select From List    id=application_control    ${LoanType}
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    id=core_code
+    Run Keyword If    '${V1}'=='True'    Focus    id=core_code
+    Run Keyword If    '${V1}'=='True'    Input Text    id=core_code    1
+    Sleep    1
+    Focus    id=selected_purposes1
+    Select Checkbox    id=selected_purposes1
+    @{InitialRole}=    Get List Items    id=initial_rule
+    Select From List    id=initial_rule    @{InitialRole}[1]
+    Sleep    1
+    Focus    id=default_term
+    Input Text    id=default_term    5
+    Focus    id=min_loan_amount
+    Input Text    id=min_loan_amount    ${Min}
+    Focus    id=max_loan_amount
+    Input Text    id=max_loan_amount    ${Max}
+    @{Score}=    Get List Items    id=active_score_model
+    Select From List    id=active_score_model    @{Score}[1]
+    @{Model}=    Get List Items    id=active_score_model_option_id
+    Select From List    id=active_score_model_option_id    @{Model}[1]
+    @{CreditTier}=    Get List Items    id=credit_tier_set
+    Select From List    id=credit_tier_set    @{CreditTier}[1]
+    @{RateTable}=    Get List Items    id=rate_table
+    Select From List    id=rate_table    @{RateTable}[1]
+    Focus    css=a.btn.btn-success
+    Click Element    css=a.btn.btn-success
+    Sleep    2
+
+fillRequiredFieldsOnPrimaryApplicantPage
+    [Documentation]    This keword is used to fill required fileds on Page
+    Execute Javascript    window.focus();
+    Focus    id=first_name_
+    ${FirstName}=    Generate Random String    5    [LETTERS]
+    Input Text    id=first_name_    QA_${FirstName}
+    ${LastName}=    Generate Random String    5    [LETTERS]
+    Input Text    id=last_name_    ${LastName}
+    ${NN}=    Generate Random String    2    [NUMBERS]
+    Input Text    id=dob_    10/10/1999
+    ${SSN}=    Generate Random String    10    [NUMBERS]
+    Input Text    id=ssn_    ${SSN}
+    Select From List    id=identification_type_    US Passport
+    Select From List    id=id_issuer_    AL
+    ${Number}=    Generate Random String    10    [NUMBERS]
+    Focus    id=id_number_
+    Input Text    id=id_number_    ${Number}
+    Focus    id=id_expire_dt_
+    Input Text    id=id_expire_dt_    10/10/2020
+    Focus    id=main_phone_
+    Input Text    id=main_phone_    9999999999
+    Sleep    1
+
+goApprovalLimitGroupPage
+    [Documentation]    This keyword is used to navigate Manage Approval Limits Group \ Page
+    Sleep    2
+    Wait Until Page Contains Element    link=Admin    ${Timeout}    Admin Link not appear on the page
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=User Administration    ${Timeout}    User Admminstration section not appear on page
+    Click Element    link=User Administration
+    Sleep    2
+    Wait Until Page Contains Element    link=Approval Limit Groups    ${Timeout}    Manage Approval Limit Groups link not appear on page
+    Click Element    link=Approval Limit Groups
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Approval Limit Group    ${Timeout}    Manage Approval Limit Groups page not loaded properly
+    Element Text Should Be    css=h1.subheading    Manage Approval Limit Groups    Manage Approval Limit Groups \ link not functioning properly

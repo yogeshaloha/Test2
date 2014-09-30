@@ -1,0 +1,213 @@
+*** Settings ***
+Documentation     This suite contains the scripts of Debt Type under Application settings.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyDebtTypesLink
+    [Documentation]    This script verifies the Debt type link under Application settings tab.
+    Focus    link=Admin
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Debt Types    ${Timeout}    Debt Types link is not displayed in the "Application settings" tab
+    Page Should Contain Element    link=Debt Types    Debt Types link is not displayed in the "Application settings" tab
+
+verifyDebtTypesButton
+    [Documentation]    This script verifies the Debt type button under Application settings tab.
+    Focus    link=Admin
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Debt Types    ${Timeout}    Debt Types button \ is not displayed in the "Application settings" tab
+    Page Should Contain Element    link=Debt Types    Debt Types button is not displayed in the "Application settings" tab
+
+toVerifyTheDebtTypesLinkRedirection
+    [Documentation]    This script verifies the navigation of Debt Type link.
+    Focus    link=Admin
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Debt Types    ${Timeout}    Debt Types button is not displayed in the "Application settings" tab
+    Page Should Contain Element    link=Debt Types    Debt Types button is not displayed in the "Application settings" tab
+    Click Element    link=Debt Types
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Debt Types page not loaded properly
+
+verifyUIOfManageDebtTypesPage
+    [Documentation]    This script verifies the UI of Manage Debt Types page.
+    navigateToManageDebtTypesPage
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Manage Debt Types header not present on Manage Debt Type page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Debt Types    Manage Debt Types has invalid text on Manage Debt Type page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_debt_type']/table/thead/tr/th    Debt Type column not present on Manage Debt Type page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_debt_type']/table/thead/tr/th    Debt Type    Debt Type column has invalid text on Manage Debt Type page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_debt_type']/table/thead/tr/th[2]    Status column not present on Manage Debt Type page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_debt_type']/table/thead/tr/th[2]    Status    Status column has invalid text on Manage Debt Type page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Textfield    id=debt_type_name_    Debt type text box not present on Manage Debt Type page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    id=debt_type_enabled_    Enabled check box not present on Manage Debt Type page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add button not present on Manage Debt Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}
+    @{Messages}=    Create List    Manage Debt Types header not present on Manage Debt Type page    Manage Debt Types has invalid text on Manage Debt Type page    Debt Type column not present on Manage Debt Type page    Debt Type column has invalid text on Manage Debt Type page    Status column not present on Manage Debt Type page
+    ...    Status column has invalid text on Manage Debt Type page    Debt type text box not present on Manage Debt Type page    Enabled check box not present on Manage Debt Type page    Add button not present on Manage Debt Type page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDefaultValues
+    [Documentation]    This script verifies the Default values on Manage debt Types page.
+    navigateToManageDebtTypesPage
+    Sleep    1
+    ${DebtTypeWatermarktext}=    Get Element Attribute    id=debt_type_name_@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Debt Type    ${DebtTypeWatermarktext}    Debt Type text box has invalid watermark text
+    ${V2}=    Run Keyword And Return Status    Checkbox Should Be Selected    id=debt_type_enabled_
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Debt Type text box has invalid watermark text    Enabled check box is not selected by default on Manage Debt Types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewDebtTypeEnabled
+    [Documentation]    This script verifies the Newly enabled added Debt Type.
+    navigateToManageDebtTypesPage
+    Sleep    1
+    ${DebtTypeName}=    Generate Random String    7    [LETTERS]
+    addNewDebtType    ${DebtTypeName}    Enabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${DebtTypeName}']    Newly added Debt Type not displayed
+
+addNewDebtTypeDisabled
+    [Documentation]    This script verifies the Newly disabled added Debt Type.
+    navigateToManageDebtTypesPage
+    Sleep    1
+    ${DebtTypeName}=    Generate Random String    7    [LETTERS]
+    addNewDebtType    ${DebtTypeName}    Disabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${DebtTypeName}']    Newly added Debt Type not displayed
+
+verifyBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation messages.
+    navigateToManageDebtTypesPage
+    Sleep    1
+    addNewDebtType    ${EMPTY}    ${EMPTY}
+    Comment    Blank field validation message for debt type
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Debt Type validation message not appear on Manage Debt Types page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty debt Type has invalid characters on Manage debt Types page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Empty Debt Type validation message not appear on Manage Debt Types page    This field is required. message for the Empty debt Type has invalid characters on Manage debt Types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addDebtTypeUniqueNameValidation
+    [Documentation]    This script verifies the unique debt type name validation on Manage Debt Type page.
+    navigateToManageDebtTypesPage
+    Sleep    1
+    ${DebtTypeName}=    Generate Random String    7    [LETTERS]
+    addNewDebtType    ${DebtTypeName}    Enabled
+    Sleep    1
+    addNewDebtType    ${DebtTypeName}    Enabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Unique Debt Type Name validation message not appear on Manage Debt Types page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message for the Unique debt Type Name has invalid characters on Manage debt Types page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique Debt Type Name validation message not appear on Manage Debt Types page    This field must be unique. message for the Unique debt Type Name has invalid characters on Manage debt Types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedEnabledDebtTypeInApplicationPage
+    [Documentation]    This script add enabled debt type and verifies it on New application page.
+    navigateToManageDebtTypesPage
+    Sleep    1
+    ${DebtTypeName}=    Generate Random String    7    [LETTERS]
+    addNewDebtType    ${DebtTypeName}    Enabled
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${DebtTypeName}']    Newly added Debt Type not displayed
+    toFillApplicationForm
+    @{AllTypes}=    Get List Items    name=-1_additional_debt_debtType
+    ${V2}=    Run Keyword And Return Status    Should Contain    ${AllTypes}    ${DebtTypeName}    Added Enabled Debt \ Type name is not displayed on the Primary Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${DebtTypeName}    1
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Newly added Debt Type not displayed    Added Enabled Debt \ Type name is not displayed on the Primary Applicant page    Added debt Type name is displayed more than one time on the Primary Applicant page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedDisabledDebtTypeInApplicationPage
+    [Documentation]    This script add disabled debt type and verifies it on New application page.
+    navigateToManageDebtTypesPage
+    Sleep    1
+    ${DebtTypeName}=    Generate Random String    7    [LETTERS]
+    addNewDebtType    ${DebtTypeName}    Disabled
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${DebtTypeName}']    Newly added Debt Type not displayed
+    toFillApplicationForm
+    @{AllTypes}=    Get List Items    name=-1_additional_debt_debtType
+    ${V2}=    Run Keyword And Return Status    Should Not Contain    ${AllTypes}    ${DebtTypeName}    Added Disabled Debt \ Type name is displayed on the Primary Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${DebtTypeName}    0
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Newly added Debt Type not displayed    Added Disabled Debt \ Type name is displayed on the Primary Applicant page    Added debt Type name is displayed more than one time on the Primary Applicant page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+navigateToManageDebtTypesPage
+    [Documentation]    This keyword navigates to Manage Debt Type page.
+    Focus    link=Admin
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Debt Types    ${Timeout}    Debt Types link is not displayed in the "Application settings" tab
+    Page Should Contain Element    link=Debt Types    Debt Types link is not displayed in the "Application settings" tab
+    Click Element    link=Debt Types
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Debt Types page not loaded properly
+
+addNewDebtType
+    [Arguments]    ${DebtType}    ${Status}
+    [Documentation]    This keyword use to add the debt type.
+    Focus    id=debt_type_name_
+    Input Text    id=debt_type_name_    ${DebtType}
+    Sleep    1
+    Run Keyword If    '${Status}'=='Disabled'    Unselect Checkbox    name=enabled
+    Sleep    1
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    1
+
+toFillApplicationForm
+    [Documentation]    This keyword fill the required fields on \ Application setup page.
+    Sleep    1
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Sleep    1
+    Page Should Contain Element    link=New Application    New Application link is not present.
+    Click Element    link=New Application
+    Sleep    2
+    Page Should Contain Element    name=loan_type    Loan Type drop down is not present on first page of New application.
+    @{LoanType}=    Get List Items    name=loan_type
+    Select From List    name=loan_type    @{LoanType}[1]
+    Page Should Contain Element    id=request_amount    Request Amount text box is not present on first page of New Application.
+    Input Text    id=request_amount    100
+    Page Should Contain Textfield    id=request_term    Request Term text box is not present on first page of New Application.
+    Click Element    name=continue
+    Sleep    1
+    Wait Until Page Contains Element    id=search_ssn    ${Timeout}    Primary Applicant page not loaded properly
+    Focus    //input[@value=' Additional Debt']
+    Click Element    //input[@value=' Additional Debt']
+    Sleep    2

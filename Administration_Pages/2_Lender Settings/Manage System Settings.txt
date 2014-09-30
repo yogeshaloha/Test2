@@ -1,0 +1,225 @@
+*** Settings ***
+Documentation     This suite contains the scripts for System Settings functionality.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifySystemSettingsLink
+    [Documentation]    This script verifies the System Settings link under Lender Settings tab.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Lender Settings \ section not appear on page
+    Click Element    //div[@id='controller_lender_settings']/div/a[2]/i
+    Sleep    1
+    Wait Until Page Contains Element    link=System Settings    ${Timeout}    System Settings link under Lender Settings \ page not appeared \ on Admin Page
+    Page Should Contain Element    link=System Settings    System Settings link under Lender Settings \ page not appeared \ on Admin Page
+
+verifySystemSettingButton
+    [Documentation]    This script verifies the System Settings button on Lender Settings Dashboard.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Manage System Settings    ${Timeout}    Manage System Settings button not appears on the Lender settings page
+    Page Should Contain Element    link=Manage System Settings    Manage System Settings button not present on Lender Settings Dashboard page
+
+verifySystemSettingsLinkRedirection
+    [Documentation]    This script verifies the redirection of System Settings link.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=System Settings    ${Timeout}    System Settings link not appears on the Lender settings page
+    Focus    link=System Settings
+    Click Element    link=System Settings
+    Sleep    2
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    Manage System Settings page not opened after clicking on System Settings link
+
+verifyUIOfManageSystemSettingsPage
+    [Documentation]    This script verifies the UI of Manage System Settings page.
+    navigateToManageSystemSettingsPage
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Manage System Settings header not present on Manage System Settings page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage System Settings    Manage System Settings \ header has invalid text on Manage System Settings page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='systemSettings']/div/h3    System Email Settings label not present on Manage System Settings page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemSettings']/div/h3    System Email Settings    System Email Settings label has invalid text on Manage System Settings page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemSettings']/div[2]/div/div    System Email:    System Email label has invalid text on Manage System Settings page \
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemSettings']/div[2]/div[2]/div    System Name:    System Name label has invalid text on Manage System Settings page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='systemTimeout']/div/h3    System Timeout Settings label not present on Manage System Settings page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemTimeout']/div/h3    System Timeout Settings    System Timeout Settings label has invalid text on Manage System Settings page
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemTimeout']/div[2]/div/div    Logout for inactivity after:    Logout for inactivity after label has invalid text on Manage System Settings page
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='initialLoanId']/div/h3    Initial Loan ID Number label not present on Manage System Settings page
+    ${V11}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='initialLoanId']/div/h3    Initial Loan ID Number    Initial Loan ID Number label has invalid \ text on Manage System Settings page
+    ${V12}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='initialLoanId']/div[2]/div/div    Starting point for Loan IDs:    Starting point for Loan IDs label has invalid text on Manage System Settings page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}
+    @{Messages}=    Create List    Manage System Settings header not present on Manage System Settings page    Manage System Settings \ header has invalid text on Manage System Settings page    System Email Settings label not present on Manage System Settings page    System Email Settings label has invalid text on Manage System Settings page    System Email label has invalid text on Manage System Settings page \
+    ...    System Name label has invalid text on Manage System Settings page    System Timeout Settings label not present on Manage System Settings page    System Timeout Settings label has invalid text on Manage System Settings page    Logout for inactivity after label has invalid text on Manage System Settings page    Initial Loan ID Number label not present on Manage System Settings page    Initial Loan ID Number label has invalid \ text on Manage System Settings page
+    ...    Starting point for Loan IDs label has invalid text on Manage System Settings page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyEditLinkOnManagesystemSettingsPage
+    [Documentation]    This script verifies the Edit button functionality.
+    navigateToManageSystemSettingsPage
+    Sleep    1
+    Page Should Contain Element    link=Edit    Edit Link not present on Manage system settings page
+    Focus    link=Edit
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    id=email    ${Timeout}    Manage System Settings(Edit) page not opened after clicking on edit link button
+
+verifyUIOfManageSystemSettings(Edit)Page
+    [Documentation]    This script verifies the UI element of Manage System Settings page after clicking on Edit button.
+    navigateToManageSystemSettingsPage
+    Sleep    1
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    id=email    ${Timeout}    Manage System Settings(Edit) page not opened after clicking on edit link button
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Manage System Settings header not present on Manage System Settings(Edit) page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage System Settings    Manage System Settings header has invalid text on Manage System Settings(Edit) page
+    Comment    UI Element of System Email Settings section
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='systemEmail']/fieldset/legend    System Email Settings label \ not present on Manage System Settings(Edit) page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemEmail']/fieldset/legend    System Email Settings    System Email Settings label has invalid text on Manage System Settings(Edit) page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemEmail']/fieldset/div/div/label    System Email*    System Email label has invalid text on Manage System Settings(Edit) page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    id=email    System Email text box not present on Manage System Settings(Edit) Page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemEmail']/fieldset/div[2]/div/label    System Name*    System Name label has invalid text on Manage System Settings(Edit) page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Textfield    id=name    System Name \ text box not present on Maage System Settings(Edit) Page
+    Comment    UI Element of System Timeout Setting section
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    xpath=(//div[@id='systemEmail']/fieldset/legend)[2]    System Timeout Setting \ label \ not present on Manage System Settings(Edit) page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    xpath=(//div[@id='systemEmail']/fieldset/legend)[2]    System Timeout Setting    System Timeout Setting label has invalid text on Manage System Settings(Edit) page
+    ${V11}=    Run Keyword And Return Status    Element Text Should Be    xpath=(//div[@id='systemEmail']/fieldset/div/div/label)[3]    Logout for inactivity after    Logout for inactivity after label has invalid text on Manage System Settings(Edit) page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Textfield    id=timeout    Logout for inactivity after \ text box not present on Manage System Settings(Edit) Page
+    ${sentence}=    Evaluate    ' \ 30 min max'.strip()
+    ${V13}=    Run Keyword And Return Status    Should Be Equal As Strings    ${sentence}    30 min max    30 min max label has invalid text on Manage System Settings(Edit) page
+    Comment    UI Element of Initial Loan ID section
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    xpath=(//div[@id='systemEmail']/fieldset/legend)[3]    Initial Loan ID \ \ label \ not present on Manage System Settings(Edit) page
+    ${V15}=    Run Keyword And Return Status    Element Text Should Be    xpath=(//div[@id='systemEmail']/fieldset/legend)[3]    Initial Loan ID    Initial Loan ID label has invalid text on Manage System Settings(Edit) page
+    ${V16}=    Run Keyword And Return Status    Element Text Should Be    xpath=(//div[@id='systemEmail']/fieldset/div/div/label)[4]    The first ID # to assign a loan    The first ID # to assign a loan label has invalid text on Manage System Settings(Edit) page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Textfield    id=initial_loan_id    The first ID # to assign a loan text box not present on Manage System Settings(Edit) Page
+    ${Test}=    Get Text    //div[@id='systemEmail']/fieldset/div/div[2]/div/div/small/em
+    ${Length}=    Get Length    ${Test}
+    ${L}=    Get Length    \ Must be at least 1009 IF you change it!
+    ${V18}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemEmail']/fieldset/div/div[2]/div/div/small/em    \ \ Must be at least 1009 IF you change it!    Must be at least 1009 IF you change it label has invalid text on Manage System Settings(Edit) page
+    ${V19}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemEmail']/fieldset/div/div[2]/div/div/small/span    (Original value: 1000)    Original value: 1000 \ abel has invalid text on Manage System Settings(Edit) page
+    ${V20}=    Run Keyword And Return Status    Page Should Contain Element    id=cancel    Cancel Button not present on Manage System Settings(Edit) page
+    ${V21}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='submit']    Save System Settings button \ not present on Manage System Settings(Edit) page
+    ${V22}=    Run Keyword And Return Status    Page Should Contain Element    link=Cancel    Cancel link button not present on Manage System Settings(Edit) page
+    ${V23}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='stickyWrapper']/div/a[2]/span/i    Save link not present on Manage System Settings(Edit) page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}    ${V21}    ${V22}    ${V23}
+    @{Messages}=    Create List    Manage System Settings header not present on Manage System Settings(Edit) page    Manage System Settings header has invalid text on Manage System Settings(Edit) page    System Email Settings label \ not present on Manage System Settings(Edit) page    System Email Settings label has invalid text on Manage System Settings(Edit) page    System Email label has invalid text on Manage System Settings(Edit) page
+    ...    System Email text box not present on Manage System Settings(Edit) Page    System Name label has invalid text on Manage System Settings(Edit) page    System Name \ text box not present on MAnage System Settings(Edit) Page    System Timeout Setting \ label \ not present on Manage System Settings(Edit) page    System Timeout Setting label has invalid text on Manage System Settings(Edit) page    Logout for inactivity after label has invalid text on Manage System Settings(Edit) page
+    ...    Logout for inactivity after \ text box not present on Manage System Settings(Edit) Page    30 min max label has invalid text on Manage System Settings(Edit) page    Initial Loan ID \ \ label \ not present on Manage System Settings(Edit) page    Initial Loan ID label has invalid text on Manage System Settings(Edit) page    The first ID # to assign a loan label has invalid text on Manage System Settings(Edit) page    The first ID # to assign a loan text box not present on Manage System Settings(Edit) Page
+    ...    Must be at least 1009 IF you change it label has invalid text on Manage System Settings(Edit) page    (Original value: 1000) label has invalid text on Manage System Settings(Edit) page    Cancel Button not present on Manage System Settings(Edit) page    Save System Settings button \ not present on Manage System Settings(Edit) page    Cancel link button not present on Manage System Settings(Edit) page    Save link not present on Manage System Settings(Edit) page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyBlankFieldValidationOnManageSystemSettings(Edit)Page
+    [Documentation]    This script verifies the Balnk field validation on Manage System Settings(Edit) page.
+    navigateToManageSystemSettingsPage
+    Sleep    1
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    id=email    ${Timeout}    Manage System Settings page not opened after clicking on edit link button
+    ${EmailID}=    Generate Random String    7    [LETTERS]
+    ${FormName}=    Generate Random String    7    [LETTERS]
+    fillTheManageSystemSettings(Edit)Page    ${EMPTY}    ${EMPTY}    ${EMPTY}
+    Sleep    1
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Blank field validation message for loan ID is not displayed
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    Initial Loan ID must be at least 1009.    Initial Loan ID must be at least 1009. message has invalid text on Manage System Settings(Edit) page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Blank field validation message for loan ID is not displayed    Initial Loan ID must be at least 1009. message has invalid text on Manage System Settings(Edit) page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifySuccessfullUpdatedDetailsNotification
+    [Documentation]    This script verifies the updated details on Manage System Settings page.
+    navigateToManageSystemSettingsPage
+    Sleep    1
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    id=email    ${Timeout}    Manage System Settings page not opened after clicking on edit link button
+    ${EmailID}=    Generate Random String    7    [LETTERS]
+    ${FormName}=    Generate Random String    7    [LETTERS]
+    fillTheManageSystemSettings(Edit)Page    ${EmailID}@${EmailID}.com    ${FormName}    1000
+    Sleep    1
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    Details not updated successfully
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemSettings']/div[2]/div/div[2]    ${EmailID}@${EmailID}.com    Displays Incorrect Email ID on Manage System Settings page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemSettings']/div[2]/div[2]/div[2]    ${FormName}    Displays Incorrect System Name on Manage System Settings page
+    ${LoanIDNum}=    Evaluate    "1000".replace('(','')
+    ${V3}=    Run Keyword And Return Status    Should Be Equal    ${LoanIDNum}    1000    Displays Incorrect Loan ID on Manage System Settings page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Displays Incorrect Email ID on Manage System Settings page    Displays Incorrect System Name on Manage System Settings page    Displays Incorrect Loan ID on Manage System Settings page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyCancelButtonFunctionality
+    [Documentation]    This script verifies the Cancel button functionality.
+    navigateToManageSystemSettingsPage
+    Sleep    1
+    ${ExistingEmail}=    Get Text    //div[@id='systemSettings']/div[2]/div/div[2]
+    ${ExistingNamel}=    Get Text    //div[@id='systemSettings']/div[2]/div[2]/div[2]
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    id=email    ${Timeout}    Manage System Settings page not opened after clicking on edit link button
+    ${EmailID}=    Generate Random String    7    [LETTERS]
+    ${FormName}=    Generate Random String    7    [LETTERS]
+    fillTheManageSystemSettings(Edit)Page    ${EmailID}@${EmailID}.com    ${FormName}    1000
+    Sleep    1
+    Focus    link=Cancel
+    Click Element    link=Cancel
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    Details not updated successfully
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemSettings']/div[2]/div/div[2]    ${ExistingEmail}    Email ID updated after clicking on Cancel button
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='systemSettings']/div[2]/div[2]/div[2]    ${ExistingNamel}    System Name updated after clicking on Cancel button
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Email ID updated after clicking on Cancel button    System Name updated after clicking on Cancel button
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+navigateToManageSystemSettingsPage
+    [Documentation]    This keyword navigates to the Manage System Settings page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=System Settings    ${Timeout}    Manage System Settings link not appears on the Lender settings page
+    Focus    link=System Settings
+    Click Element    link=System Settings
+    Sleep    2
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    Manage System Settings page not opened after clicking on System Settings link
+
+fillTheManageSystemSettings(Edit)Page
+    [Arguments]    ${Email}    ${Name}    ${LoanID}
+    [Documentation]    This script fill the required fields on Manage System Settings(Edit) page.
+    Sleep    1
+    Focus    id=email
+    Input Text    id=email    ${Email}
+    Sleep    1
+    Focus    id=name
+    Input Text    id=name    ${Name}
+    Sleep    1
+    Focus    id=initial_loan_id
+    Input Text    id=initial_loan_id    ${LoanID}
+    Sleep    1

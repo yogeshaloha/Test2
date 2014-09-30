@@ -1,0 +1,355 @@
+*** Settings ***
+Documentation     This suite contains all the scenarios of Manage Asset Types page.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyAssetTypesLink
+    [Documentation]    This script verifies the Manage Asset Type link under Admin.
+    Focus    xpath=(//a[contains(text(),'Admin')])[2]
+    Click Element    xpath=(//a[contains(text(),'Admin')])[2]
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Asset Types    ${Timeout}    Asset Types \ link is not displayed in the "Application settings" tab
+    Page Should Contain Element    link=Asset Types    Asset Types link is not displayed in the "Application settings" tab
+
+verifyAssetTypesButton
+    [Documentation]    This script verifies the Manage Asset Type button under Application Settings tab.
+    Focus    xpath=(//a[contains(text(),'Admin')])[2]
+    Click Element    xpath=(//a[contains(text(),'Admin')])[2]
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Manage Asset Types    ${Timeout}    Manage Asset Types button \ \ is not displayed in the "Application settings" tab
+    Page Should Contain Element    link=Manage Asset Types    Manage Asset Types \ Button is not displayed in the "Application settings" tab
+
+toVerifyTheAssetTypesLinkRedirection
+    [Documentation]    This script navigate to Manage Asset Types Page.
+    Focus    xpath=(//a[contains(text(),'Admin')])[2]
+    Click Element    xpath=(//a[contains(text(),'Admin')])[2]
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Asset Types    ${Timeout}    Asset Types \ Button is not displayed in the "Application settings" tab
+    Click Element    link=Asset Types
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='manage_asset_types']/table/thead/tr/th    ${Timeout}    Asset Types Page not loaded properly
+
+toVerifyUIOfManageAssetTypesPage
+    [Documentation]    This script verifies the all UI element of \ Manage Asset Types Page.
+    goToManageAssetTypesPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    General Application Settings - Manage Asset Types header not present on Manage Asset Types page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Asset Types    Manage Asset Types header has invalid text on Manage Asset Types page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_asset_types']/table/thead/tr/th    Asset Type Column \ not present on Manage Asset Types page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_asset_types']/table/thead/tr/th    Asset Type    Asset Type Column has invalid text on Manage Asset Types page \
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_asset_types']/table/thead/tr/th[2]    Liquid Asset? Column not present on Manage Asset Types page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_asset_types']/table/thead/tr/th[2]    Liquid Asset?    Liquid Asset? Column has invalid text on Manage Asset Tpes page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_asset_types']/table/thead/tr/th[3]    Status Column not present on Manage Asset Types page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_asset_types']/table/thead/tr/th[3]    Status    Status Column has invalid text on Manage Asset Types page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    id=manage_asset_types    Last Update label not present on Manage Asset Types Page
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Textfield    name=name    Asset Type text field not present on Manage Asset types page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    name=isLiquid    Is Liquid check box not present on Manage Asset Types page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    //td[3]/label    Enabled check box not present on Manage Asset types page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add button not present on Manage Asset Types Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}
+    @{Messages}=    Create List    General Application Settings - Manage Asset Types header not present on Manage Asset Types page    General Application Settings - Manage Asset Types header has invalid text on Manage Asset Types page    Asset Type Column \ not present on Manage Asset Types page    Asset Type Column has invalid text on Manage Asset Types page \    Liquid Asset? Column not present on Manage Asset Types page
+    ...    Liquid Asset? Column has invalid text on Manage Asset Tpes page    Status Column not present on Manage Asset Types page    Status Column has invalid text on Manage Asset Types page    Last Update label not present on Manage Asset Types Page    Asset Type text field not present on Manage Asset types page    Is Liquid check box not present on Manage Asset Types page
+    ...    Enabled check box not present on Manage Asset types page    Add button not present on Manage Asset Types Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDefaultValues
+    [Documentation]    This script verifies the default values of all fields on Manage Asset Types Page.
+    goToManageAssetTypesPage
+    ${AssetTypeWaterMarkText}    Get Element Attribute    id=asset_type_name_@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Asset Type    ${AssetTypeWaterMarkText}    Asset Type text box has invalid watermark text
+    ${V2}=    Run Keyword And Return Status    Checkbox Should Not Be Selected    name=isLiquid
+    ${V3}=    Run Keyword And Return Status    Checkbox Should Be Selected    name=enabled
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Asset Type text box has invalid watermark text    Is Liquid check box is selected by default on Manage Asset types page    Enabled check box is not selected by default on Manage Asset types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewAssetTypeEnabled
+    [Documentation]    This script add the new Asset Type with enabled status on \ Manage Asset Types Page.
+    goToManageAssetTypesPage
+    ${AssetTypeName}=    Generate Random String    7    [LETTERS]
+    addNewAssetType    ${AssetTypeName}    Yes    Enabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${AssetTypeName}']    Newly added Asset Type not displayed
+
+addNewAssetTypeDisabled
+    [Documentation]    This script add the new Asset Type with disabled status on \ Manage Asset Types Page.
+    goToManageAssetTypesPage
+    ${AssetTypeName}=    Generate Random String    7    [LETTERS]
+    addNewAssetType    ${AssetTypeName}    Yes    Disabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${AssetTypeName}']    Newly added Asset Type not displayed
+
+verifyBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation \ on \ Manage Asset Types Page.
+    goToManageAssetTypesPage
+    Sleep    1
+    addNewAssetType    ${EMPTY}    ${EMPTY}    ${EMPTY}
+    Comment    Blank field validation Error message for Asset Type text field
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Asset Type validation message not appear on Manage Asset Types page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Asset Type has invalid characters on Manage Asset Types page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Empty Asset Type validation message not appear on Manage Asset Types page    This field is required. message for the Empty Asset Type has invalid characters on Manage Asset Types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addAssetTypeUniqueNameValidation
+    [Documentation]    This script verifies the unique Asset Type name validation \ on \ Manage Asset Types Page.
+    goToManageAssetTypesPage
+    ${AssetTypeName}=    Generate Random String    7    [LETTERS]
+    addNewAssetType    ${AssetTypeName}    Yes    Enabled
+    Sleep    1
+    addNewAssetType    ${AssetTypeName}    Yes    Enabled
+    Sleep    1
+    Page Should Contain Element    css=small.error    Unique Asset Type validation message not present on Manage Asset Types page
+    Element Text Should Be    css=small.error    This field must be unique.    Message 'This field must be unique.' has invalid text on \ Manage Asset Types page
+
+verifyTheEditButtonClick
+    [Documentation]    This script verifies the Edit button functionality \ on \ Manage Asset Types Page.
+    goToManageAssetTypesPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Asset Type not opened
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    name=name    Asset Type name text box not present for the edited record
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    css=label    IsLiquid checkbox not present for the edited record
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    css=td.center.thirdCol > label    Enabled check box not present for the edited record
+    ${V5}=    Run Keyword And Return Status    Element Should Be Visible    //button[@type='submit']    Save link not appear on the Edit Asset Type page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='submit']    Save link not present on the Edit Asset Type page
+    ${V7}=    Run Keyword And Return Status    Element Should Be Visible    xpath=(//button[@type='button'])[2]    Close link not appear on the Edit \ Asset Type page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    xpath=(//button[@type='button'])[2]    X("Close") link not present on the Edit Asset Type \ page
+    ${V9}=    Run Keyword And Return Status    Element Should Not Be Visible    //tr[1]/td[4]/form/button    Edit link button present on Edit \ Asset Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}
+    @{Messages}=    Create List    Edit button not found for the first row in the grid    Asset Type name text box not present for the edited record    IsLiquid checkbox not present for the edited record    Enabled check box not present for the edited record    Save link not appear on the Edit Asset Type page
+    ...    Save link not present on the Edit Asset Type page    Close link not appear on the Edit \ Asset Type page    X("Close") link not present on the Edit Asset Type \ page    Edit link button present on Edit \ Asset Type page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editAssetTypeToolTipsOnControls
+    [Documentation]    This script verifies the tool tips of all controls on Edit mode of Manage Asset Types Page.
+    goToManageAssetTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Comment    Taking Tool Tip of Edit Button
+    ${EditButtonToolTip}=    Get Element Attribute    //tr[1]/td[4]/form/button@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${EditButtonToolTip}    Edit Asset Type    Edit button has invalid tool tip
+    Mouse Over    //tr[1]/td[4]/form/button
+    Focus    //tr[1]/td[4]/form/button
+    Sleep    2
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened properly
+    Comment    Taking Tool Tip of Save and Close button
+    ${SaveButtonToolTip}=    Get Element Attribute    //div[@id='manage_asset_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]@title
+    ${CancelButtonToolTip}=    Get Element Attribute    //div[@id='manage_asset_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button@title
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${SaveButtonToolTip}    Update Asset Type    Save button has invalid tool tip
+    Mouse Over    //div[@id='manage_asset_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CancelButtonToolTip}    Cancel    Cancel button has invalid tool tip
+    Mouse Over    //div[@id='manage_asset_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button
+    Sleep    2
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Edit button has invalid tool tip    Save button has invalid tool tip    Cancel button has invalid tool tip
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editAssetTypeWaterMarkText
+    [Documentation]    This script verifies the Watermark text of Asset Type text field on Edit mode of Manage Asset Types Page.
+    goToManageAssetTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Asset Type not opened
+    Input Text    name=name    ${EMPTY}
+    ${AssetTypeWaterMarkText}    Get Element Attribute    name=name@placeholder
+    Should Be Equal As Strings    ${AssetTypeWaterMarkText}    Asset Type    Asset Type text box has invalid watermark text at edit mode
+
+editAssetTypeNameDetails
+    [Documentation]    This script verifies the updated values on edit mode of Manage Asset Types Page.
+    goToManageAssetTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Asset Type not opened
+    Comment    Enter new details for existing Asset type
+    ${AssetTypeName}=    Generate Random String    7    [LETTERS]
+    Focus    name=name
+    Input Text    name=name    ${AssetTypeName}
+    Sleep    1
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    2
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values not saved properly
+    Element Text Should Be    //tr[1]/td    ${AssetTypeName}    Updated Asset Type \ name not displayed correctly
+
+editBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation on edit mode of \ Manage Asset Types Page.
+    goToManageAssetTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Asset Type \ not opened
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Updated values saved properly without giving error messages
+    Comment    Error Message for the Asset Type field
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Asset Type validation message not appear on the Manage Asset types Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Asset Type has invalid characters on Manage \ Asset types page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Empty Asset Type validation message not appear on the Manage Asset types Page    This field is required. message for the Empty Asset Type has invalid characters on Manage \ Asset types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+
+editAssetTypeCancelButtonFunctionality
+    [Documentation]    This script verifies the Cancel button functionality on edit mode of \ Manage Asset Types Page.
+    goToManageAssetTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${ExistingName}=    Get Text    //tr[1]/td
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Asset Type not opened
+    Comment    Enter the New Details in Asset Type fields
+    ${AssetTypeName}=    Generate Random String    7    [LETTERS]
+    Focus    name=name
+    Input Text    name=name    ${AssetTypeName}
+    Focus    xpath=(//button[@type='button'])[2]
+    Click Element    xpath=(//button[@type='button'])[2]
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values not saved properly
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${ExistingName}    Cancel button click update the Asset Type name value
+    ${V2}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='manage_asset_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    Save link present on the Asset Type page after clicking on the Cancel Edit button
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='manage_asset_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    Close link present on the Asset Type page after clicking on the Cancel Edit button
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Cancel button click update the Asset Type name value    Save link present on the Asset Type page after clicking on the Cancel Edit button    Close link present on the Asset Type page after clicking on the Cancel Edit button
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editAssetTypeUniqueNameValidation
+    [Documentation]    This script verifies the unique Asset Type name validation on Edit mode of \ Manage Asset Types Page.
+    goToManageAssetTypesPage
+    ${SecondName}=    Get Text    //tr[2]/td
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Asset Type not opened
+    Comment    Enter the New Details
+    Focus    name=name
+    Input Text    name=name    ${SecondName}
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Updated values/duplicate values saved without any error message
+    Page Should Contain Element    css=small.error    Unique name validation message not appear on the Page
+    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+
+verifyAddedEnabledAssetTypeInApplicationPage
+    [Documentation]    This script add the New Asset type with Enabled status and verifies that Asset type on New Application page.
+    goToManageAssetTypesPage
+    ${AssetTypeName}=    Generate Random String    7    [LETTERS]
+    addNewAssetType    ${AssetTypeName}    Yes    Enabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${AssetTypeName}']    Newly added Asset Type not displayed
+    toFillApplicationForm
+    @{AllTypes}=    Get List Items    name=-1_asset_type
+    ${V2}=    Run Keyword And Return Status    Should Contain    ${AllTypes}    ${AssetTypeName}    Added Enabled Asset Type name is not displayed on the Primary Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${AssetTypeName}    1
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Newly added Asset Type not displayed    Added Enabled Asset Type name is not displayed on the Primary Applicant page    Added Asset Type name is displayed more than one time on the Primary Applicant page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedDisabledAssetTypeInApplicationPage
+    [Documentation]    This script add the New Asset type with disabled status and verifies that Asset type on New Application page.
+    goToManageAssetTypesPage
+    ${AssetTypeName}=    Generate Random String    7    [LETTERS]
+    addNewAssetType    ${AssetTypeName}    Yes    Disabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${AssetTypeName}']    Newly added Asset Type not displayed
+    toFillApplicationForm
+    @{AllTypes}=    Get List Items    name=-1_asset_type
+    ${V2}=    Run Keyword And Return Status    Should Not Contain    ${AllTypes}    ${AssetTypeName}    Added Disabled Asset Type name is \ displaying on the Primary Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${AssetTypeName}    0
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Newly added Asset Type not displayed    Added Disabled Asset Type name is \ displaying on the Primary Applicant page    Added Disabled Asset Type name is \ displaying on the Primary Applicant page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+goToManageAssetTypesPage
+    [Documentation]    This keyword navigate to Manage Asset type page.
+    Focus    xpath=(//a[contains(text(),'Admin')])[2]
+    Click Element    xpath=(//a[contains(text(),'Admin')])[2]
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Asset Types    ${Timeout}    Asset Types \ Button is not displayed in the "Application settings" tab
+    Click Element    link=Asset Types
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='manage_asset_types']/table/thead/tr/th    ${Timeout}    Manage Asset Types Page not loaded properly
+
+addNewAssetType
+    [Arguments]    ${Name}    ${IsLiquid}    ${Status}
+    [Documentation]    This keyword add new asset type on Manage Asset Type page.
+    Focus    id=asset_type_name_
+    Input Text    id=asset_type_name_    ${Name}
+    Run Keyword If    '${IsLiquid}'=='Yes'    Select Checkbox    name=isLiquid
+    Sleep    1
+    Run Keyword If    '${Status}'=='Disabled'    Unselect Checkbox    name=enabled
+    Sleep    1
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    1
+
+toFillApplicationForm
+    [Documentation]    This keyword fill the new application form.
+    sleep    1
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    sleep    1
+    Page Should Contain Element    link=New Application    New Application link is not present.
+    Click Element    link=New Application
+    Sleep    2
+    Page Should Contain Element    name=loan_type    Loan Type drop down is not present on first page of New application.
+    @{LoanType}=    Get List Items    name=loan_type
+    Select From List    name=loan_type    @{LoanType}[1]
+    Page Should Contain Element    id=request_amount    Request Amount text box is not present on first page of New Application.
+    Input Text    id=request_amount    100
+    Page Should Contain Textfield    id=request_term    Request Term text box is not present on first page of New Application.
+    Focus    id=request_term
+    Input Text    id=request_term    1
+    Click Element    name=continue
+    Sleep    1
+    Wait Until Page Contains Element    id=search_ssn    ${Timeout}    Primary Applicant page not loaded properly
+    Click Element    //div[@id='#']/div[6]/div/div/fieldset/div/div[2]/input
+    Sleep    1
+    Wait Until Page Contains Element    //div[6]/div/div/fieldset/table/thead/tr/th    ${Timeout}    Asset \ panel not opened on Primary Applicant Page

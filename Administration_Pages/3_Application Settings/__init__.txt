@@ -1,0 +1,11 @@
+*** Settings ***
+Documentation     This folders Contains the scripts related to the below functinnalities.
+...
+...               1. \ Manage Identification Types
+...               2. Manage Residence Types
+...               3. Manage Employment Types
+...               4. \ Manage Income Sources
+...               5. \ Manage Income Frequencies
+...               6. \ Manage Asset Types
+...               7. \ Manage Applicant Types
+...               8. \ Manage Prefix Types

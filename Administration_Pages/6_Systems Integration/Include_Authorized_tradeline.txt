@@ -1,0 +1,83 @@
+*** Settings ***
+Documentation     Include Authorized tradelines by configuration
+...
+...               Description:
+...
+...               Authorized tradelines are tradelines that are listed on an individuals credit report because they are authorized to use the credit line, but the individual is not financially responsible for payment on the account. \ A common example is a company card or a spouse added to an existing tradeline. \ Some lenders will want to count these tradelines while others will not. \ As an administrator, I want to be able to define whether or not authorized tradelines should be counted in calculations and ratios.
+...
+...
+...               New section under DMS settings:
+...               " Summary information"
+...
+...               New configuration in this section:
+...               When calculating summary information and ratios, trade lines that are listed as "Authorized User" should: \ be INCLUDED in the summary informaiton, NOT be included in the summary information.
+...
+...               Default to not include.
+...
+...               When set to not include, the summary information should exclude Authorized user tradelines.
+...
+...               Authorized users are determined by the ECOA codes as follows:
+...
+...               EFX \ DMS ECOA \ Text
+...               A \ A \ Authorized User – This is an authorized user of this account; another individual has contractual responsibility.
+...
+...
+...               TU Code \ DMS ECOA \ Text
+...
+...
+...
+...               A \ A \ Authorized spouse user: joint account in which either spouse is an authorized user, but has no joint contractual liability .
+...
+...
+...               XPN Code \ DMS Code \ Type \ \ Description
+...
+...
+...
+...               3 \ A \ Authorized User \ This individual is an authorized user of this account; another individual has contractual responsibility.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyNewSectionInDMSPage
+    [Documentation]    This script verifies "Summary Information" \ present on DMS Configuration page
+    goManageConfigurationPage
+    Sleep    2
+    Page Should Contain Element    xpath=(//div[@id='dms_connection_view']/div/h3)[2]    Summary Information not present on DMS Integration Settings \ \ page
+    Element Text Should Be    xpath=(//div[@id='dms_connection_view']/div/h3)[2]    Summary Information    Summary Information Section has invalid text on \ DMS Integration Settings \ \ page
+
+verifyTwoOptionsFromSummaryInformationSection
+    [Documentation]    This script verifies "Summary Information" \ section and its fields
+    goManageConfigurationPage
+    Wait Until Page Contains Element    link=Edit
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    id=dms_bureau_3
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='summary_information']/fieldset/legend    Summary Information Settings    Summary Information Settings section has invalid text on DMS Integration Settings (Edit) \ page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='summary_information']/fieldset/div/div/label    Authorized Tradeline Accounts\n *in credit calculations    Authorized Tradeline Accounts\n *in credit calculations label in \ Summary Information Settings section on DMS Integration Settings (Edit) \ page has invalid text
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='summary_information']/fieldset/div/div[2]/div/div/div    When calculating summary information and ratios, trade lines that are listed as "Authorized User" should:    Notification text has invalid text in \ Summary Information Settings section on DMS Integration Settings (Edit) \ page
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    name=include_authorized_accounts    be INCLUDED in the summary information radio button not present in \ Summary Information Settings section on DMS Integration Settings (Edit) \ page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    xpath=(//input[@name='include_authorized_accounts'])[2]    NOT be included in the summary information in \ Summary Information Settings section on DMS Integration Settings (Edit) \ page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='summary_information']/fieldset/div/div[2]/div/div/div[2]/label    be INCLUDED in the summary information    be INCLUDED in the summary information \ label ha invalid text in \ Summary Information Settings section on DMS Integration Settings (Edit) \ page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='summary_information']/fieldset/div/div[2]/div/div/div[3]/label    NOT be included in the summary information    NOT be included in the summary information label ha invalid text in \ Summary Information Settings section on DMS Integration Settings (Edit) \ page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}
+    @{Messages}=    Create List    Summary Information Settings section has invalid text on DMS Integration Settings (Edit) \ page    Authorized Tradeline Accounts\n *in credit calculations label in \ Summary Information Settings section on DMS Integration Settings (Edit) \ page has invalid text    Notification text has invalid text in \ Summary Information Settings section on DMS Integration Settings (Edit) \ page    be INCLUDED in the summary information radio button not present in \ Summary Information Settings section on DMS Integration Settings (Edit) \ page    NOT be included in the summary information in \ Summary Information Settings section on DMS Integration Settings (Edit) \ page
+    ...    be INCLUDED in the summary information \ label ha invalid text in \ Summary Information Settings section on DMS Integration Settings (Edit) \ page    NOT be included in the summary information label ha invalid text in \ Summary Information Settings section on DMS Integration Settings (Edit) \ page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+goManageConfigurationPage
+    [Documentation]    This keyword is used to Navigate to Manage DMS Integration page
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Systems Integration    ${Timeout}    System Integration tab not appear on the Admin Page
+    Click Element    link=Systems Integration
+    Sleep    1
+    Wait Until Page Contains Element    link=DMS Integration    ${Timeout}    DMS Integration link not appear on the Admin Page
+    Click Element    link=DMS Integration
+    Sleep    2

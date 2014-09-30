@@ -1,0 +1,452 @@
+*** Settings ***
+Documentation     This suite contains the scripts for Manage Loan Types.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyLoanTypesLink
+    [Documentation]    This script verifies the Loan types link.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Loan Configuration
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Types    ${Timeout}    Loan Types link not present underLoan Configuration \ tab
+
+verifyManageLoanTypesButton
+    [Documentation]    This script verifies the Manage Loan Types button.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Loan Configuration
+    Sleep    1
+    Wait Until Page Contains Element    link=Manage Loan Types    ${Timeout}    Manage Loan Types button not present underon \ Loan Configuration Dashboard page
+    Page Should Contain Element    link=Manage Loan Types    Manage Loan Types button not present underon \ Loan Configuration Dashboard page
+
+verifyLoanTypesClickRedirection
+    [Documentation]    This script verifies the click on loan types link.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Loan Configuration
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Types    ${Timeout}    Loan Types link not present underLoan Configuration \ tab
+    Click Element    link=Loan Types
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Loan Type    ${Timeout}    Manage Loan Types Page not loaded properly
+
+verifyUIOfManageLoanTypesPage
+    [Documentation]    This script verifies the UI of Manage Loan types page.
+    navigateToManageLoanTypesPage
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Manage Loan Types header not present on manage loan types page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Loan Types    Manage Loan Types header has invalid text on manage loan types page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    link=Add Loan Type    Add Loan Type link not present on manage loan types page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    link=Add Loan Type    Add Loan Type    Add Loan Type link has invalid text on manage loan types page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Textfield    //div[@id='loan_types_table_filter']/label/input    Search text box not present on manage loan types page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    name=loan_types_table_length    View all drop down not present on manage loan types page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_types_table_length']/label    Per page label not present on manage loan types page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='loan_types_table']/thead/tr/th/span    Loan Type column not present on manage loan types page
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='loan_types_table']/thead/tr/th/span    Loan Type    Loan Type column has invalid text on manage loan types page
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='loan_types_table']/thead/tr/th[2]/span    Core Code \ column not present on manage loan types page
+    ${V11}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='loan_types_table']/thead/tr/th[2]/span    Core Code    Core Code column has invalid text on manage loan types page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='loan_types_table']/thead/tr/th[3]/span    Updated On \ column not present on manage loan types page
+    ${V13}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='loan_types_table']/thead/tr/th[3]/span    Updated On    Updated On \ column has invalid text on manage loan types page
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='loan_types_table']/thead/tr/th[4]/span    By column not present on manage loan types page
+    ${V15}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='loan_types_table']/thead/tr/th[4]/span    By    By \ \ column has invalid text on manage loan types page
+    ${V16}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='loan_types_table']/thead/tr/th[5]/span    Status column not present on manage loan types page
+    ${V17}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='loan_types_table']/thead/tr/th[5]/span    Status    Status \ \ column has invalid text on manage loan types page
+    ${V18}=    Run Keyword And Return Status    Page Should Contain Element    link=← Previous    Previous button not present on manage loan types page
+    ${V19}=    Run Keyword And Return Status    Page Should Contain Element    link=Next →    Next button not present on manage loan types page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}
+    @{Messages}=    Create List    Manage Loan Types header not present on manage loan types page    Manage Loan Types header has invalid text on manage loan types page    Add Loan Type link not present on manage loan types page    Add Loan Type link has invalid text on manage loan types page    Search text box not present on manage loan types page
+    ...    View all drop down not present on manage loan types page    Per page label not present on manage loan types page    Loan Type column not present on manage loan types page    Loan Type column has invalid text on manage loan types page    Core Code \ column not present on manage loan types page    Core Code column has invalid text on manage loan types page
+    ...    Updated On \ column not present on manage loan types page    Updated On \ column has invalid text on manage loan types page    By column not present on manage loan types page    By \ column has invalid text on manage loan types page    Status column not present on manage loan types page    Status \ column has invalid text on manage loan types page
+    ...    Previous button not present on manage loan types page    Next button not present on manage loan types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddLoanTypeLinkClick
+    [Documentation]    This script verifies the click on Add Loan type link.
+    navigateToManageLoanTypesPage
+    Sleep    1
+    Focus    link=Add Loan Type
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Create New Loan Type page not opened properly
+
+verifyUIOfCreateNewLoanTypesPage-FirstSection
+    navigateToManageLoanTypesPage
+    Sleep    1
+    Focus    link=Add Loan Type
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Create New Loan Type page not opened properly
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Create New Loan Type header not present on Create New Loan Type page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Create New Loan Type    Create New Loan Type header has invalid text on Create New Loan Type page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/legend    Loan Type Details label not present on Create New Loan Type page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/legend    Loan Type Details    Loan Type Details label has invalid text on Create New Loan Type page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div/div/label    Loan Type Name \ label not present on Create New Loan Type page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div/div/label    Loan Type Name*    Loan Type Name label has invalid text on Create New Loan Type page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Textfield    id=name    Loan Type Name text box not present on Create New Loan Type page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Checkbox    id=enabled    Enabled check box not present on Create New Loan Type page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[2]/div/label    Application Control \ label not present on Create New Loan Type page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[2]/div/label    Application Control*    Application Control Loan \ label has invalid text on Create New Loan Type page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    id=application_control    Application control drop down not present on Create New Loan Type page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[3]/div/label    Default Term label not present on Create New Loan Type page
+    ${V13}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[3]/div/label    Default Term*    Default Term \ label has invalid text on Create New Loan Type page
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Textfield    id=default_term    Default Term text box not present on Create New Loan Type page
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[4]/div/label    Core Code or Rule label not present on Create New Loan Type page
+    ${V16}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[4]/div/label    Core Code or Rule**    Core Code or Rule \ label has invalid text on Create New Loan Type page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Textfield    id=core_code    Core Code text box not present on Create New Loan Type page
+    ${V18}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[4]/div[2]/div/div[2]/label    Use Rule \ label not present on Create New Loan Type page
+    ${V19}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[4]/div[2]/div/div[2]/label    Use Rule    Use Rule \ label has invalid text on Create New Loan Type page
+    ${V20}=    Run Keyword And Return Status    Page Should Contain Checkbox    id=use_rule    User Rule Check box not present on Create New Loan Type page
+    ${V21}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[4]/div[2]/div/div[3]/div/div    Select rule drop down not present on Create New Loan Type page
+    ${V22}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[5]/div/label    Loan Values \ \ label not present on Create New Loan Type page
+    ${V23}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div/label    Loan Values**    Loan Values \ label has invalid text on Create New Loan Type page
+    ${V24}=    Run Keyword And Return Status    Page Should Contain Textfield    id=min_loan_amount    Minimum Loan Value \ text box not present on Create New Loan Type page
+    ${V25}=    Run Keyword And Return Status    Page Should Contain Textfield    id=max_loan_amount    Maximum Loan Value \ text box not present on Create New Loan Type page
+    ${V26}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[6]/div/label    Active Score Model \ label not present on Create New Loan Type page
+    ${V27}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[6]/div/label    Active Score Model**    Active Score Model \ label has invalid text on Create New Loan Type page
+    ${V28}=    Run Keyword And Return Status    Page Should Contain Element    id=active_score_model    Active Score Model drop down \ not present on Create New Loan Type page
+    ${V29}=    Run Keyword And Return Status    Page Should Contain Element    id=active_score_model_option_id    Select derived Score Model drop down \ \ not present on Create New Loan Type page
+    ${V30}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[6]/div[2]/div/div[3]/a/i    Active Score model help question mark not present on Create New Loan Type page
+    ${V31}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[7]/div/label    Credit Tier Set label not present on Create New Loan Type page
+    ${V32}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[7]/div/label    Credit Tier Set**    Credit Tier Set \ label has invalid text on Create New Loan Type page
+    ${V33}=    Run Keyword And Return Status    Page Should Contain Element    id=credit_tier_set    Credit Tier Set drop down \ \ not present on Create New Loan Type page
+    ${V34}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[8]/div/label    Rate Table label not present on Create New Loan Type page
+    ${V35}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[8]/div/label    Rate Table**    Rate Table label has invalid text on Create New Loan Type page
+    ${V36}=    Run Keyword And Return Status    Page Should Contain Element    id=rate_table    Rate table drop down \ \ not present on Create New Loan Type page
+    ${V37}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[9]/div/label    Purposes label not present on Create New Loan Type page
+    ${V38}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[9]/div/label    Purposes**    Purposes label has invalid text on Create New Loan Type page
+    ${V39}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[9]/div[2]/div/div/span    Available \ label not present on Create New Loan Type page
+    ${V40}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[9]/div[2]/div/div/span    Available:    Available \ label has invalid text on Create New Loan Type page
+    ${V41}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[9]/div[2]/div/div[2]/span    Selected label not present on Create New Loan Type page
+    ${V42}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[9]/div[2]/div/div[2]/span    Selected:    Selected label has invalid text on Create New Loan Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}    ${V21}    ${V22}    ${V23}
+    ...    ${V24}    ${V25}    ${V26}    ${V27}    ${V28}    ${V29}
+    ...    ${V30}    ${V31}    ${V32}    ${V33}    ${V34}    ${V35}
+    ...    ${V36}    ${V37}    ${V38}    ${V39}    ${V40}    ${V41}
+    ...    ${V42}
+    @{Messages}=    Create List    Create New Loan Type header not present on Create New Loan Type page    Create New Loan Type header has invalid text on Create New Loan Type page    Loan Type Details label not present on Create New Loan Type page    Loan Type Details label has invalid text on Create New Loan Type page    Loan Type Name \ label not present on Create New Loan Type page
+    ...    Loan Type Name label has invalid text on Create New Loan Type page    Loan Type Name text box not present on Create New Loan Type page    Enabled check box not present on Create New Loan Type page    Application Control \ label not present on Create New Loan Type page    Application Control Loan \ label has invalid text on Create New Loan Type page    Application control drop down not present on Create New Loan Type page
+    ...    Default Term label not present on Create New Loan Type page    Default Term \ label has invalid text on Create New Loan Type page    Default Term text box not present on Create New Loan Type page    Core Code or Rule label not present on Create New Loan Type page    Core Code or Rule \ label has invalid text on Create New Loan Type page    Core Code text box not present on Create New Loan Type page
+    ...    Use Rule \ label not present on Create New Loan Type page    Use Rule \ label has invalid text on Create New Loan Type page    User Rule Check box not present on Create New Loan Type page    Select rule drop down not present on Create New Loan Type page    Loan Values \ \ label not present on Create New Loan Type page    Loan Values \ label has invalid text on Create New Loan Type page
+    ...    Minimum Loan Value \ text box not present on Create New Loan Type page    Maximum Loan Value \ text box not present on Create New Loan Type page    Active Score Model \ label not present on Create New Loan Type page    Active Score Model \ label has invalid text on Create New Loan Type page    Active Score Model drop down \ not present on Create New Loan Type page    Select derived Score Model drop down \ \ not present on Create New Loan Type page
+    ...    Active Score model help question mark not present on Create New Loan Type page    Credit Tier Set label not present on Create New Loan Type page    Credit Tier Set \ label has invalid text on Create New Loan Type page    Credit Tier Set drop down \ \ not present on Create New Loan Type page    Rate Table label not present on Create New Loan Type page    Rate Table label has invalid text on Create New Loan Type page
+    ...    Rate table drop down \ \ not present on Create New Loan Type page    Purposes label not present on Create New Loan Type page    Purposes label has invalid text on Create New Loan Type page    Available \ label not present on Create New Loan Type page    Available \ label has invalid text on Create New Loan Type page    Selected label not present on Create New Loan Type page
+    ...    Selected label has invalid text on Create New Loan Type page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUIOfCreateNewLoanTypesPage-SecondSection
+    [Documentation]    This script verifies the UI of Create New Loan Types page.
+    navigateToManageLoanTypesPage
+    Sleep    1
+    Focus    link=Add Loan Type
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Create New Loan Type page not opened properly
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[10]/div/label    HMDA label not present on Create New Loan Type page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[10]/div/label    HMDA    HMDA label has invalid text on Create New Loan Type page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Checkbox    id=hmda_reporting    HMDA Checkbox not present on Create New Loan Type page
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[10]/div[2]/div/label    Trigger HMDA (regardless of purpose code) \ not present on Create New Loan Type page
+    ${HMDAText}=    Get Text    //div[@id='loan_type_overview']/fieldset/div[10]/div[2]/div/label
+    ${HMDAText}=    Evaluate    "${HMDAText}".strip()
+    ${V5}=    Run Keyword And Return Status    Should Be Equal    ${HMDAText}    Trigger HMDA (regardless of purpose code)    Trigger HMDA (regardless of purpose code) label has invalid text on Create New Loan Type page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[11]/div/label    Credit Pull label not present on Create New Loan Type page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[11]/div/label    Credit Pull    Credit Pull \ label has invalid text on Create New Loan Type page
+    ${CreditPullLabelMessage}=    Get Text    css=div.controls.inline > label
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    css=div.controls.inline > label    Automatically pull credit on loan submission. (Based on defined bureau order)    Automatically pull credit on loan submission.Credit Pull message label has invalid text on Create New LOan Type page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    id=pull_yes    Yes Radio button for credit pull not present on Create New Loan Type page
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    id=pull_no    No \ Radio button for credit pull not present on Create New Loan Type page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[12]/div/label    Initial Rule label not present on Create New Loan Type page
+    ${V12}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[12]/div/label    Initial Rule    Initial Rule label \ has invalid text on Create New LOan Type page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Element    id=initial_rule    Initial Rule drop down \ not present on Create New Loan Type page
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[13]/div/label    Decision Engine \ label not present on Create New Loan Type page
+    ${V15}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[13]/div/label    Decision Engine    Decision Engine label \ has invalid text on Create New LOan Type page
+    ${V16}=    Run Keyword And Return Status    Element Text Should Be    css=div.control-group > label    Automatically run Decision Engine on loan submission. (Requires automatic credit pull)    Automatically run Decision Engine on loan submission. Decision Engine message label has invalid text on Create New LOan Type page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Element    id=decision_yes    Yes Radio button for Decison engine not present on Create New Loan Type page
+    ${V18}=    Run Keyword And Return Status    Page Should Contain Element    id=decision_no    No Radio button for Decision Engine not present on Create New Loan Type page
+    ${V19}=    Run Keyword And Return Status    Page Should Contain Element    id=recommend_only    Recommend Only check box not present on Create New Loan Type page
+    ${V20}=    Run Keyword And Return Status    Element Text Should Be    css=label.control-label.inline    Recommend Only (Includes manual run of ADE)    Recommend Only Decision Engine message label has invalid text on Create New LOan Type page
+    ${V21}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[14]/div/label    Expire Decision label not present on Create New Loan Type page
+    ${V22}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[14]/div/label    Expire Decision After    Expire Decision \ label has invalid text on Create New LOan Type page
+    ${V23}=    Run Keyword And Return Status    Page Should Contain Textfield    id=default_expire_days    Expire deciosn After text box not present on Create New Loan Type page
+    ${V24}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[15]/div/label    Expire Contract After: \ label not present on Create New Loan Type page
+    ${V25}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[15]/div/label    Expire Contract After:    Contract After label has invalid text on Create New LOan Type page
+    ${V26}=    Run Keyword And Return Status    Page Should Contain Textfield    id=default_contract_expire_days    Expire Contract After \ text box not present on Create New Loan Type page
+    ${V27}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[16]/div/label    Secured \ \ label not present on Create New Loan Type page
+    ${V28}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[16]/div/label    Secured    Secured \ label has invalid text on Create New LOan Type page
+    ${V29}=    Run Keyword And Return Status    Page Should Contain Element    id=secured_yes    Yes Radio button for Secured not present on Create New Loan Type page
+    ${V30}=    Run Keyword And Return Status    Page Should Contain Element    id=secured_no    No Radio button for Secured not present on Create New Loan Type page
+    ${V31}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[17]/div/label    Accepted Collateral Types \ \ \ label not present on Create New Loan Type page
+    ${V32}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[17]/div/label    Accepted Collateral Types    Accepted Collateral Types \ label has invalid text on Create New LOan Type page
+    ${V33}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='accepted_collateral_types_inputs']/div/span    Available \ label not present on Create New Loan Type page
+    ${V34}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='accepted_collateral_types_inputs']/div/span    Available:    Available \ label has invalid text on Create New LOan Type page
+    ${V35}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='accepted_collateral_types_inputs']/div[2]/span    Selected label not present on Create New Loan Type page
+    ${V36}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='accepted_collateral_types_inputs']/div[2]/span    Selected:    Selected label has invalid text on Create New LOan Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}    ${V21}    ${V22}    ${V23}
+    ...    ${V24}    ${V25}    ${V26}    ${V27}    ${V28}    ${V29}
+    ...    ${V30}    ${V31}    ${V32}    ${V33}    ${V34}    ${V35}
+    ...    ${V36}
+    @{Messages}=    Create List    HMDA \ \ label not present on Create New Loan Type page    HMDA label has invalid text on Create New Loan Type page    HMDA Checkbox not present on Create New Loan Type page    Trigger HMDA (regardless of purpose code) \ not present on Create New Loan Type page    Trigger HMDA (regardless of purpose code) label has invalid text on Create New Loan Type page
+    ...    Credit Pull label not present on Create New Loan Type page    Credit Pull \ label has invalid text on Create New Loan Type page    Automatically pull credit on loan submission.Credit Pull message label has invalid text on Create New LOan Type page    Yes Radio button for credit pull not present on Create New Loan Type page    No \ Radio button for credit pull not present on Create New Loan Type page    Initial Rule label not present on Create New Loan Type page
+    ...    Initial Rule label \ has invalid text on Create New LOan Type page    Initial Rule drop down \ not present on Create New Loan Type page    Decision Engine \ label not present on Create New Loan Type page    Decision Engine label \ has invalid text on Create New LOan Type page    Automatically run Decision Engine on loan submission. Decision Engine message label has invalid text on Create New LOan Type page    Yes Radio button for Decison engine not present on Create New Loan Type page
+    ...    No Radio button for Decision Engine not present on Create New Loan Type page    Recommend Only check box not present on Create New Loan Type page    Recommend Only Decision Engine message label has invalid text on Create New LOan Type page    Expire Decision label not present on Create New Loan Type page    Expire Decision \ label has invalid text on Create New LOan Type page    Expire deciosn After text box not present on Create New Loan Type page
+    ...    Expire Contract After: \ label not present on Create New Loan Type page    Expire Contract After: label has invalid text on Create New LOan Type page    Expire Contract After \ text box not present on Create New Loan Type page    Secured \ \ label not present on Create New Loan Type page    Secured \ label has invalid text on Create New LOan Type page    Yes Radio button for Secured not present on Create New Loan Type page
+    ...    No Radio button for Secured not present on Create New Loan Type page    Accepted Collateral Types \ \ \ label not present on Create New Loan Type page    Accepted Collateral Types \ label has invalid text on Create New LOan Type page    Available \ label not present on Create New Loan Type page    Available label has invalid text on Add New User Page    Selected label not apear on Add New User Page
+    ...    Selected label has invalid text on Add New User Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUIOfCreateNewLoanTypesPage-ThirdSection
+    [Documentation]    This script verifies the UI of Create New Loan Types page.
+    navigateToManageLoanTypesPage
+    Sleep    1
+    Focus    link=Add Loan Type
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Create New Loan Type page not opened properly
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[18]/div/label    Default Collateral Type label not present on Create New Loan Type page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[18]/div/label    Default Collateral Type    Default Collateral Type label has invalid text on Create New LOan Type page \
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    id=default_collateral_type_id    Default Collateral Type drop down \ not present on Create New Loan Type page
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[19]/div/label    Allow Multiple Collateral label not present on Create New Loan Type page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[19]/div/label    Allow Multiple Collateral    Allow Multiple Collateral label has invalid text on Create New LOan Type page \
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    id=allow_multiple_collateral_yes    Yes Radio button for Allow Multple Collateral not present on Create New Loan Type page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    id=allow_multiple_collateral_no    Yes Radio button for \ Allow Multple Collateral not present on Create New Loan Type page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[20]/div/label    Supporting Document Types \ label not present on Create New Loan Type page
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[20]/div/label    Supporting Document Types    Supporting Document Types label has invalid text on Create New LOan Type page
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='supportingDocTypes']/thead/tr/th    Document Type column \ not present on Create New Loan Type page
+    ${V11}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='supportingDocTypes']/thead/tr/th    Document Type    Document Type column \ has invalid text on Create New LOan Type page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='supportingDocTypes']/thead/tr/th[2]    Required \ column \ not present on Create New Loan Type page \
+    ${V13}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='supportingDocTypes']/thead/tr/th[2]    Required    Required \ column \ has invalid text on Create New LOan Type page
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    id=add_entry    Add Document Type sign \ not present on Create New Loan Type page
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loan_type_overview']/fieldset/div[21]/div/label    Up-sell Products label not present on Create New Loan Type page
+    ${V16}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[21]/div/label    Up-sell Products    Up-sell Products \ label has invalid text on Create New LOan Type page \
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loanTypeProducts']/div/span    Available label not present on Create New Loan Type page \
+    ${V18}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loanTypeProducts']/div/span    Available:    Available label has invalid text on Create New LOan Type page
+    ${V19}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loanTypeProducts']/div[2]/span    Selected label not present on Create New Loan Type page \
+    ${V20}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loanTypeProducts']/div[2]/span    Selected:    Selected \ label has invalid text on Create New LOan Type page \
+    ${V21}=    Run Keyword And Return Status    Page Should Contain Element    //form[@id='loan_type_form']/div[2]/div/div/a    Cancel button not present on Create New Loan Type page
+    ${V22}=    Run Keyword And Return Status    Page Should Contain Element    //form[@id='loan_type_form']/div[2]/div/div/a[2]    Save \ button not present on Create New Loan Type page
+    ${V23}=    Run Keyword And Return Status    Page Should Contain Element    link=Cancel    Cancel link button not present on Create New Loan Type page
+    ${V24}=    Run Keyword And Return Status    Page Should Contain Element    link=Save    Save link button not present on Create New Loan Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}    ${V21}    ${V22}    ${V23}
+    ...    ${V24}
+    @{Messages}=    Create List    Default Collateral Type label not present on Create New Loan Type page    Default Collateral Type label has invalid text on Create New LOan Type page \    Default Collateral Type drop down \ not present on Create New Loan Type page    Allow Multiple Collateral label not present on Create New Loan Type page    Allow Multiple Collateral label has invalid text on Create New LOan Type page \
+    ...    Yes Radio button for Allow Multple Collateral not present on Create New Loan Type page    No \ Radio button for \ Allow Multple Collateral not present on Create New Loan Type page    Supporting Document Types \ label not present on Create New Loan Type page    Supporting Document Types label has invalid text on Create New LOan Type page    Document Type column \ not present on Create New Loan Type page    Document Type column \ has invalid text on Create New LOan Type page
+    ...    Required \ column \ not present on Create New Loan Type page \    Required \ column \ has invalid text on Create New LOan Type page    Add Document Type sign \ not present on Create New Loan Type page    Up-sell Products label not present on Create New Loan Type page    Up-sell Products \ label has invalid text on Create New LOan Type page \    Available label not present on Create New Loan Type page \
+    ...    Available label has invalid text on Create New LOan Type page    Selected label not present on Create New Loan Type page \    Selected \ label has invalid text on Create New LOan Type page \    Cancel button not present on Create New Loan Type page    Save \ button not present on Create New Loan Type page    Cancel link button not present on Create New Loan Type page
+    ...    Save link button not present on Create New Loan Type page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyRequiredFieldsOnAddNewLoanTypePage
+    [Documentation]    This scripts verifies the required fields on the Add New Loan Type Page
+    navigateToManageLoanTypesPage
+    Sleep    1
+    Focus    link=Add Loan Type
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Create New Loan Type page not opened properly
+    Focus    id=enabled
+    Click Element    id=enabled
+    Sleep    2
+    Focus    css=a.btn.btn-success
+    Click Element    css=a.btn.btn-success
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    id=loan_type_validation_error    All Required field validation message not appear on the page
+    ${ValidationMessage}=    Get Text    id=loan_type_validation_error
+    @{ValidationMessage}=    Split To Lines    ${ValidationMessage}
+    ${V2}=    Run Keyword And Return Status    Should Be Equal    @{ValidationMessage}[1]    Please enter all required fields or deselect the Enable check box next to the Loan Type Name    ×Please enter all required fields or deselect the Enable check box next to the Loan Type Name message has invalid text on the Add New Loan Type Page
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div/div[2]/div/div/small    Required field validation message of Loan Type Name* not appear on the page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div/div[2]/div/div/small    This field is required.    This field is required. message of "Loan Type Name" has invalid text on the Add New Loan Type Page
+    ${V5}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[2]/div[2]/div/small    Required field validation message of Application Control not appear on the page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[2]/div[2]/div/small    This field is required.    This field is required. message of "Application control" has invalid text on the Add New Loan Type Page
+    ${V7}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[3]/div[2]/div/small    Required field validation message of Default Term not appear on the page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[3]/div[2]/div/small    This field is required.    This field is required. message of "Default Term" has invalid text on the Add New Loan Type Page
+    ${V9}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[4]/div[2]/div/div/div/small    Required field validation message of Core Code or Rule not appear on the page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[4]/div[2]/div/div/div/small    This field is required.    This field is required. message of "Core Code or Rule" has invalid text on the Add New Loan Type Page
+    ${V11}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/small    Required field validation message of Min Loan Value not appear on the page
+    ${V12}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/small    This field is required.    This field is required. message of "Min Loan Value" has invalid text on the Add New Loan Type Page
+    ${V13}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/small    Required field validation message of Max Loan Value not appear on the page
+    ${V14}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[5]/div[2]/div/div/small    This field is required.    This field is required. message of "Max Loan Value" has invalid text on the Add New Loan Type Page
+    ${V15}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[6]/div[2]/div/div/small    Required field validation message of Active Score Model not appear on the page
+    ${V16}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[6]/div[2]/div/div/small    This field is required.    This field is required. message of "Active Score Model" has invalid text on the Add New Loan Type Page
+    ${V17}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[6]/div[2]/div/div[2]/small    Required field validation message of Derived Score not appear on the page
+    ${V18}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[6]/div[2]/div/div[2]/small    This field is required.    This field is required. message of "Derived Score" has invalid text on the Add New Loan Type Page
+    ${V19}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[7]/div[2]/div/small    Required field validation message of Credit Tier Set not appear on the page
+    ${V20}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[7]/div[2]/div/small    This field is required.    This field is required. message of "Credit Tier Set" has invalid text on the Add New Loan Type Page
+    ${V21}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[8]/div[2]/div/small    Required field validation message of Rate Table not appear on the page
+    ${V22}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[8]/div[2]/div/small    This field is required.    This field is required. message of "Rate Table" has invalid text on the Add New Loan Type Page
+    ${V23}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[9]/div[2]/div/div/small    Required field validation message of Purposes not appear on the page
+    ${V24}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[9]/div[2]/div/div/small    At least one loan purpose is required    At least one loan purpose is required \ message of "Purposes" has invalid text on the Add New Loan Type Page
+    ${V25}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div[12]/div[2]/div/small    Required field validation message of Initial Rule not appear on the page
+    ${V26}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div[12]/div[2]/div/small    This field is required.    This field is required. message of "Initial Rule" has invalid text on the Add New Loan Type Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}    ${V21}    ${V22}    ${V23}
+    ...    ${V24}    ${V25}    ${V26}
+    @{Messages}=    Create List    All Required field validation message not appear on the page    ×Please enter all required fields or deselect the Enable check box next to the Loan Type Name message has invalid text on the Add New Loan Type Page    Required field validation message of Loan Type Name* not appear on the page    This field is required. message of "Loan Type Name" has invalid text on the Add New Loan Type Page    Required field validation message of Application Control not appear on the page
+    ...    This field is required. message of "Application control" has invalid text on the Add New Loan Type Page    Required field validation message of Default Term not appear on the page    This field is required. message of "Default Term" has invalid text on the Add New Loan Type Page    Required field validation message of Core Code or Rule not appear on the page    This field is required. message of "Core Code or Rule" has invalid text on the Add New Loan Type Page    Required field validation message of Min Loan Value not appear on the page
+    ...    This field is required. message of "Min Loan Value" has invalid text on the Add New Loan Type Page    Required field validation message of Max Loan Value not appear on the page    This field is required. message of "Max Loan Value" has invalid text on the Add New Loan Type Page    Required field validation message of Active Score Model not appear on the page    This field is required. message of "Active Score Model" has invalid text on the Add New Loan Type Page    Required field validation message of Derived Score not appear on the page
+    ...    This field is required. message of "Derived Score" has invalid text on the Add New Loan Type Page    Required field validation message of Credit Tier Set not appear on the page    This field is required. message of "Credit Tier Set" has invalid text on the Add New Loan Type Page    Required field validation message of Rate Table not appear on the page    This field is required. message of "Rate Table" has invalid text on the Add New Loan Type Page    Required field validation message of Purposes not appear on the page
+    ...    At least one loan purpose is required \ message of "Purposes" has invalid text on the Add New Loan Type Page    Required field validation message of Initial Rule not appear on the page    This field is required. message of "Initial Rule" has invalid text on the Add New Loan Type Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewLoanEnabledAndVerifyOnApplicationPage
+    [Documentation]    This scripts verifies the Add New Loan Type functionality \ and \ verifies the added enabled loan type appeared in the "Loan Type" drop down on the Application Setup page
+    navigateToManageLoanTypesPage
+    Sleep    1
+    Focus    link=Add Loan Type
+    Click Element    link=Add Loan Type
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    fillLoanInformation    ${Name}    Enabled
+    Sleep    2
+    Element Should Be Visible    css=div.alert.alert-info    Add Loan Type not working in Applciation
+    ${Notification}=    Get Text    css=div.alert.alert-info
+    @{Notification}=    Split To Lines    ${Notification}
+    ${V1}=    Run Keyword And Return Status    Should Be Equal    @{Notification}[1]    Loan type has been created    Loan Type added notification has invalid text
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/div[2]/div/div[2]    ${Name} - Enabled    Added Loan has invalid name and Status on the Loan Type View Page
+    Comment    Go to the New Application Page to Verify added Loan type in the Drop down
+    Page Should Contain Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    link=New Application
+    Sleep    4
+    ${V3}=    Run Keyword And Return Status    Select From List    name=loan_type    ${Name}
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Loan Type added notification has invalid text    Added Loan has invalid name and Status on the Loan Type View Page    Added Enabled Loan Type not displayed in the "Loan Type" drop down on Application Setup page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewLoanDisabledAndVerifyOnApplicationPage
+    [Documentation]    This scripts verifies the Add New Loan Type functionality \ and \ verifies the added disabled loan type \ should not appear in the "Loan Type" drop down on the Application Setup page
+    navigateToManageLoanTypesPage
+    Sleep    1
+    Focus    link=Add Loan Type
+    Click Element    link=Add Loan Type
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    fillLoanInformation    ${Name}    Disabled
+    Sleep    2
+    Element Should Be Visible    css=div.alert.alert-info    Add Loan Type not working in Applciation
+    ${Notification}=    Get Text    css=div.alert.alert-info
+    @{Notification}=    Split To Lines    ${Notification}
+    ${V1}=    Run Keyword And Return Status    Should Be Equal    @{Notification}[1]    Loan type has been created    Loan Type added notification has invalid text
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loan_type_overview']/div[2]/div/div[2]    ${Name} - Disabled    Added Loan has invalid name and Status on the Loan Type View Page
+    Comment    Go to the New Application Page to Verify added Loan type in the Drop down
+    Page Should Contain Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Click Element    link=New Application
+    Sleep    4
+    ${V3}=    Run Keyword And Return Status    Select From List    name=loan_type    ${Name}
+    Run Keyword If    '${V3}'=='False'    Set Global Variable    ${V3}    True
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Loan Type added notification has invalid text    Added Loan has invalid name and Status on the Loan Type View Page    Added Disabled Loan Type displayed in the "Loan Type" drop down on Application Setup page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUniqueNameValidation
+    [Documentation]    This scripts verifies the Unique Name validation on the Add Loan Page
+    navigateToManageLoanTypesPage
+    Sleep    1
+    Focus    link=Add Loan Type
+    Click Element    link=Add Loan Type
+    Sleep    1
+    ${Name}=    Generate Random String    7    [LETTERS]
+    fillLoanInformation    ${Name}    Enabled
+    Sleep    2
+    Element Should Be Visible    css=div.alert.alert-info    Add Loan Type not working in Applciation
+    Focus    link=Manage Loan Types
+    Click Element    link=Manage Loan Types
+    Sleep    2
+    Focus    link=Add Loan Type
+    Click Element    link=Add Loan Type
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Create Loan Type page not laoded properly
+    Focus    id=name
+    Input Text    id=name    ${Name}
+    Sleep    2
+    Focus    id=default_term
+    Sleep    2
+    Element Should Be Visible    //div[@id='loan_type_overview']/fieldset/div/div[2]/div/div/small    Loan Type Unique name validation message not appear on the Create Loan Type Page
+    Element Text Should Be    //div[@id='loan_type_overview']/fieldset/div/div[2]/div/div/small    This field must be unique.    This field must be unique. mesage has invalid text on the Create Loan Type page
+
+*** Keywords ***
+navigateToManageLoanTypesPage
+    [Documentation]    This keyword is used to navigates to Manage Loan Types page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Configuration    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Loan Configuration
+    Sleep    1
+    Wait Until Page Contains Element    link=Loan Types    ${Timeout}    Loan Types link not present underLoan Configuration \ tab
+    Click Element    link=Loan Types
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Loan Type    ${Timeout}    Manage Loan Types Page not loaded properly
+
+fillLoanInformation
+    [Arguments]    ${Name}    ${Status}
+    [Documentation]    This keyword is used to fill loan information
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New Type page not loaded properly
+    Sleep    1
+    Focus    id=name
+    Input Text    id=name    ${Name}
+    Focus    id=enabled
+    Run Keyword If    '${Status}'=='Enabled'    Select Checkbox    id=enabled
+    Sleep    2
+    Focus    id=application_control
+    Select From List By Index    id=application_control    1
+    Sleep    1
+    Focus    id=core_code
+    Input Text    id=core_code    1
+    Sleep    1
+    Focus    name=selected_purposes[]
+    Select Checkbox    name=selected_purposes[]
+    @{InitialRole}=    Get List Items    id=initial_rule
+    Select From List    id=initial_rule    @{InitialRole}[1]
+    Sleep    1
+    Focus    id=default_term
+    Input Text    id=default_term    5
+    Focus    id=min_loan_amount
+    Input Text    id=min_loan_amount    1
+    Focus    id=max_loan_amount
+    Input Text    id=max_loan_amount    50
+    @{Score}=    Get List Items    id=active_score_model
+    Select From List    id=active_score_model    @{Score}[1]
+    @{Model}=    Get List Items    id=active_score_model_option_id
+    Select From List    id=active_score_model_option_id    @{Model}[1]
+    @{CreditTier}=    Get List Items    id=credit_tier_set
+    Select From List    id=credit_tier_set    @{CreditTier}[1]
+    @{RateTable}=    Get List Items    id=rate_table
+    Select From List    id=rate_table    @{RateTable}[1]
+    Focus    css=a.btn.btn-success
+    Click Element    css=a.btn.btn-success
+    Sleep    2

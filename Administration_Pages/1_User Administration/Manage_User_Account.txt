@@ -1,0 +1,490 @@
+*** Settings ***
+Documentation     This suite contains the scripts related to the Manage User Account Page
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close Browser
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyPrivilegesSectionOnAddNewUserPage
+    [Documentation]    This script verifies Privileges section on Add New User page
+    goToManageUserPage
+    Sleep    1
+    Click Element    link=Add User
+    Sleep    2
+    Wait Until Page Contains Element    id=first_name    ${Timeout}    Add New User Page not loaded properly
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=#privileges > fieldset > legend    Privileges section not present on Add New User page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=#privileges > fieldset > legend    Privileges    Privileges section has invalid text on Add New User page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    css=div.row-fluid.modal-multiselect > div.span3 > label.control-label    Roles*    Roles* label in \ Privileges section has invalid text on Add New User page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='privileges']/fieldset/div[2]/div/label    Approval Limit Group    Approval Limits label in \ Privileges section has invalid text on Add New User page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //a[@id='approval_limits_help']/i    Approval Limits help icon not present on Add New User page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    @{Messages}=    Create List    Privileges section not present on Add New User page    Privileges section has invalid text on Add New User page    Roles* label in \ Privileges section has invalid text on Add New User page    Approval Limits label in \ Privileges section has invalid text on Add New User page    Approval Limits help icon not present on Add New User page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyPrivilegesSectionOnEditUserPage
+    [Documentation]    This script verifies Privileges section on Edit User page
+    goToManageUserPage
+    Sleep    1
+    Wait Until Page Contains Element    link=Add User
+    Page Should Contain Element    //tr[1]/td[2]/a    There is no any user present on User List
+    Click Element    //tr[1]/td[2]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    View User Page not loaded properly
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    id=phone    ${Timeout}    Edit User Page not loaded properly
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=#privileges > fieldset > legend    Privileges section not present on Edit User page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=#privileges > fieldset > legend    Privileges    Privileges section has invalid text on Edit User page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    css=div.row-fluid.modal-multiselect > div.span3 > label.control-label    Roles*    Roles* label in \ Privileges section has invalid text on Edit User page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='privileges']/fieldset/div[2]/div/label    Approval Limit Group    Approval Limits label in \ Privileges section has invalid text on Edit User page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //a[@id='approval_limits_help']/i    Approval Limits help icon not present on Edit User page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    @{Messages}=    Create List    Privileges section not present on Edit User page    Privileges section has invalid text on Edit User page    Roles* label in \ Privileges section has invalid text on Edit User page    Approval Limits label in \ Privileges section has invalid text on Edit User page    Approval Limits help icon not present on Edit User page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyFieldLengthAddNewUserPage
+    [Documentation]    This script verifies :
+    ...    1. User should not be able to add more than 10 digits for phone and fax fields.
+    ...    2. Ext field text field size should be 10
+    goToManageUserPage
+    Click Element    link=Add User
+    Sleep    1
+    Wait Until Page Contains Element    name=add_user    ${Timeout}    Add New User Page not loaded properly
+    ${NumberMoreThan10Digit}=    Generate Random String    20    [NUMBERS]
+    Focus    id=phone
+    Input Text    id=phone    ${NumberMoreThan10Digit}
+    Focus    id=extension
+    Input Text    id=extension    ${NumberMoreThan10Digit}
+    Focus    id=mobile
+    Input Text    id=mobile    ${NumberMoreThan10Digit}
+    Focus    id=fax
+    Input Text    id=fax    ${NumberMoreThan10Digit}
+    Sleep    1
+    ${Phone}=    Get Value    id=phone
+    ${Extension}=    Get Value    id=extension
+    ${Mobile}=    Get Value    id=mobile
+    ${Fax}=    Get Value    id=fax
+    ${V1}=    Run Keyword And Return Status    Length Should Be    ${Phone}    14    Phone field accepting more than 10 Digits on Add New User Page
+    ${V2}=    Run Keyword And Return Status    Length Should Be    ${Extension}    10    Extension field accepting more than 10 Digits on Add New User Page
+    ${V3}=    Run Keyword And Return Status    Length Should Be    ${Mobile}    14    Mobile field accepting more than 10 Digits on Add New User Page
+    ${V4}=    Run Keyword And Return Status    Length Should Be    ${Fax}    14    Fax field accepting more than 10 Digits on Add New User Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Phone field accepting more than 10 Digits on Add New User Page    Extension field accepting more than 10 Digits on Add New User Page    Mobile field accepting more than 10 Digits on Add New User Page    Fax field accepting more than 10 Digits on Add New User Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyRequiredFieldLabelsOnAddNewUserPage
+    [Documentation]    This script verifies required filed labels on Add New User page
+    goToManageUserPage
+    Click Element    link=Add User
+    Sleep    1
+    Wait Until Page Contains Element    name=add_user    ${Timeout}    Add New User Page not loaded properly
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='personalInfo']/fieldset/div/div/label    Name*    Required field Name* label has invalid text on Add New User Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='privileges']/fieldset/div/div/label    Roles*    Required field Roles* \ label has invalid text on Add New User Page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loginDetails']/fieldset/div/div/label    Email Address*    Required field Email Address* \ label has invalid text on Add New User Page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loginDetails']/fieldset/div[2]/div/label    Branches*    Required field Branches* \ label has invalid text on Add New User Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Required field Name* label has invalid text on Add New User Page    Required field Roles* \ label has invalid text on Add New User Page    Required field Email Address* \ label has invalid text on Add New User Page    Required field Branches* \ label has invalid text on Add New User Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyFieldLengthAddEditUserPage
+    [Documentation]    This script verifies Edit User Page:
+    ...    1. User should not be able to add more than 10 digits for phone and fax fields.
+    ...    2. Ext field text field size should be 10
+    goToManageUserPage
+    Sleep    1
+    Wait Until Page Contains Element    link=Add User    ${Timeout}    Add New User link not appear on Manage User Account Page
+    Page Should Contain Element    //tr[1]/td[2]/a    There is no any user present on User List
+    Click Element    //tr[1]/td[2]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit
+    Click Element    link=Edit
+    Sleep    2
+    Wait Until Page Contains Element    id=phone    ${Timeout}    Edit User Page not loaded properly
+    ${NumberMoreThan10Digit}=    Generate Random String    20    [NUMBERS]
+    Sleep    2
+    Focus    id=phone
+    Input Text    id=phone    ${NumberMoreThan10Digit}
+    Focus    id=extension
+    Input Text    id=extension    ${NumberMoreThan10Digit}
+    Focus    id=mobile
+    Input Text    id=mobile    ${NumberMoreThan10Digit}
+    Focus    id=fax
+    Input Text    id=fax    ${NumberMoreThan10Digit}
+    Sleep    1
+    ${Phone}=    Get Value    id=phone
+    ${Extension}=    Get Value    id=extension
+    ${Mobile}=    Get Value    id=mobile
+    ${Fax}=    Get Value    id=fax
+    ${V1}=    Run Keyword And Return Status    Length Should Be    ${Phone}    14    Phone field accepting more than 10 Digits on Edit \ User Page
+    ${V2}=    Run Keyword And Return Status    Length Should Be    ${Extension}    10    Extension field accepting more than 10 Digits on Edit \ User Page
+    ${V3}=    Run Keyword And Return Status    Length Should Be    ${Mobile}    14    Mobile field accepting more than 10 Digits on Edit \ User Page
+    ${V4}=    Run Keyword And Return Status    Length Should Be    ${Fax}    14    Fax field accepting more than 10 Digits on Edit \ User Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Phone field accepting more than 10 Digits on Edit \ User Page    Extension field accepting more than 10 Digits on Edit \ User Page    Mobile field accepting more than 10 Digits on Edit \ User Page    Fax field accepting more than 10 Digits on Edit \ User Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyRequiredFieldLabelsOnEditUserPage
+    [Documentation]    This script verifies required filed labels on Edit User page
+    goToManageUserPage
+    Sleep    1
+    Wait Until Page Contains Element    link=Add User    ${Timeout}    Add New User link not appear on Manage User Account Page
+    Page Should Contain Element    //tr[1]/td[2]/a    There is no any user present on User List
+    Click Element    //tr[1]/td[2]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    id=phone
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='personalInfo']/fieldset/div/div/label    Name*    Required field Name* label has invalid text on Edit User Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='privileges']/fieldset/div/div/label    Roles*    Required field Roles* \ label has invalid text on Edit \ User Page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loginDetails']/fieldset/div/div/label    Email Address*    Required field Email Address* \ label has invalid text on Edit \ User Page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loginDetails']/fieldset/div[3]/div/label    Branches*    Required field Branches* \ label has invalid text on Edit \ User Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Required field Name* label has invalid text on Edit User Page    Required field Roles* \ label has invalid text on Edit \ User Page    Required field Email Address* \ label has invalid text on Edit \ User Page    Required field Branches* \ label has invalid text on Edit \ User Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyManageUserAccountPage
+    [Documentation]    This script use to verify UI of Manage User Account.
+    goToManageUserPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=h1.subheading    Manage User Accounts header not apear on Manage User Accounts Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage User Accounts    Manage User Accounts header has invalid text
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    link=Add User    Add User link not apear on Manage User Accounts Page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    link=Add User    Add User    Add User link has invalid text
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    id=action    Action drop down not present on Manage User Account Page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    id=update    Update button not present on Manage User Account Page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    css=label > input[type="text"]    Search text field not present on Manage User Accounts Page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    name=userMgt_length    View All drop down not present on Manage User Accounts Page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    css=#userMgt_length > label    Per Page drop down
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    id=toggle    Select all check box not present on Manage User Account Page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='userMgt']/thead/tr/th[2]    User Name column not apear on Manage User Account Page
+    ${V12}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='userMgt']/thead/tr/th[2]    Username    Username column has invalid text on Manage User Account Page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='userMgt']/thead/tr/th[3]    First column not apear on Manage User Account Page
+    ${V14}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='userMgt']/thead/tr/th[3]    First    First column has invalid text on Manage User Account Page
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='userMgt']/thead/tr/th[4]    Last column not apear on Manage User Account Page
+    ${V16}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='userMgt']/thead/tr/th[4]    Last    Last column has invalid text on Manage User Account Page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='userMgt']/thead/tr/th[6]    Update On column not apear on Manage User Account Page
+    ${V18}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='userMgt']/thead/tr/th[6]    Updated On    Updated On column has invalid text on Manage User Account Page
+    ${V19}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='userMgt']/thead/tr/th[7]    By column not apear on Manage User Account Page
+    ${V20}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='userMgt']/thead/tr/th[7]    By    By column has invalid text on Manage User Account Page
+    ${V21}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='userMgt']/thead/tr/th[8]/span/select    Status drop down not apear on Manage User Account Page
+    ${V22}=    Run Keyword And Return Status    Page Should Contain Element    id=reset    Reset Button not present on table
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}    ${V21}    ${V22}
+    @{Messages}=    Create List    Manage User Accounts header not apear on Manage User Accounts Page    Manage User Accounts header has invalid text    Add User link not apear on Manage User Accounts Page    Add User link has invalid text on Manage User Account Page    Action drop down not present on Manage User Account Page
+    ...    Update button not present on Manage User Account Page    Search text field not present on Manage User Accounts Page    View All drop down not present on Manage User Accounts Page    Per Page drop down on Manage User Account Page    Select all check box not present on Manage User Account Page    User Name column not apear on Manage User Account Page
+    ...    Username column has invalid text on Manage User Account Page    First column not apear on Manage User Account Page    First column not apear on Manage User Account Page    First column has invalid text on Manage User Account Page    Last column not apear on Manage User Account Page    Last column has invalid text on Manage User Account Page
+    ...    Updated On column has invalid text on Manage User Account Page    By column not apear on Manage User Account Page    By column has invalid text on Manage User Account Page    Status drop down not apear on Manage User Account Page    Reset Button not present on table
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+veriftUIOfAddUserPage
+    [Documentation]    This script use to Verify UI of Add User Page.
+    goToManageUserPage
+    Sleep    2
+    Click Element    link=Add User
+    Sleep    1
+    Wait Until Page Contains Element    id=first_name    ${Timeout}    Add New User Page Not loaded properly
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    link=Manage User Accounts    Manage User Account link button not apear on Add New User Page
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    css=em    "required to save user account" note not apear on Add New User Page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    css=em    *required to save user account    "*required to save user account" note has invalid text
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    css=legend    Personal Information label not apear on Add New User page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    css=legend    Personal Information    Personal Information label has invalid text on Add New User Page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    css=label.control-label    Name* field not apear on Add New User Oage
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    css=label.control-label    Name*    Name field has invalid text on Add New User Page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Textfield    id=first_name    First_Name text box not apear on Add New User Page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Textfield    id=middle_name    middle_name text box not apear on Add New User Page
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Textfield    id=last_name    last_name text box not apear on Add New User Page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='personalInfo']/fieldset/div[2]/div/label    Title label not apear on Add New User Page
+    ${V12}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='personalInfo']/fieldset/div[2]/div/label    Title    Title label has invaild text on Add New User Page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Textfield    id=title    title field not apear on Add New User Page
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='personalInfo']/fieldset/div[3]/div/label    Employe ID not apear on Add New User Page
+    ${V15}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='personalInfo']/fieldset/div[3]/div/label    Employee ID    Employee ID has invalid text on Add New User Page
+    ${V16}=    Run Keyword And Return Status    Page Should Contain Textfield    id=emp_id    Employee ID text field not apear on Add New User Page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='personalInfo']/fieldset/div[4]/div/label    Core Id label not apear on Add New User Page \ \ \ \ \ \
+    ${V18}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='personalInfo']/fieldset/div[4]/div/label    Core ID    Core ID has invalid text on Add New User Page
+    ${V19}=    Run Keyword And Return Status    Page Should Contain Textfield    id=core_id    text box not apear on Add New User Page
+    ${V20}=    Run Keyword And Return Status    Page Should Contain Element    css=#contactInfo > fieldset > legend    Contact Information label not apear on on Add New User Page
+    ${V21}=    Run Keyword And Return Status    Element Text Should Be    css=#contactInfo > fieldset > legend    Contact Information    Contact Information label has invalid text on Add New User Page
+    ${V22}=    Run Keyword And Return Status    Page Should Contain Element    css=#contactInfo > fieldset > div.row-fluid > div.span3 > label.control-label    Phone label not apear on Add New User Page
+    ${V23}=    Run Keyword And Return Status    Element Text Should Be    css=#contactInfo > fieldset > div.row-fluid > div.span3 > label.control-label    Phone    Phone label has invalid text on Add New User Page
+    ${V24}=    Run Keyword And Return Status    Page Should Contain Textfield    id=phone    Phone text field not present on Phone label not apear on Add New User Page
+    ${V25}=    Run Keyword And Return Status    Page Should Contain Textfield    id=extension    Ext text field not present on Phone label not apear on Add New User Page
+    ${V26}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='contactInfo']/fieldset/div[2]/div/label    Mobile label not apear on Add New User Page
+    ${V27}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='contactInfo']/fieldset/div[2]/div/label    Mobile    Mobile label has invalid text on Add New User Page
+    ${V28}=    Run Keyword And Return Status    Page Should Contain Textfield    id=mobile    Mobile text field not apear on Add New User Page
+    ${V29}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='contactInfo']/fieldset/div[3]/div/label    Fax label not apear on Add New User Page
+    ${V30}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='contactInfo']/fieldset/div[3]/div/label    Fax    Fax label has invalid text on Add New User Page
+    ${V31}=    Run Keyword And Return Status    Page Should Contain Textfield    id=fax    Fax text field not apear
+    ${V32}=    Run Keyword And Return Status    Page Should Contain Element    css=#privileges > fieldset > legend    Privileges label not apear on Add New User Page
+    ${V33}=    Run Keyword And Return Status    Element Text Should Be    css=#privileges > fieldset > legend    Privileges    Privileges label has invalid text on Add New User Page
+    ${V34}=    Run Keyword And Return Status    Page Should Contain Element    css=div.row-fluid.modal-multiselect > div.span3 > label.control-label    Role label not apear on Add New User Page
+    ${V35}=    Run Keyword And Return Status    Element Text Should Be    css=div.row-fluid.modal-multiselect > div.span3 > label.control-label    Roles*    Role label has invalid text on Add New User Page
+    ${V36}=    Run Keyword And Return Status    Page Should Contain Element    css=span.multiSelectLabel    Available label not apear on Add New User Page
+    ${V37}=    Run Keyword And Return Status    Element Text Should Be    css=span.multiSelectLabel    Available:    Available label has invalid text on Add New User Page
+    ${V38}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='privileges']/fieldset/div/div[2]/div/div[2]/span    Selected label not apear on Add New User Page
+    ${V39}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='privileges']/fieldset/div/div[2]/div/div[2]/span    Selected:    Selected label has invalid text on Add New User Page
+    ${V40}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='privileges']/fieldset/div[2]/div/label    Approval Limit Group label not apear on Add New User Page
+    ${V41}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='privileges']/fieldset/div[2]/div/label    Approval Limit Group    Approval Limit Group label has invalid text on Add New User Page
+    ${V42}=    Run Keyword And Return Status    Page Should Contain Element    css=div.disabled    Approval Limit Group drop down is enable on Add New User Page
+    ${V43}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='privileges']/fieldset/div[3]/div/label    Contract Override Group label not apear on Add New User Page
+    ${V44}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='privileges']/fieldset/div[3]/div/label    Contract Override Group    Contract Override Group label has invalid text on Add New User Page
+    ${V45}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='privileges']/fieldset/div[3]/div[2]/div/div    Contract Override Group drop down is enable on Add New User Page
+    ${V46}=    Run Keyword And Return Status    Page Should Contain Element    css=i.fa.fa-question-circle    First Question Mark not apear on Add New User Page
+    ${V47}=    Run Keyword And Return Status    Page Should Contain Element    css=#contract_override_help > i.fa.fa-question-circle    Second Question Mark not apear on Add New User Page
+    ${V48}=    Run Keyword And Return Status    Page Should Contain Element    css=#loginDetails > fieldset > legend    Login Details label not apear on Add New User Page
+    ${V49}=    Run Keyword And Return Status    Element Text Should Be    css=#loginDetails > fieldset > legend    Login Details    Login Label has invalid text on Add New User Page
+    ${V50}=    Run Keyword And Return Status    Page Should Contain Element    css=#loginDetails > fieldset > div.row-fluid > div.span3 > label.control-label    Email Address label not apear on Add New User Page
+    ${V51}=    Run Keyword And Return Status    Element Text Should Be    css=#loginDetails > fieldset > div.row-fluid > div.span3 > label.control-label    Email Address*    Email Address label has invalid text on Add New User Page
+    ${V52}=    Run Keyword And Return Status    Page Should Contain Textfield    id=email_address    Email Address text field not apear on \ Add New User Page
+    ${V53}=    Run Keyword And Return Status    Page Should Contain Element    css=div.controls.controls-row > label.checkbox    Enable check box not apear on Add New User Page
+    ${V54}=    Run Keyword And Return Status    Element Text Should Be    css=div.controls.controls-row > label.checkbox    Enable    Enable check box has invalid text on Add New User Page
+    ${V55}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loginDetails']/fieldset/div[2]/div/label    Branches label not apear on Add New User Page
+    ${V56}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loginDetails']/fieldset/div[2]/div/label    Branches*    Branches label has invalid text on Add New User Page
+    ${V57}=    Run Keyword And Return Status    Page Should Contain Element    css=div.controls.modal-multiselect > div.has-double-dropdown > div.pull-left > span.multiSelectLabel    Available label not apear on Add New User page
+    ${V58}=    Run Keyword And Return Status    Element Text Should Be    css=div.controls.modal-multiselect > div.has-double-dropdown > div.pull-left > span.multiSelectLabel    Available:    Available label has invalid text \ on Add New User page
+    ${V59}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='loginDetails']/fieldset/div[2]/div[2]/div/div/div[2]/span    Selected label not apear on Add New User Page
+    ${V60}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loginDetails']/fieldset/div[2]/div[2]/div/div/div[2]/span    Selected:    Selected label has invalid text \ on Add New User Page
+    ${V61}=    Run Keyword And Return Status    Page Should Contain Element    id=cancel    Cancel button not apear on Add New User Page
+    ${V62}=    Run Keyword And Return Status    Element Text Should Be    id=cancel    Cancel    Cancel button has invalid text on Add New User Page
+    ${V63}=    Run Keyword And Return Status    Page Should Contain Element    id=add_user    Save button not apear on Add New User Page
+    ${V64}=    Run Keyword And Return Status    Element Text Should Be    id=add_user    Save    Save button has invalid text \ on Add New User Page
+    ${V65}=    Run Keyword And Return Status    Page Should Contain Element    link=Cancel    Cancel link button not apear on Add New User Page
+    ${V66}=    Run Keyword And Return Status    Element Text Should Be    link=Cancel    Cancel    Cancel link button has invalid text on Add New User Page
+    ${V67}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='stickyWrapper']/div/a[2]/span/i    Save link button not apear on Add New User Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}    ${V21}    ${V22}    ${V23}
+    ...    ${V24}    ${V25}    ${V26}    ${V27}    ${V28}    ${V29}
+    ...    ${V30}    ${V31}    ${V32}    ${V33}    ${V34}    ${V35}
+    ...    ${V36}    ${V37}    ${V38}    ${V39}    ${V40}    ${V41}
+    ...    ${V42}    ${V43}    ${V44}    ${V45}    ${V46}    ${V47}
+    ...    ${V48}    ${V49}    ${V50}    ${V51}    ${V52}    ${V53}
+    ...    ${V54}    ${V55}    ${V56}    ${V57}    ${V58}    ${V59}
+    ...    ${V60}    ${V61}    ${V62}    ${V63}    ${V64}    ${V65}
+    ...    ${V66}    ${V67}
+    @{Messages}=    Create List    Manage User Account link button not apear on Add New User Page    "required to save user account" note not apear on Add New User Page    "*required to save user account" note has invalid text    Personal Information label not apear on Add New User page    Personal Information label has invalid text on Add New User Page
+    ...    Name* field not apear on Add New User Oage    Name field has invalid text on Add New User Page    First_Name text box not apear on Add New User Page    middle_name text box not apear on Add New User Page    last_name text box not apear on Add New User Page    Title label not apear on Add New User Page
+    ...    Title label has invaild text on Add New User Page    title field not apear on Add New User Page    Employe ID not apear on Add New User Page    Employee ID has invalid text on Add New User Page    Employee ID text field not apear on Add New User Page    Core Id label not apear on Add New User Page
+    ...    Core ID has invalid text on Add New User Page    text box not apear on Add New User Page    Contact Information label not apear on on Add New User Page    Contact Information label has invalid text on Add New User Page    Phone label not apear on Add New User Page    Phone label has invalid text on Add New User Page
+    ...    Phone text field not present on Phone label not apear on Add New User Page    Ext text field not present on Phone label not apear on Add New User Page    Mobile label not apear on Add New User Page    Mobile label has invalid text on Add New User Page    Mobile text field not apear on Add New User Page    Fax label not apear on Add New User Page
+    ...    Fax label has invalid text on Add New User Page    Fax text field not apear on Add New User Page    Privileges label not apear on Add New User Page    Privileges label has invalid text on Add New User Page    Role label not apear on Add New User Page    Role label has invalid text on Add New User Page
+    ...    Available label not apear on Add New User Page    Available label has invalid text on Add New User Page    Selected label not apear on Add New User Page    Selected label has invalid text on Add New User Page    Approval Limit Group label not apear on Add New User Page    Approval Limit Group label has invalid text on Add New User Page
+    ...    Approval Limit Group drop down is enable on Add New User Page    Contract Override Group label not apear on Add New User Page    Contract Override Group label has invalid text on Add New User Page    Contract Override Group drop down is enable on Add New User Page    First Question Mark not apear on Add New User Page    Second Question Mark not apear on Add New User Page
+    ...    Login Details label not apear on Add New User Page    Login Label has invalid text on Add New User Page    Email Address label not apear on Add New User Page    Email Address label has invalid text on Add New User Page    Email Address text field not apear on \ Add New User Page    Enable check box not apear on Add New User Page
+    ...    Enable check box has invalid text on Add New User Page    Branches label not apear on Add New User Page    Branches label has invalid text on Add New User Page    Available label not apear on Add New User page    Available label has invalid text \ on Add New User page    Selected label not apear on Add New User Page
+    ...    Selected label has invalid text \ on Add New User Page    Cancel button not apear on Add New User Page    Cancel button has invalid text on Add New User Page    Save button not apear on Add New User Page    Save button has invalid text \ on Add New User Page    Cancel link button not apear on Add New User Page
+    ...    Cancel link button has invalid text on Add New User Page    Save link button not apear on Add New User Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyRequiredFieldValidationOnAddNewUserPage
+    [Documentation]    This script use to verify Required field validation on Add New User Page.
+    goToManageUserPage
+    Sleep    2
+    Click Element    link=Add User
+    Sleep    1
+    Wait Until Page Contains Element    id=first_name    ${Timeout}    Add New User Page Not loaded properly
+    Comment    To verify the required field validation on Add New User Page
+    Click Element    //div[@id='stickyWrapper']/div/a[2]/span/i
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='personalInfo']/fieldset/div/div[2]/div/div/div/small    This field is required.    First Name field is not required on Add New User Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='personalInfo']/fieldset/div/div[2]/div/div/div[2]/small    This field is required.    Last Name field is not required on Add New User Page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='privileges']/fieldset/div/div[2]/div/div/small    This field is required.    Roles field is not required on Add New User Page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loginDetails']/fieldset/div/div[2]/div/div/div/small    This field is required.    Email Address field is not required on Add New User Page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loginDetails']/fieldset/div[2]/div[2]/div/div/div/small    This field is required.    Branches field is not required on Add New User Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    @{Messages}=    Create List    First Name field is not required on Add New User Page    Last Name field is not required on Add New User Page    Roles field is not required on Add New User Page    Email Address field is not required on Add New User Page    Branches field is not required on Add New User Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDuplicateEmailAddress
+    [Documentation]    This script use to verify Duplicate Email Address on Add New User Page.
+    goToManageUserPage
+    Sleep    1
+    ${ExistingEmail}=    Get Text    //tr[1]/td[2]/a
+    Click Element    link=Add User
+    Sleep    1
+    Wait Until Page Contains Element    id=first_name    ${Timeout}    Add New User Page Not loaded properly
+    Comment    To verify Duplicate Email Address on Add New User Page
+    Focus    id=email_address
+    Input Text    id=email_address    ${ExistingEmail}
+    Focus    id=add_user
+    Sleep    1
+    Focus    id=add_user
+    Click Element    id=add_user
+    Sleep    2
+    Element Text Should Be    //div[@id='loginDetails']/fieldset/div/div[2]/div/div/div/small    This email address is not available.    Duplicate Email Address Error message has invalid text on Add New User Page
+
+veriftNewlyAddedUserDetails
+    [Documentation]    This script use to verify the details of newly added User.
+    ${FirstName}    Generate Random String    5    [UPPER]
+    ${LastName}    Generate Random String    5    [UPPER]
+    ${Title}    Generate Random String    5    [LETTERS]
+    ${EmpID}    Generate Random String    5    [NUMBERS]
+    ${CoreID}    Generate Random String    5    [NUMBERS]
+    ${Email}    Generate Random String    8    [LETTERS]
+    Set Global Variable    ${Email}    ${Email}@${Email}.com
+    addNewUserAccount    ${FirstName}    ${LastName}    ${Title}    ${EmpID}    ${CoreID}    ${Email}
+    Sleep    1
+    Element Should Be Visible    css=div.alert.alert-info    New User not saved successfully
+    ${NotificationMessage}=    Get Text    css=div.alert.alert-info
+    @{NotificationMessage}=    Split To Lines    ${NotificationMessage}
+    Should Be Equal    @{NotificationMessage}[0]    ×
+    Should Be Equal    @{NotificationMessage}[1]    Info! Your account has successfully been created.    Successfully notification message has invalid text on View User Page
+    Sleep    5
+    Focus    link=${Email}
+    Click Element    link=${Email}
+    Sleep    2
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    User Details Page not load properly
+    Sleep    1
+    ${firstNameLastName}=    Get Text    //div[@id='personalInfo']/div[2]/div/div[2]
+    ${V1}=    Run Keyword And Return Status    Should Be Equal    ${firstNameLastName}    ${FirstName} \ ${LastName}    First name and Last name have invalid text on User Details page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='personalInfo']/div[2]/div[2]/div[2]    ${Title}    Title has invalid text on User Details page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='personalInfo']/div[2]/div[3]/div[2]    ${EmpID}    Employee ID has invalid text on User Details page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='personalInfo']/div[2]/div[4]/div[2]    ${CoreID}    Core ID has invalid text on User Details page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='contactInfo']/div[2]/div/div[2]    (999) 999-9999    Phnoe no. has invalid number on User Details page
+    ${GetRole}=    Get Text    //div[@id='privileges']/div[2]/div/div[2]
+    ${V6}=    Run Keyword And Return Status    Should Be Equal    ${GetRole}    ${Role}    Role has \ invalid text on User details page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loginInfo']/div[2]/div/div[2]    ${Email} - Enabled    Email Address has invalid text on on User Details page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='loginInfo']/div[2]/div[3]/div[2]    ${Branch}    Branch has invalid text on User details page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}
+    @{Messages}=    Create List    First name and Last name have invalid text on User Details page    Title has invalid text on User Details page    Employee ID has invalid text on User Details page    Core ID has invalid text on User Details page    Phnoe no. has invalid number on User Details page
+    ...    Role has \ invalid text on User details page    Email Address has invalid text on on User Details page    Branch has invalid text on User details page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyEnableDisableEmailAddressOnAddNewUserPage
+    [Documentation]    This script verifies the Disable User functionality
+    ${FirstName}    Generate Random String    5    [LETTERS]
+    ${LastName}    Generate Random String    5    [LETTERS]
+    ${Title}    Generate Random String    5    [LETTERS]
+    ${EmpID}    Generate Random String    5    [NUMBERS]
+    ${CoreID}    Generate Random String    5    [NUMBERS]
+    ${Email}    Generate Random String    8    [LETTERS]
+    Set Global Variable    ${Email}    ${Email}@${Email}.com
+    addNewUserAccount    ${FirstName}    ${LastName}    ${Title}    ${EmpID}    ${CoreID}    ${Email}
+    Sleep    4
+    Element Should Be Visible    css=div.alert.alert-info    New User not saved successfully
+    ${NotificationMessage}=    Get Text    css=div.alert.alert-info
+    @{NotificationMessage}=    Split To Lines    ${NotificationMessage}
+    Should Be Equal    @{NotificationMessage}[0]    ×
+    Should Be Equal    @{NotificationMessage}[1]    Info! Your account has successfully been created.    Successfully notification message has invalid text on View User Page
+    Sleep    2
+    Wait Until Page Contains Element    link=${Email}    ${Timeout}    Added user not displayed in the Manage User account User list page
+    Focus    link=${Email}
+    Click Element    link=${Email}
+    Sleep    2
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    User Details Page not load properly
+    Click Element    link=Edit
+    Sleep    1
+    Focus    id=enable_user
+    Click Element    id=enable_user
+    Focus    id=update_user
+    Click Element    id=update_user
+    Confirm Action
+    Sleep    3
+    Wait Until Page Contains Element    css=div.alert.alert-info    ${Timeout}    Successful update notification message not appear on the User View Page
+    Element Should Be Visible    css=div.alert.alert-info    Successful update notification message not appear on the User View Page
+    ${NotificationMessage}=    Get Text    css=div.alert.alert-info
+    @{NotificationMessage}=    Split To Lines    ${NotificationMessage}
+    Should Be Equal    @{NotificationMessage}[0]    ×
+    Should Be Equal    @{NotificationMessage}[1]    Info! Account has been updated.    Update Details notification message has invalid text on View User Page
+    Sleep    5
+    Click Element    link=Manage User Accounts
+    Sleep    1
+    Wait Until Page Contains Element    //table[@id='userMgt']/thead/tr/th[8]/span/select    ${Timeout}    MAnage User page not loaded properly
+    Focus    //table[@id='userMgt']/thead/tr/th[8]/span/select
+    Select From List    //table[@id='userMgt']/thead/tr/th[8]/span/select    Disabled
+    Input Text    css=label > input[type="text"]    ${Email}
+    Sleep    5
+    Element Text Should Be    //tr[1]/td[2]/a    ${Email}    Searched Disabled user not found in Disable Status List on Manage User Account Page
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td[2]/a    ${Email}    Email Address has invalid text on View user page for Disable User ${Email}
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td[3]    ${FirstName}    First Name has invalid text on View user page for Disable User ${Email}
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td[4]    ${LastName}    Last Name has invalid text on View user page for Disable User ${Email}
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Email Address has invalid text on View user page    First Name has invalid text on View user page    Last Name has invalid text on View user page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+goToManageUserPage
+    [Documentation]    This keyword is used to Navigate to Manage User Account page
+    Sleep    1
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_user_admin']/div/a[2]/i    ${Timeout}    Admin page not loaded properly
+    Click Element    //div[@id='controller_user_admin']/div/a[2]/i
+    Sleep    1
+    Wait Until Page Contains Element    link=User Accounts    ${Timeout}    User Account tab not displayed
+    Click Element    link=User Accounts
+    Sleep    2
+    Wait Until Page Contains Element    link=Add User    ${Timeout}    Manage User Account Page not loaded Properly
+
+addNewUserAccount
+    [Arguments]    ${FirstName}    ${LastName}    ${Title}    ${EmpID}    ${CoreID}    ${Email}
+    [Documentation]    This keyword use to Add New User Account.
+    goToManageUserPage
+    Sleep    2
+    Click Element    link=Add User
+    Sleep    1
+    Wait Until Page Contains Element    id=first_name    ${Timeout}    Add New User Page Not loaded properly
+    Comment    To fill personal information Section On Add New User Account
+    Focus    id=first_name
+    Input Text    id=first_name    ${FirstName}
+    Focus    id=last_name
+    Input Text    id=last_name    ${LastName}
+    Focus    id=title
+    Input Text    id=title    ${Title}
+    Focus    id=emp_id
+    Input Text    id=emp_id    ${EmpID}
+    Focus    id=core_id
+    Input Text    id=core_id    ${CoreID}
+    Comment    To fill Contact information Section On Add New User Account
+    Focus    id=phone
+    Input Text    id=phone    9999999999
+    Focus    id=mobile
+    Input Text    id=mobile    9999999999
+    Focus    id=fax
+    Input Text    id=fax    9999999999
+    Comment    To fill Privileges Section On Add New User Account
+    Focus    id=selected_roles1
+    Click Element    id=selected_roles1
+    ${Role}=    Get Text    //div[@id='privileges']/fieldset/div/div[2]/div/div/div/ul/li/label
+    Set Global Variable    ${Role}    ${Role}
+    Comment    To fill Login Details Section On Add New User Account
+    Focus    id=email_address
+    Input Text    id=email_address    ${Email}
+    Focus    id=enable_user
+    Click Element    id=enable_user
+    Sleep    1
+    Focus    //div[@id='loginDetails']/fieldset/div[2]/div[2]/div/div/div/div/ul/li/label/input
+    Click Element    //div[@id='loginDetails']/fieldset/div[2]/div[2]/div/div/div/div/ul/li/label/input
+    ${Branch}=    Get Text    //div[@id='loginDetails']/fieldset/div[2]/div[2]/div/div/div[2]/div/ul/li
+    Set Global Variable    ${Branch}    ${Branch}
+    Sleep    2
+    Focus    id=add_user
+    Sleep    1
+    Click Element    id=add_user
+    Sleep    2
+    Wait Until Page Contains Element    link=Add User    ${Timeout}    New User not added successfully

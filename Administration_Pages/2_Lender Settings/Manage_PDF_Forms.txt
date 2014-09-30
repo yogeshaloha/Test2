@@ -1,0 +1,562 @@
+*** Settings ***
+Documentation     This suite contains all the scenarios of Manage PDF Form.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyPDFFormsLink
+    [Documentation]    This script verifyes the Manage PDF Forms link.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=PDF Forms    ${Timeout}    PDF Form \ link not present under Lender Settings tab
+
+verifyPDFFormsButton
+    [Documentation]    This script verifyes the Manage PDF Forms button under Lender Settings tab.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Manage PDF Forms    ${Timeout}    Manage PDF form button not appears on the Lender settings page
+    Page Should Contain Element    link=Manage PDF Forms    Manage PDF Form \ button not present on Lender Settings Dashboard page
+
+verifyPDFFormsLinkRedirection
+    [Documentation]    This script navigates to Manage Forms page.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=PDF Forms    ${Timeout}    PDF Form \ link not present under Lender Settings tab
+    Focus    link=PDF Forms
+    Click Element    link=PDF Forms
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Form    ${Timeout}    Manage Forms \ page not loaded properly
+
+verifyUIOfManageFormsPage
+    [Documentation]    This script verifyes the UI element of Manage Forms page.
+    goToManageFormsPage
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Manage Forms header is not present \ on Manage Forms page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Forms    Manage Forms header has invalid text on Manage Forms page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    link=Add Form    Add Form link not present on Manage Forms page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    link=Add Form    Add Form    Add Form link has invalid text on Manage Forms page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='manage_forms']/thead/tr/th    Form Name Column \ not present on Manage Forms page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_forms']/thead/tr/th    Form Name    Form Name Column has invalid text on Manage Forms page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='manage_forms']/thead/tr/th[2]    PDF File Name \ Column not present on Manage Forms page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_forms']/thead/tr/th[2]    PDF File Name    PDF File Name Column has invalid text on Manage Forms page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='manage_forms']/thead/tr/th[3]    Code Column not present on Manage Forms page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_forms']/thead/tr/th[3]    Code    Code Column has invalid text on Manage Forms page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='manage_forms']/thead/tr/th[4]    Form Type Column not present on Manage Forms page
+    ${V12}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_forms']/thead/tr/th[4]    Form Type    Form Type Column has invalid text on Manage Forms page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='manage_forms']/thead/tr/th[5]    Updated On Column not present on Manage Forms page
+    ${V14}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_forms']/thead/tr/th[5]    Updated On    Updated On Column has invalid text on Manage Forms page
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='manage_forms']/thead/tr/th[6]    By Column not present on Manage Forms page
+    ${V16}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_forms']/thead/tr/th[6]    By    By Column has invalid text on Manage Forms page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='manage_forms']/thead/tr/th[7]    Status \ Column not present on Manage Forms page
+    ${V18}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='manage_forms']/thead/tr/th[7]    Status    Status Column \ has invalid text on Manage Forms page
+    ${V19}=    Run Keyword And Return Status    Page Should Contain Textfield    //div[@id='manage_forms_filter']/label/input    Search text box not present on Manage Forms page
+    ${V20}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_forms_length']/label/select    View All drop down not present on Manage Forms page
+    ${V21}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_forms_length']/label    Per Page label not present on Manage Forms page
+    ${V22}=    Run Keyword And Return Status    Page Should Contain Element    link=← Previous    Previous link button not present on Manage Forms page
+    ${V23}=    Run Keyword And Return Status    Page Should Contain Element    link=Next →    Next link button not present on Manage Forms page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}    ${V21}    ${V22}    ${V23}
+    @{Messages}=    Create List    Manage Forms header is not present \ on Manage Forms page    Manage Forms header has invalid text on Manage Forms page    Add Form link not present on Manage Forms page    Add Form link has invalid text on Manage Forms page    Form Name Column \ not present on Manage Forms page
+    ...    Form Name Column \ has invalid text on Manage Forms page    PDF File Name Column not present on Manage Forms page    PDF File Name Column \ \ has invalid text on Manage Forms page    Code Column not present on Manage Forms page    Code Column has invalid text on Manage Forms page    Form Type \ Column not present on Manage Forms page
+    ...    Form Type Column \ \ has invalid text on Manage Forms page    Updated On Column \ \ not present on Manage Forms page    Updated On \ label has invalid text on Manage Forms page    By Column not present on Manage Forms page    By Column has invalid text on Manage Forms page    Status Column not present on Manage Forms page
+    ...    Status Column \ has invalid text on Manage Forms page    Search text box not present on Manage Forms page    View All drop down not present on Manage Forms page    Per Page label not present on Manage Forms page    Previous link button not present on Manage Forms page    Next link button not present on Manage Forms page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUIOfAddNewPDFFormPage
+    [Documentation]    This script verifyes UI elements of Add New PDF Form page.
+    goToManageFormsPage
+    Sleep    2
+    Click Element    link=Add Form
+    Sleep    2
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New PDF Form page not loaded properly
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Add New PDF Form header not present on Add New PDF Form page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Add New PDF Form    Add New PDF Form has invalid text on Add New PDF Form page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='pdf_form_settings']/fieldset/legend    PDF Form Settings section not present on Add New PDF Form page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='pdf_form_settings']/fieldset/legend    PDF Form Settings    PDF Form Settings section has invalid text on Add New PDF Form page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='pdf_form_settings']/fieldset/div/div/label    Form Name*label not present on Add New PDF Form page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='pdf_form_settings']/fieldset/div/div/label    Form Name*    Form Name* label has invalid text on Add New PDF Form page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Textfield    id=name    Name text box not present on Add New PDF Form page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='pdf_form_settings']/fieldset/div/div[2]/div/div/label    Enabled checkbox not present on Add New PDF Form page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='pdf_form_settings']/fieldset/div[2]/div/label    Form Code label not present on Add New PDF Form page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='pdf_form_settings']/fieldset/div[2]/div/label    Form Code    Form Code \ label has invalid text on Add New PDF Form page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Textfield    id=code    Form Code text box not present on Add New PDF Form page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='pdf_form_settings']/fieldset/div[3]/div/label    Form Type label not present on Add New PDF Form page
+    ${V13}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='pdf_form_settings']/fieldset/div[3]/div/label    Form Type    Form Type label has invalid text on Add New PDF Form page
+    ${V14}=    Run Keyword And Return Status    Page Should Contain Element    id=type    Form Type drop down not present \ on Add New PDF Form page
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='pdf_form_settings']/fieldset/div[4]/div/label    PDF* label not present on Add New PDF Form page
+    ${V16}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='pdf_form_settings']/fieldset/div[4]/div/label    PDF*    PDF* \ label has invalid text on Add New PDF Form page
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='pdf_form_settings']/fieldset/div[4]/div[2]/div/div/label    Select File button not present on Add New PDF Form page
+    ${V18}=    Run Keyword And Return Status    Page Should Contain Element    link=Cancel    Cancel link button not present \ on Add New PDF Form page
+    ${V19}=    Run Keyword And Return Status    Element Text Should Be    link=Cancel    Cancel    Cancel link button has invalid text on Add New PDF Form page
+    ${V20}=    Run Keyword And Return Status    Page Should Contain Element    link=Manage Forms    Manage Forms \ link button not present \ on Add New PDF Form page
+    ${V21}=    Run Keyword And Return Status    Element Text Should Be    link=Manage Forms    Manage Forms    Manage Forms \ link button has invalid text on Add New PDF Form page
+    ${V22}=    Run Keyword And Return Status    Page Should Contain Element    link=Save    Save link button not present \ on Add New PDF Form page
+    ${V23}=    Run Keyword And Return Status    Element Text Should Be    link=Save    Save    Save link button has invalid text on Add New PDF Form page
+    ${V24}=    Run Keyword And Return Status    Page Should Contain Element    //input[@value='Cancel']    Cancel \ button not present \ on Add New PDF Form page
+    ${V25}=    Run Keyword And Return Status    Page Should Contain Element    //input[@value='Save']    Save \ button not present on Add New PDF Form page
+    Comment    Added verification for New Added section    05 Aug 2014
+    ${V26}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='criteriaSetsTable']/thead/tr/th[2]    PDF Print Condition    PDF Print Condition section not appear on the Add New Form Page
+    ${V27}=    Run Keyword And Return Status    Page Should Contain Element    //a[contains(text(),'Add PDF Print Condition')]    Add PDF Print Condition button not appear on the Add New Form Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}    ${V21}    ${V22}    ${V23}
+    ...    ${V24}    ${V25}    ${V26}    ${V27}
+    @{Messages}=    Create List    Add New PDF Form header not present on Add New PDF Form page    Add New PDF Form has invalid text on Add New PDF Form page    PDF Form Settings section not present on Add New PDF Form page    PDF Form Settings section has invalid text on Add New PDF Form page    Form Name*label not present on Add New PDF Form page
+    ...    Form Name* label has invalid text on Add New PDF Form page    Name text box not present on Add New PDF Form page    Enabled checkbox not present on Add New PDF Form page    Form Code label not present on Add New PDF Form page    Form Code \ label has invalid text on Add New PDF Form page    Form Code text box not present on Add New PDF Form page
+    ...    Form Type \ label not present on Add New PDF Form page    Form Type label has invalid text on Add New PDF Form page    Form Type drop down not present \ on Add New PDF Form page    PDF* label not present on Add New PDF Form page    PDF* \ label has invalid text on Add New PDF Form page    Select File button not present on Add New PDF Form page
+    ...    Cancel link button not present \ on Add New PDF Form page    Cancel link button has invalid text on Add New PDF Form page    Manage Forms \ link button not present \ on Add New PDF Form page    Manage Forms \ link button has invalid text on Add New PDF Form page    Save link button not present \ on Add New PDF Form page    Save link button has invalid text on Add New PDF Form page
+    ...    Cancel \ button not present \ on Add New PDF Form page    Save \ button not present \ on Add New PDF Form page    PDF Print Condition section not appear on the Add New Form Page    Add PDF Print Condition button not appear on the Add New Form Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUIPDFPrintConditionSection
+    [Documentation]    This scripts verifies the UI of the Add New PDF Print Condition section
+    goToManageFormsPage
+    Sleep    2
+    Click Element    link=Add Form
+    Sleep    2
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New PDF Form page not loaded properly
+    Focus    //a[contains(text(),'Add PDF Print Condition')]
+    Click Element    //a[contains(text(),'Add PDF Print Condition')]
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    id=unique1    Add PDF Print Condition section not expanded after clicking on the "Add PDF Print Condition " button \ on Add New Form Page
+    ${V2}=    Run Keyword And Return Status    Textfield Value Should Be    id=unique1    PDF Print Condition 1    PDF Print Condition default text has invalid text on the Add New Form Page under Add PDF Print Condition section
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='criteriaSetDiv_-1']/table/tbody/tr[2]/td[3]    Condition    Condition column name has invalid text on the Add New Form Page under Add PDF Print Condition section
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='criteriaSetDiv_-1']/table/tbody/tr[2]/td[4]    Attribute    Attribute column name has invalid text on the Add New Form Page under Add PDF Print Condition section
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='criteriaSetDiv_-1']/table/tbody/tr[2]/td[5]    Method    Method column name has invalid text on the Add New Form Page under Add PDF Print Condition section
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='criteriaSetDiv_-1']/table/tbody/tr[2]/td[6]    Value    Value column name has invalid text on the Add New Form Page under Add PDF Print Condition section
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='criteriaSetDiv_-1']/table/tbody/tr[2]/td[7]/a/i    Add Row button \ not appear in added print condition
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='criteriaSetDiv_-1']/table/tbody/tr/td[3]/div/button    Add New Print Condition button not appear in the Add New PDF Print Condition section
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='criteriaSetDiv_-1']/table/tbody/tr/td[3]/div/button[2]    Delete button not appear in the Add New PDF Print Condition section
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    id=unique2    Attribute drop down not present in the First Print Condition on Add New Form Page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    id=unique3    Method drop down not present in the First Print Condition on Add New Form Page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    id=unique4    Value Text box not present in the First Print Condition on Add New Form Page
+
+verifyDefaultValuesOnAddNewPDFFormPage
+    [Documentation]    This script verifyes default values \ on Add New PDF Form Page.
+    goToManageFormsPage
+    Sleep    2
+    Click Element    link=Add Form
+    Sleep    2
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New PDF Form page not loaded properly
+    ${FormNameWaterMarkText}=    Get Element Attribute    id=name@placeholder
+    ${FormCodeWaterMarkText}=    Get Element Attribute    id=code@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Name    ${FormNameWaterMarkText}    Form name text box has invalid watermark text On Add New PDF Form Page
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    Form Code    ${FormCodeWaterMarkText}    Form code text box has invalid watermark text On Add New PDF Form Page
+    ${V3}=    Run Keyword And Return Status    Checkbox Should Not Be Selected    name=enabled
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Form name text box has invalid watermark text On Add New PDF Form Page    Form code text box has invalid watermark text On Add New PDF Form Page    Enabled check box not selected by default \ On Add New PDF Form Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyButtonFunctionalityInPDFPrintConditionSection
+    goToManageFormsPage
+    Sleep    2
+    Click Element    link=Add Form
+    Sleep    2
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New PDF Form page not loaded properly
+    Focus    //a[contains(text(),'Add PDF Print Condition')]
+    Click Element    //a[contains(text(),'Add PDF Print Condition')]
+    Sleep    1
+    Comment    Verify Add New Condition Row \ Functionality
+    Focus    //div[@id='criteriaSetDiv_-1']/table/tbody/tr[2]/td[7]/a/i
+    Click Element    //div[@id='criteriaSetDiv_-1']/table/tbody/tr[2]/td[7]/a/i
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    id=unique5    New Row not added to the Print Condition One on Add New Form Page after clicking on the Add Row Button
+    Comment    Verify Delete Row functionality
+    Focus    //tr[@id='-1_-2_criteriaRow']/td[7]/a/i
+    Click Element    //tr[@id='-1_-2_criteriaRow']/td[7]/a/i
+    Sleep    1
+    ${V2}=    Run Keyword And Return Status    Element Should Not Be Visible    id=unique5    Added \ Row not deleted \ From Print Condition One on Add New Form Page after clicking on the Add Row Button
+    Comment    Verify Add Print Condition Functionality
+    Focus    //div[@id='criteriaSetDiv_-1']/table/tbody/tr/td[3]/div/button
+    Click Element    //div[@id='criteriaSetDiv_-1']/table/tbody/tr/td[3]/div/button
+    Sleep    1
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    id=unique8    New Print Condition not added to Page after Clicking on Add Button
+    ${V4}=    Run Keyword And Return Status    Textfield Value Should Be    id=unique8    PDF Print Condition 2    PDF Print Condition 2 text box has invalid text
+    Comment    Verify Delete \ Print Condition Functionality
+    Focus    xpath=(//button[@type='button'])[2]
+    Click Element    xpath=(//button[@type='button'])[2]
+    Sleep    1
+    ${V5}=    Run Keyword And Return Status    Element Should Not Be Visible    id=unique1    Print Condition 1 not deleted after clicking on the Delete Condition button on Add New From Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    @{Messages}=    Create List    New Row not added to the Print Condition One on Add New Form Page after clicking on the Add Row Button    Added \ Row not deleted \ From Print Condition One on Add New Form Page after clicking on the Add Row Button    New Print Condition not added to Page after Clicking on Add Button    PDF Print Condition 2 text box has invalid text    Print Condition 1 not deleted after clicking on the Delete Condition button on Add New From Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyBlankFieldValidationOnAddNewPDFFormPage
+    [Documentation]    This script verifyes blank field validation on Add New PDF Form page.
+    goToManageFormsPage
+    Sleep    2
+    Click Element    link=Add Form
+    Sleep    2
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New PDF Form page not loaded properly
+    Focus    link=Save
+    Click Element    link=Save
+    Sleep    2
+    Wait Until Page Contains Element    link=Cancel    ${Timeout}    New PDF Form added without giving validation message
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Blank field validation message for form Name is not displayed
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. \ message has invalid text on Add New PDF Form page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='pdf_form_settings']/fieldset/div[4]/div[2]/div/div/small    Blank field validation message for Upload PDF field is not displayed
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='pdf_form_settings']/fieldset/div[4]/div[2]/div/div/small    This field is required.    This field is required. message has invalid text on Add New PDF Form page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Blank field validation message forform Name is not displayed    This field is required. \ message has invalid text on Add New PDF Form page    Blank field validation message for Upload PDF field is not displayed    This field is required. message has invalid text on Add New PDF Form page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUniqueFormNameValidation
+    [Documentation]    This script verifyes unique form name validation \ on Add New PDF Form Page.
+    goToManageFormsPage
+    Sleep    2
+    ${SecondName}=    Get Text    //tr[1]/td[1]
+    Click Element    link=Add Form
+    Sleep    2
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New PDF Form page not loaded properly
+    Focus    id=name
+    Input Text    id=name    ${SecondName}
+    Sleep    1
+    Focus    id=code
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Unique Form Name validation message not displyed on Add New PDF Form page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique., message has invalid text on Add New PDF Form page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique Form Name validation message not displyed on Add New PDF Form page    This field must be unique., message has invalid text on Add New PDF Form page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyCancelButtonFunctionalityOnAddNewPDFFormPage
+    [Documentation]    This script verifyes Cancel button functionality on Add New PDF Form page.
+    goToManageFormsPage
+    Sleep    2
+    Click Element    link=Add Form
+    Sleep    2
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New PDF Form page not loaded properly
+    ${FormName}=    Generate Random String    5    [LETTERS]
+    ${FormCode}=    Generate Random String    5    [LETTERS]
+    Focus    id=name
+    Input Text    id=name    ${FormName}
+    Sleep    1
+    Focus    id=code
+    Input Text    id=code    ${FormCode}
+    Sleep    1
+    Focus    id=type
+    Select From List By Index    id=type    2
+    Sleep    1
+    Focus    //input[@value='Cancel']
+    Click Element    //input[@value='Cancel']
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Form    ${Timeout}    Manage Form page not opened after clicking on Cancel button
+    Focus    //div[@id='manage_forms_filter']/label/input
+    Input Text    //div[@id='manage_forms_filter']/label/input    ${FormName}
+    Sleep    2
+    Page Should Contain Element    //table[@id='manage_forms']/tbody/tr/td    Non Added Form \ displays on Manage Form Page
+    Element Text Should Be    //table[@id='manage_forms']/tbody/tr/td    No matching records found    No matching records found \ message has invalid text on the Manage Form page
+
+verifyManageFormsLinkButtonFunctionality
+    [Documentation]    This script verifyes Manage Forms link button functionality on Add New PDF Form Page.
+    goToManageFormsPage
+    Sleep    2
+    Click Element    link=Add Form
+    Sleep    2
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New PDF Form page not loaded properly
+    ${FormName}=    Generate Random String    5    [LETTERS]
+    ${FormCode}=    Generate Random String    5    [LETTERS]
+    Focus    id=name
+    Input Text    id=name    ${FormName}
+    Sleep    1
+    Focus    id=code
+    Input Text    id=code    ${FormCode}
+    Sleep    1
+    Focus    id=type
+    Select From List By Index    id=type    2
+    Sleep    1
+    Click Element    link=Manage Forms
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Form    ${Timeout}    Manage Form page not opened after clicking on Manage Forms link button
+    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Manage Form page not opened after clicking on Manage Forms link button
+
+verifyBlankFieldValidationOnEditPDFFormPage
+    [Documentation]    This script verifyes blank field validation on Edit PDF Form page.
+    goToManageFormsPage
+    Sleep    2
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='stickyWrapper']/div/a/span/i    ${Timeout}    Form View Page not loaded properly
+    Focus    //div[@id='stickyWrapper']/div/a/span/i
+    Click Element    //div[@id='stickyWrapper']/div/a/span/i
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Edit PDF Form Page not opened
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Sleep    1
+    Focus    name=code
+    Input Text    name=code    ${EMPTY}
+    Focus    name=type
+    Select From List By Index    name=type    0
+    Sleep    1
+    Focus    //input[@value='Save']
+    Click Element    //input[@value='Save']
+    Sleep    2
+    Wait Until Page Contains Element    link=Cancel    ${Timeout}    New PDF Form added without giving validation message
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Blank field validation message for form Name is not displayed
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. \ message has invalid text on Edit PDF Form page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Blank field validation message for form Name is not displayed    This field is required. \ message has invalid text on Edit PDF Form page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyWaterMarkTextOnEditPDFFormPage
+    [Documentation]    This script verifyes Water Mark text of fields \ on Edit PDF Form page.
+    goToManageFormsPage
+    Sleep    2
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='stickyWrapper']/div/a/span/i    ${Timeout}    Form View Page not loaded properly
+    Focus    //div[@id='stickyWrapper']/div/a/span/i
+    Click Element    //div[@id='stickyWrapper']/div/a/span/i
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit PDF Form Page not opened
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Sleep    1
+    Focus    name=code
+    Input Text    name=code    ${EMPTY}
+    ${FormNameWaterMarkText}=    Get Element Attribute    name=name@placeholder
+    ${FormCodeWaterMarkText}=    Get Element Attribute    name=code@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Name    ${FormNameWaterMarkText}    Form name text box has invalid watermark text On Edit PDF Form Page
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    Form Code    ${FormCodeWaterMarkText}    Form code text box has invalid watermark text On Edit PDF Form Page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Form name text box has invalid watermark text On Edit PDF Form Page    Form code text box has invalid watermark text On Edit PDF Form Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyUniqueFormNameValidationOnEditPDFForm
+    [Documentation]    This script verifyes unique form name validation Edit PDF Form page.
+    goToManageFormsPage
+    Sleep    2
+    ${SecondName}=    Get Text    //tr[2]/td[1]
+    Sleep    1
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='stickyWrapper']/div/a/span/i    ${Timeout}    Form View Page not loaded properly
+    Focus    //div[@id='stickyWrapper']/div/a/span/i
+    Click Element    //div[@id='stickyWrapper']/div/a/span/i
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit PDF Form Page not opened
+    Focus    name=name
+    Input Text    name=name    ${SecondName}
+    Sleep    1
+    Focus    name=code
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Unique Form Name validation message not displyed on Edit PDF Form Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique.message has invalid text \ on Edit PDF Form Page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique Form Name validation message not displyed on Edit PDF Form Page    This field must be unique.message has invalid text \ on Edit PDF Form Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyCancelButtonFunctionalityOnEditPDFFormPage
+    [Documentation]    This script verifyes the Cancel button functionality on Edit PDF Form page.
+    goToManageFormsPage
+    ${FormName}=    Generate Random String    5    [LETTERS]
+    ${FormCode}=    Generate Random String    5    [LETTERS]
+    Sleep    2
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='stickyWrapper']/div/a/span/i    ${Timeout}    Form View Page not loaded properly
+    Focus    //div[@id='stickyWrapper']/div/a/span/i
+    Click Element    //div[@id='stickyWrapper']/div/a/span/i
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit PDF Form Page not opened
+    Focus    name=name
+    Input Text    name=name    ${FormName}
+    Sleep    1
+    Focus    name=code
+    Input Text    name=code    ${FormCode}
+    Focus    name=type
+    Select From List By Index    name=type    1
+    Sleep    1
+    Focus    //input[@value='Cancel']
+    Click Element    //input[@value='Cancel']
+    Sleep    2
+    Wait Until Page Contains Element    link=Manage Forms    ${Timeout}    User not redirected to the Form View Page after clicking on Cancel button on the Edit page
+    ${FormNameExisting}=    Get Text    //div[@id='pdf_form_settings_view']/div[2]/div/div[2]
+    ${FormNameExisting}=    Fetch From Left    ${FormNameExisting}    (
+    Should Not Be Equal    ${FormNameExisting}    ${FormName}    Cancel Button update the Form Details
+
+verifyManageFormsLinkButtonFunctionalityOnEditPDFFormPage
+    [Documentation]    This script verifyes Manage Forms link button functionality on Edit PDF Form Page.
+    goToManageFormsPage
+    ${FormName}=    Generate Random String    5    [LETTERS]
+    ${FormCode}=    Generate Random String    5    [LETTERS]
+    Sleep    2
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='stickyWrapper']/div/a/span/i    ${Timeout}    Form View Page not loaded properly
+    Focus    //div[@id='stickyWrapper']/div/a/span/i
+    Click Element    //div[@id='stickyWrapper']/div/a/span/i
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit PDF Form Page not opened
+    Focus    name=name
+    Input Text    name=name    ${FormName}
+    Sleep    1
+    Focus    name=code
+    Input Text    name=code    ${FormCode}
+    Focus    name=type
+    Select From List By Index    name=type    1
+    Sleep    1
+    Focus    link=Manage Forms
+    Click Element    link=Manage Forms
+    Sleep    3
+    Element Should Be Visible    link=Add Form    User Not redirected to the Manage Forms page after cliking on the Manage Form link on the Edit From Page
+
+verifyUpdatedFormOnManageFormsPage
+    [Documentation]    This script update the details on Edit PDF Form page.
+    goToManageFormsPage
+    ${FormName}=    Generate Random String    5    [LETTERS]
+    ${FormCode}=    Generate Random String    5    [LETTERS]
+    Sleep    2
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='stickyWrapper']/div/a/span/i    ${Timeout}    Form View Page not loaded properly
+    Focus    //div[@id='stickyWrapper']/div/a/span/i
+    Click Element    //div[@id='stickyWrapper']/div/a/span/i
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit PDF Form Page not opened
+    Focus    name=name
+    Input Text    name=name    ${FormName}
+    Sleep    1
+    Focus    id=enabled
+    Select Checkbox    id=enabled
+    Focus    name=code
+    Input Text    name=code    ${FormCode}
+    Focus    name=type
+    Select From List By Index    name=type    1
+    Sleep    1
+    Focus    //input[@value='Save']
+    Click Element    //input[@value='Save']
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=div.alert.alert-info    PDF Form updated successfully. notification message not displayed after update the details
+    ${Notification}=    Get Text    css=div.alert.alert-info
+    @{Notification}=    Split To Lines    ${Notification}
+    ${V2}=    Run Keyword And Return Status    Should Be Equal    @{Notification}[0]    ×    Cross sign not display
+    ${V3}=    Run Keyword And Return Status    Should Be Equal    @{Notification}[1]    PDF Form updated successfully.    PDF Form updated successfully. notification has invalid text.
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='pdf_form_settings_view']/div[2]/div/div[2]    ${FormName} (Enabled)
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='pdf_form_settings_view']/div[2]/div[2]/div[2]    ${FormCode}
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    @{Messages}=    Create List    PDF Form updated successfully. notification message not displayed after update the details    Cross sign not display    PDF Form updated successfully. notification has invalid text.    Updated form name not appeares \ correctly on the Form View Page    Updated form Code not appeares correctly on the Form View Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedEnabledPDFFromTypeOnAddNewPDFFormPage
+    [Documentation]    This script verifyes Added Enabled PDF From Type On Add New PDF Form Page.
+    goToManageFormTypesPage
+    Sleep    1
+    ${FormType}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    addNewFormType    ${FormType}    ${Description}    Enabled
+    Sleep    1
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${FormType}']    Could not add New Form Type on Manage Form Types page
+    Sleep    1
+    goToManageFormsPage
+    Sleep    2
+    Click Element    link=Add Form
+    Sleep    2
+    Wait Until Page Contains Element    id=type    ${Timeout}    Add New PDF Form page not loaded properly
+    @{FormTypeName}=    Get List Items    id=type
+    ${V1}=    Run Keyword And Return Status    Should Contain    ${FormTypeName}    ${FormType}    Added Enabled Form Type name is not displayed on Add New PDF Form page
+    ${V2}=    Run Keyword And Return Status    Should Contain X Times    ${FormTypeName}    ${FormType}    1    Added Enabled Form Type name is displayed \ more than one time on Add New PDF Form page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Added Enabled Form Type name is not displayed on Add New PDF Form page    Added Enabled Form Type name is displayed \ more than one time on Add New PDF Form page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+
+verifyAddedDisabledPDFFromTypeOnAddNewPDFFormPage
+    [Documentation]    This script verifyes Added Disabled PDF From Type On Add New PDF Form Page.
+    goToManageFormTypesPage
+    Sleep    1
+    ${FormType}=    Generate Random String    7    [LETTERS]
+    ${Description}=    Generate Random String    7    [LETTERS]
+    addNewFormType    ${FormType}    ${Description}    Disabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${FormType}']    Could not add New Form Type on Manage Form Types page
+    Sleep    1
+    goToManageFormsPage
+    Sleep    2
+    Click Element    link=Add Form
+    Sleep    2
+    Wait Until Page Contains Element    id=type    ${Timeout}    Add New PDF Form page not loaded properly
+    @{FormTypeName}=    Get List Items    id=type
+    ${V1}=    Run Keyword And Return Status    Should Not Contain    ${FormTypeName}    ${FormType}    Added Disabled Form Type name \ displayed on Add New PDF Form page
+    ${V2}=    Run Keyword And Return Status    Should Contain X Times    ${FormTypeName}    ${FormType}    0    Added Disabled Form Type name is displayed \ more than one time on Add New PDF Form page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Added Disabled Form Type name \ displayed on Add New PDF Form page    Added Disabled Form Type name is displayed \ more than one time on Add New PDF Form page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+
+*** Keywords ***
+goToManageFormsPage
+    [Documentation]    This keyword navigates to Manage Forms page.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=PDF Forms    ${Timeout}    PDF Form \ link not present under Lender Settings tab
+    Focus    link=PDF Forms
+    Click Element    link=PDF Forms
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Form    ${Timeout}    Manage PDF Form \ page not loaded properly
+
+goToManageFormTypesPage
+    [Documentation]    This keyword navigates to Manage Form Types page.
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[4]/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin Page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=PDF Form Types    ${Timeout}    PDF Form Types link not present under Lender Settings tab
+    Click Element    link=PDF Form Types
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Form Types page not loaded properly
+
+addNewFormType
+    [Arguments]    ${FormType}    ${Description}    ${Status}
+    [Documentation]    This keyword use to add new form type on Manage Form Type page.
+    Sleep    1
+    Focus    id=new_form_type_name
+    Input Text    id=new_form_type_name    ${FormType}
+    Sleep    1
+    Focus    id=new_form_type_description
+    Input Text    id=new_form_type_description    ${Description}
+    Sleep    1
+    Run Keyword If    '${Status}'=='Disabled'    Unselect Checkbox    name=enabled
+    Sleep    1
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    2

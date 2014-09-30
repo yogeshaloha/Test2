@@ -1,0 +1,509 @@
+*** Settings ***
+Documentation     ID:
+...               US404
+...               Name:
+...               Applicant types
+...               Tags:
+...
+...               Description:
+...
+...               Applicant types are currently hard coded into the system instead, they should be configurable by the lender that then mapped to the values that are supported by the core system (when available).
+...
+...               When the core system is Symitar, the options should be as follows:
+...
+...               0) Main Applicant
+...               1) Current Spouse
+...               2) Previous Spouse
+...               3) Coborrower
+...               4) Co signer
+...               5) Membership
+...               6) Credit Union Defined
+...               7) Credit Union Defined
+...               8) Credit Union Defined
+...               9) Credit Union Defined
+...               10) Loan Co-Maker
+...               11) Loan Co-Applicant
+...               12) Guarantor
+...
+...               Acceptance Criteria:
+...
+...               New page to configure Applicant types that support in line editing
+...               Ability to add new with:
+...               Free form text in Applicant type
+...               core defined values in core system code (see above)
+...               enable/disable toggle defaulted to enabled for new entries
+...               Ability to edit inline
+...               Ability to save on edit
+...               Validation for unique value for Applicant type across all entries (enabled and disabled)
+...               validation needed for core system code - must be filled in (one to many relationship is OK)
+...               sort order by status (enabled then disabled) then Applicant type
+...               Confirmation message on successful update or save
+...               Current drop down on the application page should show only enabled values
+...               On application view, no need to validate application entry.
+...               On application edit, need applicant type to be valid/active. \ At any point in the process, if a user edits the application, need to validate and enforce application type by providing an error telling the user that the applicant type is "not valid" when it is disabled.
+...               Canceling out of edit mode (and not making any changes to the application) should clear out any enforcement.
+...
+...
+...               Support for all UI components including:
+...               - last update date
+...               - last update by
+...               -save from link at top and button at bottom
+...               - green highlight of updated record on save
+...               - confirmation message on save
+...               - dynamic labels based on core system
+...               - suppression of core components if no core system is configured
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyApplicantTypesLink
+    [Documentation]    This script verifies the Manage Applicant Types Link under Application Settings tab.
+    Click Element    link=Admin
+    sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_app_config']/div/a[2]/i    ${Timeout}    Application Settings tab not displyed.
+    Click Element    //div[@id='controller_app_config']/div/a[2]/i
+    Page Should Contain Element    link=Applicant Types    Applicant Types link is not displayed in the "Application settings" tab
+
+verifyApplicantTypesButton
+    [Documentation]    This script verifies the Manage Applicant Types button under Application settings tab.
+    Click Element    link=Admin
+    sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not displyed.
+    Click Element    link=Application Settings
+    Sleep    1
+    Page Should Contain Element    link=Manage Applicant Types    Manage Applicant Types Button is not displayed On \ "Application settings" \ Page
+
+toVerifyTheApplicantTypeLinkRedirection
+    [Documentation]    This script verifies the navigation for Manage Applicant Types Page.
+    goToManageApplicantTypesPage
+    sleep    1
+    Wait Until Page Contains Element    id=applicant_type_name_    ${Timeout}    Manage Applicant Types page not loaded properly
+    Element Text Should Be    css=h1.subheading    Manage Applicant Types    Applicant Type link not working
+    Page Should Contain Element    id=applicant_type_name_    Applicant Type link not working
+
+toVerifyUIOfManageApplicantType
+    [Documentation]    This script verifies the UI of Manage Applicant Types page.
+    goToManageApplicantTypesPage
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Applicant Types    General Application Settings - Manage Applicant Types page header has invalid characters
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_applicant_types']/table/thead/tr/th    Applicant Type    Applicant Type column name has invalid characters on the \ Manage Applicant Type page
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_applicant_types']/table/thead/tr/th[2]    Applicant Core ID    Applicant Core ID column name has invalid characters on the \ Manage Applicant Type page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_applicant_types']/table/thead/tr/th[3]    Name Type    Name Type column name has invalid characters on the \ Manage Applicant Type page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_applicant_types']/table/thead/tr/th[5]    Status    Status column name has invalid characters on the \ Manage Applicant Type page
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    //span[@id='last_updated']/small    Last Updated Label not present on the Manage Applicant Type Page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Textfield    id=applicant_type_name_    Applicant Type name text box not present on the Manage Applicant Type Page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain List    id=applicant_type_core_code_    Core System Code Drop down not present on the Manage Applicant Type Page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Checkbox    name=enabled    Enabled check box not present on the Manage Applicant Type Page
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add button not present on the Manage Applicant Type Page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain List    id=applicant_type_name_type_    Name \ Type Drop down not present on the Manage Applicant Type Page
+    Comment    Added on 17 Sept
+    ${V12}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_applicant_types']/table/thead/tr/th[4]    De-Duplicate    De-Duplicate column name has invalid characters on the \ Manage Applicant Type page
+    ${V13}=    Run Keyword And Return Status    Page Should Contain Checkbox    name=deduplicate    De-Duplicate check box not present on the Manage Applicant Type Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}
+    @{Messages}=    Create List    Manage Applicant Types page header has invalid characters    Applicant Type column name has invalid characters on the \ Manage Applicant Type page    Applicant Core ID column name has invalid characters on the \ Manage Applicant Type page    Name Type column name has invalid characters on the \ Manage Applicant Type page    Status column name has invalid characters on the \ Manage Applicant Type page
+    ...    Last Updated Label not present on the Manage Applicant Type Page    Applicant Type name text box not present on the Manage Applicant Type Page    Core System Code Drop down not present on the Manage Applicant Type Page    Enabled check box not present on the Manage Applicant Type Page    Add button not present on the Manage Applicant Type Page    Name \ Type Drop down not present on the Manage Applicant Type Page
+    ...    De-Duplicate column name has invalid characters on the \ Manage Applicant Type page    De-Duplicate check box not present on the Manage Applicant Type Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDefaultValues
+    [Documentation]    This script verifies the default values on Manage Applicant Types page.
+    goToManageApplicantTypesPage
+    ${ApplicantTypeWaterMarkText}=    Get Element Attribute    id=applicant_type_name_@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Applicant Type    ${ApplicantTypeWaterMarkText}    Applicant Type text box has invalid watermark text
+    @{AllCoreCode}=    Get List Items    id=applicant_type_core_code_
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    Core ID    @{AllCoreCode}[0]    [Core System] Code value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    (0) Main Applicant    @{AllCoreCode}[1]    (0) Main Applicant value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V4}=    Run Keyword And Return Status    Should Be Equal As Strings    (1) Current Spouse    @{AllCoreCode}[2]    (1) Current Spouse value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V5}=    Run Keyword And Return Status    Should Be Equal As Strings    (2) Previous Spouse    @{AllCoreCode}[3]    (2) Previous Spouse value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V6}=    Run Keyword And Return Status    Should Be Equal As Strings    (3) Coborrower    @{AllCoreCode}[4]    (3) Coborrower value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V7}=    Run Keyword And Return Status    Should Be Equal As Strings    (4) Co signer    @{AllCoreCode}[5]    (4) Co signer value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V8}=    Run Keyword And Return Status    Should Be Equal As Strings    (5) Membership    @{AllCoreCode}[6]    (5) Membership value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V9}=    Run Keyword And Return Status    Should Be Equal As Strings    (6) Credit Union Defined    @{AllCoreCode}[7]    (6) Credit Union Defined value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V10}=    Run Keyword And Return Status    Should Be Equal As Strings    (7) Credit Union Defined    @{AllCoreCode}[8]    (7) Credit Union Defined value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V11}=    Run Keyword And Return Status    Should Be Equal As Strings    (8) Credit Union Defined    @{AllCoreCode}[9]    (8) Credit Union Defined value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V12}=    Run Keyword And Return Status    Should Be Equal As Strings    (9) Credit Union Defined    @{AllCoreCode}[10]    (9) Credit Union Defined value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V13}=    Run Keyword And Return Status    Should Be Equal As Strings    (10) Loan Co-Maker    @{AllCoreCode}[11]    (10) Loan Co-Maker value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V14}=    Run Keyword And Return Status    Should Be Equal As Strings    (11) Loan Co-Applicant    @{AllCoreCode}[12]    (11) Loan Co-Applicant \ value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V15}=    Run Keyword And Return Status    Should Be Equal As Strings    (12) Guarantor    @{AllCoreCode}[13]    (12) Guarantor value in the drop down has invalid characters on Manage Applicant Type Page
+    ${V16}=    Run Keyword And Return Status    Checkbox Should Be Selected    name=enabled
+    Comment    Added on 17 Sept
+    ${V17}=    Run Keyword And Return Status    Checkbox Should Be Selected    name=deduplicate
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    @{Messages}=    Create List    Applicant Type text box has invalid watermark text    [Core System] Code value in the drop down has invalid characters on Manage Applicant Type Page    (0) Main Applicant value in the drop down has invalid characters on Manage Applicant Type Page    (1) Current Spouse value in the drop down has invalid characters on Manage Applicant Type Page    (2) Previous Spouse value in the drop down has invalid characters on Manage Applicant Type Page
+    ...    (3) Coborrower value in the drop down has invalid characters on Manage Applicant Type Page    (4) Co signer value in the drop down has invalid characters on Manage Applicant Type Page    (5) Membership value in the drop down has invalid characters on Manage Applicant Type Page    (6) Credit Union Defined value in the drop down has invalid characters on Manage Applicant Type Page    (7) Credit Union Defined value in the drop down has invalid characters on Manage Applicant Type Page    (8) Credit Union Defined value in the drop down has invalid characters on Manage Applicant Type Page
+    ...    (9) Credit Union Defined value in the drop down has invalid characters on Manage Applicant Type Page    (10) Loan Co-Maker value in the drop down has invalid characters on Manage Applicant Type Page    (11) Loan Co-Applicant \ value in the drop down has invalid characters on Manage Applicant Type Page    (12) Guarantor value in the drop down has invalid characters on Manage Applicant Type Page    Enabled check box not selected by default on the Manage Applicant \ Page    De-Duplicate check box not selected by default on the Manage Applicant \ Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewApplicantTypeEnabled
+    [Documentation]    This script use to Add New Applicant Type with Enable Status.
+    goToManageApplicantTypesPage
+    ${ApplicantTypeName}=    Generate Random String    7    [LETTERS]
+    addNewApplicantTypeName    ${ApplicantTypeName}    2    Enabled
+    Sleep    3
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${ApplicantTypeName}']    Could not add New Applicant Type
+
+addNewApplicantTypeDisabled
+    [Documentation]    This script use to Add New Applicant Type with Disable Status.
+    goToManageApplicantTypesPage
+    ${ApplicantTypeName}=    Generate Random String    7    [LETTERS]
+    addNewApplicantTypeName    ${ApplicantTypeName}    2    Disabled
+    Sleep    3
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${ApplicantTypeName}']    Could not add New Applicant Type
+
+verifyBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation on Manage Applicant Type Page.
+    goToManageApplicantTypesPage
+    addNewApplicantTypeName    ${EMPTY}    0    ${EMPTY}
+    Comment    Error Message for the Applicant Type Name
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Applicant Type name validation message not appear on the Manage Applicant Type \ page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Applicant type name \ has invalid characters on the Manage Applicant Page
+    Comment    Error Message for the Core Code Drop down List
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    css=td.secondCol > small.error    Empty Core Code \ validation message not appear on the Manage Applicant Type \ page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=td.secondCol > small.error    This field is required.    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Applicant Page
+    Comment    Error Message for the Name Type Drop down List
+    ${V5}=    Run Keyword And Return Status    Element Should Be Visible    css=td.thirdCol > small.error    Name Type validation message not appear on the Manage Applicant Type \ page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    css=td.thirdCol > small.error    This field is required.    This field is required. message for the Empty Name Type \ has invalid characters on the Manage Applicant Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}
+    @{Messages}=    Create List    Empty Applicant Type name validation message not appear on the Manage Applicant Type \ page    This field is required. message for the Empty Applicant type name \ has invalid characters on the Manage Applicant Page    Empty Core Code \ validation message not appear on the Manage Applicant Type \ page    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Applicant Page    Name Type validation message not appear on the Manage Applicant Type \ page
+    ...    This field is required. message for the Empty Name Type \ has invalid characters on the Manage Applicant Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addApplicantTypeUniqueNameValidation
+    [Documentation]    This script verifies the Unique applicant type name validation on Manage Applicant Type Page.
+    goToManageApplicantTypesPage
+    ${ApplicantTypeName}=    Generate Random String    7    [LETTERS]
+    addNewApplicantTypeName    ${ApplicantTypeName}    2    Enabled
+    Sleep    1
+    addNewApplicantTypeName    ${ApplicantTypeName}    2    Enabled
+    Sleep    1
+    Page Should Contain Element    css=small.error    Unique name validation message not appear on the Page
+    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+
+verifyTheEditButtonClick
+    [Documentation]    This script verifies the Edit button functionality on Manage Applicant Type Page.
+    goToManageApplicantTypesPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //tr[1]/td[6]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[6]/form/button
+    sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Applicant Type not opened
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    name=name    Type name text box not present for the edited record
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    name=core_code    Core Code drop down not present for the edited record
+    ${V4}=    Run Keyword And Return Status    Element Should Be Visible    //button[@type='submit']    Save link not appear on the Edit Account Type
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='submit']    Save link not present on the Edit Account Type page
+    ${V6}=    Run Keyword And Return Status    Element Should Be Visible    xpath=(//button[@type='button'])[2]    Close link not appear on the Edit Account Type
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    xpath=(//button[@type='button'])[2]    X("Close") link not present on the Edit Account Type page
+    ${V8}=    Run Keyword And Return Status    Element Should Not Be Visible    //tr[1]/td[6]/form/button    Edit link button present on Edit Account Type page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    name=name_type    Name Type drop down not present for the edited record
+    Comment    Added on 17 Sept
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Checkbox    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/label/input    De-Duplicate Check box not appear on Edit Applicant Type page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Checkbox    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[5]/label/input    Enable Check box not appear on Edit Applicant Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    @{Messages}=    Create List    Edit button not found for the first row in the grid    Type name text box not present for the edited record    Core Code drop down not present for the edited record    Save link not appear on the Edit Account Type    Save link not present on the Edit Account Type page
+    ...    Close link not appear on the Edit Account Type    X("Close") link not present on the Edit Account Type page    Edit link button present on Edit Account Type page    Name Type drop down not present for the edited record    De-Duplicate Check box not appear on Edit Applicant Type page    Enable Check box not appear on Edit Applicant Type page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editApplicantTypeToolTipsOnControls
+    [Documentation]    This script verifies the All tool tips on Edit functionality on Manage Applicant Type Page.
+    goToManageApplicantTypesPage
+    Page Should Contain Element    //tr[1]/td[6]/form/button    Edit button not found for the first row in the grid
+    ${EditButtonToolTip}=    Get Element Attribute    //tr[1]/td[6]/form/button@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${EditButtonToolTip}    Edit Applicant Type    Edit \ button has invalid tool tip
+    Mouse Over    //tr[1]/td[6]/form/button
+    Sleep    2
+    Click Element    //tr[1]/td[6]/form/button
+    sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened properly
+    ${SaveButtonToolTip}=    Get Element Attribute    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[6]/button[2]@title
+    ${CancelButtonToolTip}=    Get Element Attribute    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[6]/button@title
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${SaveButtonToolTip}    Update Applicant Type    Save button has invalid tool tip
+    Mouse Over    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[6]/button[2]
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CancelButtonToolTip}    Cancel    Cancel \ button has invalid tool tip
+    Mouse Over    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[6]/button
+    Sleep    2
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Edit button not found for the first row in the grid    Save button has invalid tool tip    Cancel \ button has invalid tool tip
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editApplicantTypeWaterMarkText
+    [Documentation]    This script verifies the Water Mark Text on Edit mode on Manage Applicant Type Page.
+    goToManageApplicantTypesPage
+    Page Should Contain Element    //tr[1]/td[6]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[6]/form/button
+    sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Applicant Type not opened
+    Page Should Contain Element    name=name
+    Input Text    name=name    ${EMPTY}
+    ${ApplicantTypeWaterMarkText}=    Get Element Attribute    name=name@placeholder
+    Should Be Equal As Strings    ${ApplicantTypeWaterMarkText}    Applicant Type    Applicant Type text box has invalid watermark text at edit mode
+
+editAccountTypeNameDetails
+    [Documentation]    This script verifies the Added Applicant Type Details on Manage Applicant Type Page.
+    goToManageApplicantTypesPage
+    Page Should Contain Element    //tr[1]/td[6]/form/button    Edit button not found for the first row in the grid
+    Focus    //tr[1]/td[6]/form/button
+    Click Element    //tr[1]/td[6]/form/button
+    Comment    Enter the New Details
+    ${AccountTypeName}=    Generate Random String    7    [LETTERS]
+    sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode of Applicant Type not opened
+    Focus    name=name
+    Input Text    name=name    ${AccountTypeName}
+    @{AllCoreCodes}=    Get List Items    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select
+    ${AlreadySelectedValue}=    Get Selected List Label    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select
+    ${AlreadySelectedNameType}=    Get Selected List Label    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select
+    @{AllNameType}=    Get List Items    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select
+    Run Keyword If    '@{AllCoreCodes}[2]'!='${AlreadySelectedValue}'    Select From List    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select    @{AllCoreCodes}[2]
+    Run Keyword If    '@{AllCoreCodes}[3]'!='${AlreadySelectedValue}'    Select From List    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select    @{AllCoreCodes}[3]
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select
+    Run Keyword If    '@{AllNameType}[2]'!='${AlreadySelectedNameType}'    Select From List    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select    @{AllNameType}[2]
+    Run Keyword If    '@{AllNameType}[3]'!='${AlreadySelectedNameType}'    Select From List    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select    @{AllNameType}[3]
+    ${Updated Value}=    Get Selected List Label    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select
+    ${UpdatedNameType}=    Get Selected List Label    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select
+    Comment    Added for De Duplicate
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/label/input
+    ${Checked}=    Run Keyword And Return Status    Checkbox Should Be Selected    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/label/input
+    Run Keyword If    '${Checked}'=='True'    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/label/input
+    Run Keyword If    '${Checked}'=='True'    Click Element    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/label/input
+    Run Keyword If    '${Checked}'!='True'    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/label/input
+    Run Keyword If    '${Checked}'!='True'    Click Element    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/label/input
+    Sleep    1
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[6]/button[2]
+    Sleep    2
+    Click Element    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[6]/button[2]
+    Sleep    4
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values not saved properly
+    Sleep    1
+    Focus    //tr[1]/td
+    Element Text Should Be    //tr[1]/td    ${AccountTypeName}    Updated Account Type name not displayed correctly
+    Element Text Should Be    //tr[1]/td[2]    ${Updated Value}    Updated Account Type Core Code \ not displayed correctly
+    Element Text Should Be    //tr[1]/td[3]    ${UpdatedNameType}    Updated Name Type Core Code \ not displayed correctly
+    Run Keyword If    '${Checked}'=='True'    Element Text Should Be    //tr[1]/td[4]    No    Updated De Duplicate value not displayed correctly
+    Run Keyword If    '${Checked}'!='True'    Element Text Should Be    //tr[1]/td[4]    Yes    Updated De Duplicate value not displayed correctly
+
+editBlankFieldValidation
+    [Documentation]    This script verifies the Blank field validation on Edit Mode on Manage Applicant Type Page.
+    goToManageApplicantTypesPage
+    Page Should Contain Element    //tr[1]/td[6]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[6]/form/button
+    Comment    Enter the New Details
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td/input[3]    ${Timeout}    Edit mode not opened after clicking on Edit button
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td/input[3]
+    Input Text    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td/input[3]    ${EMPTY}
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select
+    Select From List By Index    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select    0
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select
+    Select From List By Index    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select    0
+    Sleep    2
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select
+    Sleep    2
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[6]/button[2]
+    Sleep    2
+    Click Element    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[6]/button[2]
+    Sleep    2
+    Comment    Error Message for the Applicant Type Name
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td/input[3]
+    Sleep    2
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Applicant Type name validation message not appear on the Manage Applicant Type \ page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Applicant type name \ has invalid characters on the Manage Applicant Page
+    Comment    Error Message for the Core Code Drop down List
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    css=td.secondCol > small.error    Empty Core Code \ validation message not appear on the Manage Applicant Type \ page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=td.secondCol > small.error    This field is required.    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Applicant Page
+    Comment    Error Message for the Name Type \ Drop down List
+    ${V5}=    Run Keyword And Return Status    Element Should Be Visible    css=td.thirdCol > small.error    Empty Name Type validation message not appear on the Manage Applicant Type \ page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    css=td.thirdCol > small.error    This field is required.    This field is required. message for the Empty Name Type \ has invalid characters on the Manage Applicant Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}
+    @{Messages}=    Create List    Empty Applicant Type name validation message not appear on the Manage Applicant Type \ page    This field is required. message for the Empty Applicant type name \ has invalid characters on the Manage Applicant Page    Empty Core Code \ validation message not appear on the Manage Applicant Type \ page    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Applicant Page    Empty Name Type validation message not appear on the Manage Applicant Type \ page
+    ...    This field is required. message for the Empty Name Type \ has invalid characters on the Manage Applicant Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editAccountTypeCancelButton
+    [Documentation]    This script verifies the Cancel button functionality on edit mode on Manage Applicant Type Page.
+    goToManageApplicantTypesPage
+    Page Should Contain Element    //tr[1]/td[6]/form/button    Edit button not found for the first row in the grid
+    ${ExistingName}=    Get Text    //tr[1]/td
+    Focus    //tr[1]/td[6]/form/button
+    Click Element    //tr[1]/td[6]/form/button
+    Comment    Enter the New Details
+    ${AccountTypeName}=    Generate Random String    7    [LETTERS]
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td/input[3]    ${Timeout}    Edit Applicant Type Page not laoded after clicking on the Edit button
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td/input[3]
+    Input Text    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td/input[3]    ${AccountTypeName}
+    @{AllCoreCodes}=    Get List Items    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select
+    ${AlreadySelectedValue}=    Get Selected List Label    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select
+    @{AllNameType}=    Get List Items    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select
+    ${AlreadySelectedNameType}=    Get Selected List Label    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select
+    Run Keyword If    '@{AllCoreCodes}[2]'!='${AlreadySelectedValue}'    Select From List    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select    @{AllCoreCodes}[2]
+    Run Keyword If    '@{AllCoreCodes}[3]'!='${AlreadySelectedValue}'    Select From List    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select    @{AllCoreCodes}[3]
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select
+    Run Keyword If    '@{AllNameType}[2]'!='${AlreadySelectedNameType}'    Select From List    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select    @{AllNameType}[2]
+    Run Keyword If    '@{AllNameType}[3]'!='${AlreadySelectedNameType}'    Select From List    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select    @{AllNameType}[3]
+    ${Updated Value}=    Get Selected List Label    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/select
+    ${UpdatedNameType}=    Get Selected List Label    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/select
+    Sleep    2
+    Focus    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[6]/button
+    Sleep    2
+    Click Element    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[6]/button
+    Sleep    4
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values are saved after clicking on Save button
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${ExistingName}    Cancel button click update the Account Type name value
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td[2]    ${AlreadySelectedValue}    Cancel button click update the Core Code value
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button[2]    Save link \ present on the Account Type page after clicking on the Cancel Edit button
+    ${V4}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='manage_applicant_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[5]/button    Close link \ present on the Account Type page after clicking on the Cancel Edit button
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td[3]    ${AlreadySelectedNameType}    Cancel button click update the Name Type \ value
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    @{Messages}=    Create List    Cancel button click update the Account Type name value    Cancel button click update the Core Code value    Save link \ present on the Account Type page after clicking on the Cancel Edit button    Close link \ present on the Account Type page after clicking on the Cancel Edit button    Cancel button click update the Name Type \ value
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editAccountTypeNameUniqueValidation
+    [Documentation]    This script verifies the unique name validation on edit mode on Manage Applicant Type Page.
+    goToManageApplicantTypesPage
+    ${SecondName}=    Get Text    //tr[2]/td
+    Page Should Contain Element    //tr[1]/td[6]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[6]/form/button
+    Comment    Enter the New Details
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened after clicking on Edit button
+    Focus    name=name
+    Input Text    name=name    ${SecondName}
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Page Should Contain Element    css=small.error    Unique name validation message not appear on the Page
+    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+
+verifyAddedEnabledTypeInApplicationPage
+    [Documentation]    This script verifies the Added Applicant Type with enable status on New Application Page.
+    goToManageApplicantTypesPage
+    ${ApplicantTypeName}=    Generate Random String    7    [LETTERS]
+    addNewApplicantTypeName    ${ApplicantTypeName}    2    Enabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${ApplicantTypeName}']    Could not add New Applicant Type
+    fillApplicationForm
+    Sleep    1
+    Wait Until Page Contains Element    id=applicant_type_    ${Timeout}    Primary Applicant form not saved properly after filling the form
+    @{AllTypes}=    Get List Items    id=applicant_type_
+    ${V2}=    Run Keyword And Return Status    Should Contain    ${AllTypes}    ${ApplicantTypeName}    Added Enabled Applicant Type name is not displayed on the Additional Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${ApplicantTypeName}    1    Added Applicant Type name is displayed \ more than one time on the Additional Applicant page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Could not add New Applicant Type    Added Enabled Applicant Type name is not displayed on the Additional Applicant page    Added Applicant Type name is displayed \ more than one time on the Additional Applicant page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedDisabledTypeInApplicationPage
+    [Documentation]    This script verifies the Added Applicant Type with disable status on New Application Page.
+    goToManageApplicantTypesPage
+    ${ApplicantTypeName}=    Generate Random String    7    [LETTERS]
+    addNewApplicantTypeName    ${ApplicantTypeName}    2    Disabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${ApplicantTypeName}']    Could not add New Applicant Type
+    fillApplicationForm
+    Sleep    1
+    Wait Until Page Contains Element    id=applicant_type_    ${Timeout}    Primary Applicant form not saved properly after filling the form
+    @{AllTypes}=    Get List Items    id=applicant_type_
+    ${V2}=    Run Keyword And Return Status    Should Not Contain    ${AllTypes}    ${ApplicantTypeName}    Added Disabled Applicant Type name is displayed on the Additional Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${ApplicantTypeName}    0    Added Disabled Applicant Type name is displayed on the Additional Applicant page drop down
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Could not add New Applicant Type    Added Disabled Applicant Type name is displayed on the Additional Applicant page    Added Disabled Applicant Type name is displayed on the Additional Applicant page drop down
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+goToManageApplicantTypesPage
+    [Documentation]    This keyword use to navigate to Manage Applicant Types page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_app_config']/div/a[2]/i    ${Timeout}    Application Settings tab not displayed
+    Click Element    //div[@id='controller_app_config']/div/a[2]/i
+    Sleep    1
+    Wait Until Page Contains Element    link=Applicant Types    ${Timeout}    Applicant Types link not displayed
+    Click Element    link=Applicant Types
+    Sleep    1
+
+addNewApplicantTypeName
+    [Arguments]    ${Name}    ${CoreCodeNumber}    ${Status}
+    [Documentation]    This keyword add new Applicant Type
+    ...
+    ...    Please provide the arguments as
+    ...    Name = "Name"
+    ...    Core Code = must be greater than 1
+    ...    Status = Enabled Or Disabled
+    Focus    id=applicant_type_name_
+    Input Text    id=applicant_type_name_    ${Name}
+    Focus    id=applicant_type_core_code_
+    @{AllCoreCodes}=    Get List Items    id=applicant_type_core_code_
+    Select From List    id=applicant_type_core_code_    @{AllCoreCodes}[${CoreCodeNumber}]
+    @{AllJoints}=    Get List Items    id=applicant_type_name_type_
+    Select From List    id=applicant_type_name_type_    @{AllJoints}[${CoreCodeNumber}]
+    Run Keyword If    '${Status}'=='Disabled'    Unselect Checkbox    name=enabled
+    Focus    name=submit-add
+    Click Element    name=submit-add
+
+fillApplicationForm
+    [Documentation]    This keyword use to fill the New Application form.
+    sleep    1
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    sleep    1
+    Page Should Contain Element    link=New Application    New Application link is not present.
+    Click Element    link=New Application
+    Sleep    2
+    Page Should Contain Element    name=loan_type    Loan Type drop down is not present on first page of New application.
+    @{LoanType}=    Get List Items    name=loan_type
+    Select From List    name=loan_type    @{LoanType}[1]
+    Page Should Contain Element    id=request_amount    Request Amount text box is not present on first page of New Application.
+    Input Text    id=request_amount    100
+    Page Should Contain Textfield    id=request_term    Request Term text box is not present on first page of New Application.
+    Focus    id=request_term
+    Input Text    id=request_term    1
+    Click Element    name=continue
+    Sleep    1
+    Wait Until Page Contains Element    id=search_ssn    ${Timeout}    Primary Applicant page not loaded properly
+    Input Text    id=first_name_    Fname
+    Input Text    id=last_name_    Lname
+    Input Text    id=dob_    10/10/1999
+    ${SSN}=    Generate Random String    9    [NUMBERS]
+    Input Text    id=ssn_    ${SSN}
+    @{State}=    Get List Items    id=id_issuer_
+    Select From List    id=id_issuer_    @{State}[3]
+    Focus    id=id_number_
+    Input Text    id=id_number_    9999999999
+    Focus    id=id_expire_dt_
+    Input Text    id=id_expire_dt_    12/12/2020
+    Focus    id=main_phone_
+    Input Text    id=main_phone_    9999999999
+    Focus    name=more_applicants
+    Click Element    name=more_applicants
+    Focus    xpath=(//button[@name='continue'])[2]
+    Click Element    xpath=(//button[@name='continue'])[2]
+    Sleep    1

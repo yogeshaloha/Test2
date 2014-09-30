@@ -1,0 +1,362 @@
+*** Settings ***
+Documentation     Tradeline include/exclude reasons
+...
+...               Description:
+...
+...               As an admin, I need to be able to define the valid reasons for include or exclude a tradeline manually. \ Acceptance criteria:
+...               New admin page under Lender Settings
+...               New include edit grid with reason (free form text) and enable disable
+...               Need to be able to add new as needed
+...               Each entry should be unique an not blank
+...               Last updated should be included in grid
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyManageTradelineInclude ReasonsLink
+    [Documentation]    This script verifies "Manage Tradeline Include Reasons" link in Lender Setting Tab.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Underwriting Configuration    ${Timeout}    Underwriting Configuration \ Tab not appeared on page
+    Click Element    link=Underwriting Configuration
+    Sleep    2
+    Page Should Contain Element    link=Tradeline Update Reasons    Manage Tradeline Include Reasons \ \ link is not displayed in the "Underwriting Configuration" tab
+
+verifyManageTradelineInclude ReasonsButton
+    [Documentation]    This script verifies "Manage Tradeline Include Reasons" button on \ Lender Setting page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Underwriting Configuration    ${Timeout}    Underwriting Configuration \ Tab not appeared on page
+    Click Element    link=Underwriting Configuration
+    Sleep    2
+    Page Should Contain Element    xpath=(//a[contains(text(),'Manage Tradeline Include Reasons')])[2]    Manage Tradeline Include Reasons Button is not displayed in the "Lender Settings" page
+
+verifyManageTradelineInclude ReasonsLinkRedirection
+    [Documentation]    This script verifies "Manage Tradeline Include Reasons" link \ functionality.
+    goToManageTradelineIncludeReasonsPage
+    Sleep    1
+    Wait Until Page Contains Element    id=add_reason    ${Timeout}    Manage Include Reasons page is not displayed.
+    Element Text Should Be    css=h1.subheading    Manage Tradeline Include Reasons    Manage Tradeline Include Reasons \ link not working
+
+toVerifyUIOfManageTradelineIncludeReasons
+    [Documentation]    This script verifies \ UI of \ "Manage Tradeline Include Reasons" page.
+    goToManageTradelineIncludeReasonsPage
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage Tradeline Include Reasons    Manage Tradeline Include Reasons \ page header has invalid characters
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='tradeline_include_reasons_table']/thead/tr/th    Reason    Reason column name has invalid characters on the Manage Tradeline Include Reasons page.
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='tradeline_include_reasons_table']/thead/tr/th[2]    Status    Status column name has invalid characters on the Manage Tradeline Include Reasons page.
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    //span[@id='last_updated']/small    Last Updated Label not present \ on the Manage Tradeline Include Reasons page.
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Textfield    id=add_reason    Applicant Type name text box not present \ on the Manage Tradeline Include Reasons page.
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Checkbox    id=new_reason_enabled    Enabled text box not present \ on the Manage Tradeline Include Reasons page.
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='submit']    Add button not present \ on the Manage Tradeline Include Reasons page.
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}
+    @{Messages}=    Create List    Manage Tradeline Include Reasons \ page header has invalid characters    Reason column name has invalid characters on the Manage Tradeline Include Reasons page.    Enabled column name has invalid characters on the Manage Tradeline Include Reasons page.    Last Updated Label not present \ on theManage Tradeline Include Reasons page.    Applicant Type name text box not present \ on the Manage Tradeline Include Reasons page.
+    ...    Enabled text box not present \ on the Manage Tradeline Include Reasons page.    Add button not present \ on the Manage Tradeline Include Reasons page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDefaultValues
+    [Documentation]    This script verifies the Default values on \ "Manage Tradeline Include Reasons" page.
+    goToManageTradelineIncludeReasonsPage
+    ${ReasonWaterMarkText}=    Get Element Attribute    id=add_reason@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Reason    ${ReasonWaterMarkText}    Reason \ text box has invalid watermark text
+    ${V2}=    Run Keyword And Return Status    Checkbox Should Be Selected    id=new_reason_enabled
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Applicant Type text box has invalid watermark text    Enabled check box not selected by default on the Manage Applicant \ Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewReasonEnabled
+    [Documentation]    This script add New Reason with Enabled status.
+    goToManageTradelineIncludeReasonsPage
+    ${ReasonName}=    Generate Random String    7    [LETTERS]
+    addNewReason    ${ReasonName}    Enabled
+    Sleep    4
+    Page Should Contain Element    //table[@id='tradeline_include_reasons_table']/tbody/tr[td/text()='${ReasonName}']    Could not add New Reason
+    Comment    Element Text Should Be    //table[@id='tradeline_include_reasons_table']/tbody/tr[td/text()='${ReasonName}']//td[2]    Enabled    Added Reason displays invalid Status
+
+addNewReasonDisabled
+    [Documentation]    This script add New Reason with Disabled status.
+    goToManageTradelineIncludeReasonsPage
+    ${ReasonName}=    Generate Random String    7    [LETTERS]
+    addNewReason    ${ReasonName}    Disabled
+    Sleep    3
+    Page Should Contain Element    //table[@id='tradeline_include_reasons_table']/tbody/tr[td/text()='${ReasonName}']    Could not add New Reason
+    Comment    Element Text Should Be    //table[@id='tradeline_include_reasons_table']/tbody/tr[td/text()='${ReasonName}']//td[2]    Disabled    Added Reason displays invalid Status
+
+verifyBlankFieldValidation
+    [Documentation]    This script verifies required field validation.
+    goToManageTradelineIncludeReasonsPage
+    addNewReason    ${EMPTY}    ${EMPTY}
+    Comment    Error Message for the Reason \ Name
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Empty Reason \ name validation message not appear \ on the Manage Tradeline Include Reasons page.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty reason \ name has invalid characters \ on the Manage Tradeline Include Reasons page.
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Empty Reason \ name validation message not appear \ on the Manage Tradeline Include Reasons page.    This field is required. message for the Empty reason \ name has invalid characters \ on the Manage Tradeline Include Reasons page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addReasonUniqueNameValidation
+    [Documentation]    This script verifies the Unique name validation.
+    goToManageTradelineIncludeReasonsPage
+    ${ReasonName}=    Generate Random String    7    [LETTERS]
+    addNewReason    ${ReasonName}    Enabled
+    Sleep    4
+    addNewReason    ${ReasonName}    Enabled
+    Sleep    4
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Unique name validation message not appear on the Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique name validation message not appear on the Page    This field must be unique. message has invalid characters
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyTheEditButtonClick
+    [Documentation]    This script verifies Edit button Click and Controls appear on page.
+    goToManageTradelineIncludeReasonsPage
+    Sleep    1
+    Page Should Contain Element    id=edit_button_1    Edit button not found for the first row in the grid
+    Click Element    id=edit_button_1
+    Sleep    1
+    Wait Until Page Contains Element    id=reason_1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    id=reason_1    Reason \ name text box not present for the edited record
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    id=new_reason_enabled    Status Check box not present for the edited record
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    //button[@type='submit']    Save link not appear on the Edit Account Type
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='submit']    Save link not present on the Edit Account Type page
+    ${V5}=    Run Keyword And Return Status    Element Should Be Visible    xpath=(//button[@type='button'])[2]    X("Close") \ link not appear on the Edit Account Type
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    xpath=(//button[@type='button'])[2]    X("Close") link not present on the Edit Account Type page
+    ${V7}=    Run Keyword And Return Status    Element Should Not Be Visible    id=edit_button_1    Edit button visibile for Edited first record in grid
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}
+    @{Messages}=    Create List    Reason \ name text box not present for the edited record    Status Check box not present for the edited record    Save link not appear on the Edit Account Type    Save link not present on the Edit Account Type page    X("Close") \ link not appear on the Edit Account Type
+    ...    X("Close") link not present on the Edit Account Type page    Edit button visibile for Edited first record in grid
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editReasonToolTipsOnControls
+    [Documentation]    This script verifies Tool tips at edit mode.
+    goToManageTradelineIncludeReasonsPage
+    Page Should Contain Element    id=edit_button_1    Edit button not found for the first row in the grid
+    ${EditButtonToolTip}=    Get Element Attribute    id=edit_button_1@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${EditButtonToolTip}    Edit Tradeline Include Reasons    Edit \ button has invalid tool tip
+    Mouse Over    id=edit_button_1
+    Sleep    2
+    Click Element    id=edit_button_1
+    Sleep    1
+    Wait Until Page Contains Element    id=reason_1
+    ${SaveButtonToolTip}=    Get Element Attribute    //button[@type='submit']@title
+    ${CancelButtonToolTip}=    Get Element Attribute    xpath=(//button[@type='button'])[2]@title
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${SaveButtonToolTip}    Update Tradeline Include Reason    Save button has invalid tool tip
+    Mouse Over    //button[@type='submit']
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CancelButtonToolTip}    Cancel    Cancel \ button has invalid tool tip
+    Mouse Over    xpath=(//button[@type='button'])[2]
+    Sleep    2
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Edit button not found for the first row in the grid    Save button has invalid tool tip    Cancel \ button has invalid tool tip
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editReasonWaterMarkText-issue
+    [Documentation]    This script verifies \ Water mark text at edit mode.
+    goToManageTradelineIncludeReasonsPage
+    Page Should Contain Element    id=edit_button_1    Edit button not found for the first row in the grid
+    Click Element    id=edit_button_1
+    Sleep    1
+    Wait Until Page Contains Element    id=reason_1
+    Input Text    id=reason_1    ${EMPTY}
+    ${ReasonWaterMarkText}=    Get Element Attribute    id=reason_1@placeholder
+    Should Be Equal As Strings    ${ReasonWaterMarkText}    Reason    Reason \ text box has invalid watermark text at edit mode
+
+editReasonNameDetails
+    [Documentation]    This script update reason details.
+    goToManageTradelineIncludeReasonsPage
+    Page Should Contain Element    id=edit_button_1    Edit button not found for the first row in the grid
+    Click Element    id=edit_button_1
+    Comment    Enter the New Details
+    ${ReasonName}=    Generate Random String    7    [LETTERS]
+    Sleep    3
+    Wait Until Page Contains Element    id=reason_1    ${Timeout}    Edit Reason page not loaded
+    Focus    id=reason_1
+    Input Text    id=reason_1    ${ReasonName}
+    Sleep    2
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    5
+    Element Text Should Be    //tr[1]/td    ${ReasonName}    Updated Reason \ name not displayed correctly
+
+enableAndDisableReason
+    [Documentation]    Tis script verifies Enable and Disable functionality.
+    goToManageTradelineIncludeReasonsPage
+    ${ReasonName}=    Generate Random String    7    [LETTERS]
+    addNewReason    ${ReasonName}    Enabled
+    Sleep    4
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='tradeline_include_reasons_table']/tbody/tr[td/text()='${ReasonName}']    Could not add New Reason
+    Comment    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='tradeline_include_reasons_table']/tbody/tr[td/text()='${ReasonName}']//td[2]    Enabled    Added Reason \ displays invalid Status
+    Sleep    3
+    Wait Until Page Contains Element    //table[@id='tradeline_include_reasons_table']/tbody/tr[td/text()='${ReasonName}']//td[3]/div/form/button    ${Timeout}    Edit button not appeared for added Reason
+    Click Element    //table[@id='tradeline_include_reasons_table']/tbody/tr[td/text()='${ReasonName}']//td[3]/div/form/button
+    Comment    Disable the Reason Name
+    Sleep    3
+    Wait Until Page Contains Element    name=enabled    ${Timeout}    Edit reason page \ not loaded properly
+    Sleep    2
+    Focus    name=enabled
+    Click Element    name=enabled
+    Comment    Click on the Save button
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    5
+    Comment    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='tradeline_include_reasons_table']/tbody/tr[td/text()='${ReasonName}']//td[2]    Disabled    Unable to update the Reason Status Enabled to Disabled
+    Comment    Update to Enabled State
+    Click Element    //table[@id='tradeline_include_reasons_table']/tbody/tr[td/text()='${ReasonName}']//td[3]/div/form/button
+    Comment    Disable the Reason Name
+    Sleep    3
+    Wait Until Page Contains Element    name=enabled    ${Timeout}    Edit reason page \ not loaded properly
+    Sleep    2
+    Focus    name=enabled
+    Click Element    name=enabled
+    Comment    Click on the Save button
+    Sleep    1
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    5
+    Comment    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='tradeline_include_reasons_table']/tbody/tr[td/text()='${ReasonName}']//td[2]    Enabled    Unable to update the Reason Status Disabled to Enabled
+    @{Verification}=    Create List    ${V1}
+    @{Messages}=    Create List    Could not add New Reason
+    Comment    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    Comment    @{Messages}=    Create List    Could not add New Reason    Added Reason displays invalid Status    Unable to update the Reason Status Enabled to Disabled    Unable to update the Reason \ Status Disabled to Enabled
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editBlankFieldValidation
+    [Documentation]    This script verifies required field validation on Edit page.
+    goToManageTradelineIncludeReasonsPage
+    Page Should Contain Element    id=edit_button_1    Edit button not found for the first row in the grid
+    Click Element    id=edit_button_1
+    Comment    Enter the New Details
+    Wait Until Page Contains Element    id=reason_1
+    Focus    id=reason_1
+    Input Text    id=reason_1    ${EMPTY}
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Comment    Error Message for the Applicant Type Name
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    css=small.error    Empty Reason \ name validation message not appear \ on the Manage Tradeline Include Reasons page.
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty reason \ name has invalid characters \ on the Manage Tradeline Include Reasons page.
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Empty Reason \ name validation message not appear \ on the Manage Tradeline Include Reasons page.    This field is required. message for the Empty reason \ name has invalid characters \ on the Manage Tradeline Include Reasons page.
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editReasonCancelButton
+    [Documentation]    This script verifies Cancel button click on Edit mode.
+    goToManageTradelineIncludeReasonsPage
+    Sleep    1
+    Page Should Contain Element    //tr[@id='tradeline_reason_row_1']/td[3]/div/form/button    Edit button not found for the first row in the grid
+    ${ExistingName}=    Get Text    //tr[1]/td
+    Focus    //tr[@id='tradeline_reason_row_1']/td[3]/div/form/button
+    Click Element    //tr[@id='tradeline_reason_row_1']/td[3]/div/form/button
+    Comment    Enter the New Details
+    ${ReasonName}=    Generate Random String    7    [LETTERS]
+    Sleep    1
+    Wait Until Page Contains Element    id=reason_1
+    Focus    id=reason_1
+    Input Text    id=reason_1    ${ReasonName}
+    Focus    //table[@id='tradeline_include_reasons_table']/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button
+    Click Element    //table[@id='tradeline_include_reasons_table']/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${ExistingName}    Cancel button click update the Reason Name value
+    ${V2}=    Run Keyword And Return Status    Element Should Not Be Visible    //table[@id='tradeline_include_reasons_table']/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]    Save link \ present on the Manage Tradeline Include Reasons page \ after clicking on the Cancel Edit button
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //table[@id='tradeline_include_reasons_table']/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button    Close link \ present on the Manage Tradeline Include Reasons page \ after clicking on the Cancel Edit button
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Cancel button click update the Reason Name value    Save link \ present on the Manage Tradeline Include Reasons page \ after clicking on the Cancel Edit button    Close link \ present on the Manage Tradeline Include Reasons page \ after clicking on the Cancel Edit button
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editReasonNameUniqueValidation
+    [Documentation]    This scripot verifies Unique name validation on Edit mode.
+    goToManageTradelineIncludeReasonsPage
+    Sleep    1
+    Wait Until Page Contains Element    //tr[@id='tradeline_reason_row_1']/td[3]/div/form/button
+    ${SecondName}=    Get Text    //tr[2]/td
+    Page Should Contain Element    //tr[@id='tradeline_reason_row_1']/td[3]/div/form/button    Edit button not found for the first row in the grid
+    Focus    //tr[@id='tradeline_reason_row_1']/td[3]/div/form/button
+    Click Element    //tr[@id='tradeline_reason_row_1']/td[3]/div/form/button
+    Comment    Enter the New Details
+    Sleep    1
+    Wait Until Page Contains Element    id=reason_1
+    Focus    id=reason_1
+    Input Text    id=reason_1    ${SecondName}
+    Focus    //table[@id='tradeline_include_reasons_table']/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]
+    Click Element    //table[@id='tradeline_include_reasons_table']/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Unique name validation message not appear on the Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Unique name validation message not appear on the Page    This field must be unique. message has invalid characters
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+goToManageTradelineIncludeReasonsPage
+    [Documentation]    This keyword is used to Navigate to Tradeline Include Reason Page
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin page does not contain Lender Settings tab or page is not displayed.
+    Sleep    1
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Manage Tradeline Include Reasons    ${Timeout}    Manage Tradeline Include Reason link is not present under Lender Settings tab.
+    Click Element    link=Manage Tradeline Include Reasons
+    Sleep    1
+
+addNewReason
+    [Arguments]    ${Name}    ${Status}
+    [Documentation]    This keyword add new Applicant Type
+    ...
+    ...    Please provide the arguments as
+    ...    Name = "Name"
+    ...    Core Code = must be greater than 1
+    ...    Status = Enabled Or Disabled
+    Sleep    1
+    Focus    id=add_reason
+    Input Text    id=add_reason    ${Name}
+    Sleep    2
+    Run Keyword If    '${Status}'=='Disabled'    Unselect Checkbox    id=new_reason_enabled
+    Sleep    1
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    2
+
+goToCreditReviewPage
+    [Documentation]    This keyword is used to Navigate to Credit Review Page
+    Sleep    2
+    Wait Until Page Contains Element    link=Queues
+    Sleep    1
+    Click Element    link=Queues
+    Sleep    2
+    Wait Until Page Contains Element    link=Credit Pulled    ${Timeout}    Queues page not loaded properly
+    Focus    link=Credit Pulled
+    Click Element    link=Credit Pulled
+    Sleep    2
+    Wait Until Page Contains Element    css=label > input[type="text"]
+    Page Should Contain Element    //tr[1]/td/a    There are no record present in the list to test this function
+    Focus    //tr[1]/td/a
+    Click Element    //tr[1]/td/a
+    Sleep    2
+    Focus    link=Credit Review
+    Click Element    link=Credit Review
+    Sleep    2
+    Wait Until Page Contains Element    link=Launch tradeline reason modal    ${Timeout}    Launch tradeline reason modal button is not present on Credit Review page.

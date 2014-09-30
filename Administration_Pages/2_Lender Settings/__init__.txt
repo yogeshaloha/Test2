@@ -1,0 +1,9 @@
+*** Settings ***
+Documentation     This folders Contains the scripts related to the below functinnalities.
+...
+...               1. \ Manage Lender Information
+...               2. Manage Branches
+...               3. Manage Subscriber Codes
+...               4. Manage Tradeline Include Reasons
+...               5. \ Manage PDF Forms
+...               6. Manage PDF Form Types

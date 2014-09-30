@@ -1,0 +1,403 @@
+*** Settings ***
+Documentation     ID:US402
+...               Name :Residence types
+...               Tags:
+...
+...               Description:
+...
+...               Residence types are currently hard coded into the system instead, they should be configurable by the lender that then mapped to the values that are supported by the core system (when available).
+...
+...               When the core system is Symitar, the options should be as follows:
+...
+...               0) unknown
+...               1) Own
+...               2) Rent
+...               3) Living with Others
+...               4) Other
+...
+...               Acceptance Criteria:
+...
+...               New page to configure residence types that support in line editing
+...               Ability to add new with:
+...               Free form text in employment type
+...               core defined values in core system code (see above)
+...               enable/disable toggle defaulted to enabled for new entries
+...               Ability to edit inline
+...               Ability to save on edit
+...               Validation for unique value for residence type across all entries (enabled and disabled)
+...               validation needed for core system code - must be filled in (one to many relationship is OK)
+...               sort order by status (enabled then disabled) then recidence type
+...               Confirmation message on successful update or save
+...               Current drop down on the application page should show only enabled values
+...               On application view, no need to validate application entry.
+...               On application edit, need residence type to be valid/active. \ At any point in the process, if a user edits the application, need to validate and enforce residence type by providing an error telling the applicant that the residence type is "not valid" when it is disabled.
+...               Canceling out of edit mode (and not making any changes to the application) should clear out any enforcement.
+...
+...
+...               Support for all UI components including:
+...               - last update date
+...               - last update by
+...               -save from link at top and button at bottom
+...               - green highlight of updated record on save
+...               - confirmation message on save
+...               - dynamic labels based on core system
+...               - suppression of core components if no core system is configured
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyResidenceTypesLink
+    [Documentation]    This verifies the Manage Residence Types link under Application Settings tab.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_app_config']/div/a[2]/i    ${Timeout}    Administration Panel not loaded properly
+    Click Element    //div[@id='controller_app_config']/div/a[2]/i
+    Page Should Contain Element    link=Residence Types    Residence Types \ link is not displayed in the "Application settings" tab
+
+verifyResidenceTypesButton
+    [Documentation]    This verifies the Manage Residence Types link under Application Settings tab.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Administration Panel not loaded properly
+    Click Element    link=Application Settings
+    Sleep    1
+    Page Should Contain Element    //a[contains(text(),'Manage Residence Types')]    Manage Residence Types Button is not displayed On \ "Application settings" Page
+
+toVerifyTheResidenceLinkRedirection
+    [Documentation]    This script navigate to Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    Sleep    1
+    Wait Until Page Contains Element    id=new_residence_type_name    ${Timeout}    Manage Residence Types page not loaded properly
+    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Residence Types    Residence Types link not working
+    Page Should Contain Element    id=new_residence_type_name    Residence Types link not working
+
+toVerifyUIOfManageResidenceType
+    [Documentation]    This script verifies the UI of Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Residence Types    Manage Residence Types page header has invalid characters
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_residence_types']/table/thead/tr/th    Residence Type    Residence Type column name has invalid characters on the Manage Residence Types \
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_residence_types']/table/thead/tr/th[2]    Core ID    [Core System] Code \ column name has invalid characters on the Manage Residence Types \
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_residence_types']/table/thead/tr/th[3]    Status    Status \ column name has invalid characters on the Manage Residence Types \
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //span[@id='last_updated']/small    Last Updated Label not present on the Manage Residence Types \
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Textfield    id=new_residence_type_name    Residence Type name text box not present on the Manage Residence Types \
+    ${V7}=    Run Keyword And Return Status    Page Should Contain List    id=new_residence_type_core_code    Core System Code Drop down not present on the Manage Residence Types \
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Checkbox    name=enabled    Enabled text box not present on the Manage Residence Types \
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add button not present on the Manage Residence Types \
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}
+    @{Messages}=    Create List    Manage Residence Types page header has invalid characters    Residence Type column name has invalid characters on the Manage Residence Types \    [Core System] Code \ column name has invalid characters on the Manage Residence Types \    Status \ column name has invalid characters on the Manage Residence Types \    Last Updated Label not present on the Manage Residence Types \
+    ...    Residence Type name text box not present on the Manage Residence Types \    Core System Code Drop down not present on the Manage Residence Types \    Enabled text box not present on the Manage Applicant Type Page    Add button not present on the Manage Residence Types \
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDefaultValues
+    [Documentation]    This script verifies the Default values of fields on Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    ${ResidenceTypeWaterMarkText}=    Get Element Attribute    name=name@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Residence Type    ${ResidenceTypeWaterMarkText}    Residence Type text box has invalid watermark text
+    @{AllCoreCode}=    Get List Items    name=core_code
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    Core ID    @{AllCoreCode}[0]    [Core System] Code value in the drop down has invalid characters on Manage Residence Type Page
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    (0) Unknown    @{AllCoreCode}[1]    (0) Unknown value in the drop down has invalid characters on Manage Residence Type Page
+    ${V4}=    Run Keyword And Return Status    Should Be Equal As Strings    (1) Own    @{AllCoreCode}[2]    (1) Own value in the drop down has invalid characters on Manage Residence Type Page
+    ${V5}=    Run Keyword And Return Status    Should Be Equal As Strings    (2) Rent    @{AllCoreCode}[3]    (2) Rent value in the drop down has invalid characters on Manage Residence Type Page
+    ${V6}=    Run Keyword And Return Status    Should Be Equal As Strings    (3) Living with Others    @{AllCoreCode}[4]    (3) Living with Others value in the drop down has invalid characters on Manage Residence Type Page
+    ${V7}=    Run Keyword And Return Status    Should Be Equal As Strings    (4) Other    @{AllCoreCode}[5]    (4) Other value in the drop down has invalid characters on Manage Residence Type Page
+    ${V8}=    Run Keyword And Return Status    Checkbox Should Be Selected    name=enabled
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}
+    @{Messages}=    Create List    Residence Type text box has invalid watermark text    [Core System] Code value in the drop down has invalid characters on Manage Residence Type Page    (0) Unknown value in the drop down has invalid characters on Manage Residence Type Page    (1) Own value in the drop down has invalid characters on Manage Residence Type Page    (2) Rent value in the drop down has invalid characters on Manage Residence Type Page
+    ...    (3) Living with Others value in the drop down has invalid characters on Manage Residence Type Page    (4) Other value in the drop down has invalid characters on Manage Residence Type Page    Enabled check box not selected by default on the Manage Residence Type Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewResidenceTypeEnabled
+    [Documentation]    This script adds the new residence type with enable status on Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    ${ResidenceTypeName}=    Generate Random String    7    [LETTERS]
+    addNewResidenceTypeName    ${ResidenceTypeName}    2    Enabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${ResidenceTypeName}']    Could not add New Residence Type
+
+addNewResidenceTypeDisabled
+    [Documentation]    This script adds the new residence type with disable status on Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    ${ResidenceTypeName}=    Generate Random String    7    [LETTERS]
+    addNewResidenceTypeName    ${ResidenceTypeName}    2    Disabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${ResidenceTypeName}']    Could not add New Residence Type
+
+verifyBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation on \ Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    addNewResidenceTypeName    ${EMPTY}    0    ${EMPTY}
+    Comment    Error Message for the Applicant Type Name
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Residence \ Type name validation message not appear on the Manage Residence Type Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Applicant type name \ has invalid characters on the Manage Residence Type Page
+    Comment    Error Message for the Core Code Drop down List
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    css=td.secondCol > small.error    Empty Core Code \ validation message not appear on the Manage Residence Type Page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=td.secondCol > small.error    This field is required.    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Residence Type Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Empty Residence \ Type name validation message not appear on the Manage Residence Type Page    This field is required. message for the Empty Applicant type name \ has invalid characters on the Manage Residence Type Page    Empty Core Code \ validation message not appear on the Manage Residence Type Page    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Residence Type Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addResidenceTypeUniqueNameValidation
+    [Documentation]    This script verifies the unique Residence Type name validation on Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    ${ResidenceTypeName}=    Generate Random String    7    [LETTERS]
+    addNewResidenceTypeName    ${ResidenceTypeName}    2    Enabled
+    Sleep    1
+    addNewResidenceTypeName    ${ResidenceTypeName}    2    Enabled
+    Sleep    2
+    Page Should Contain Element    css=small.error    Unique name validation message not appear on the Page
+    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+
+verifyTheEditButtonClick
+    [Documentation]    This script verifies the Edit button functionality on Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened on Manage Residence Types page
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    name=name    Type name text box not present for the edited record
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    name=core_code    Core Code drop down not present for the edited record
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_residence_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/label    Satus check box not present for the edited record
+    ${V5}=    Run Keyword And Return Status    Element Should Be Visible    //button[@type='submit']    Save link not appear on the Edit Account Type
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='submit']    Save link not present on the Edit Account Type page
+    ${V7}=    Run Keyword And Return Status    Element Should Be Visible    xpath=(//button[@type='button'])[2]    Close link not appear on the Edit Account Type
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    xpath=(//button[@type='button'])[2]    X("Close") link not present on the Edit Account Type page
+    ${V9}=    Run Keyword And Return Status    Element Should Not Be Visible    //tr[1]/td[4]/form/button    Edit button still appear on the Edit Account Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}
+    @{Messages}=    Create List    Edit button not found for the first row in the grid    Type name text box not present for the edited record    Core Code drop down not present for the edited record    Satus check box not present for the edited record    Save link not appear on the Edit Account Type
+    ...    Save link not present on the Edit Account Type page    Close link not appear on the Edit Account Type    X("Close") link not present on the Edit Account Type page    Edit button still appear on the Edit Account Type page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editResidenceTypeToolTipsOnControls
+    [Documentation]    This script verifies the all tool tips of all controls of edit mode on Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${EditButtonToolTip}=    Get Element Attribute    //tr[1]/td[4]/form/button@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${EditButtonToolTip}    Edit Residence Type    Edit button has invalid tool tip
+    Mouse Over    //tr[1]/td[4]/form/button
+    Sleep    2
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='manage_residence_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    ${Timeout}    Edit mode not opened on Manage Residence Types page
+    ${SaveButtonToolTip}=    Get Element Attribute    //div[@id='manage_residence_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]@title
+    ${CancelButtonToolTip}=    Get Element Attribute    xpath=(//button[@type='button'])[2]@title
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${SaveButtonToolTip}    Update Residence Type    Save \ button has invalid tool tip
+    Mouse Over    //button[@type='submit']
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CancelButtonToolTip}    Cancel    Cancel button has invalid tool tip
+    Mouse Over    xpath=(//button[@type='button'])[2]
+    Sleep    2
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Edit button has invalid tool tip    Save button has invalid tool tip    Cancel button has invalid tool tip
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editResidenceTypeWaterMarkText
+    [Documentation]    This script verifies the Water Mark text of Residence Type field on Edit mode on Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened on Manage Residence Types page
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    ${ResidenceTypeWaterMarkText}=    Get Element Attribute    name=name@placeholder
+    Should Be Equal As Strings    ${ResidenceTypeWaterMarkText}    Residence Type    Residence Type text box has invalid watermark text at edit mode
+
+editResidenceTypeNameDetails
+    [Documentation]    This script verifies the Updated values through the edit functionality on Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    ${ResidenceTypeName}=    Generate Random String    7    [LETTERS]
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened on Manage Residence Types page
+    Focus    name=name
+    Input Text    name=name    ${ResidenceTypeName}
+    @{AllCoreCodes}=    Get List Items    name=core_code
+    ${AlreadySelectedValue}=    Get Selected List Label    name=core_code
+    Run Keyword If    '@{AllCoreCodes}[2]'!='${AlreadySelectedValue}'    Select From List    name=core_code    @{AllCoreCodes}[2]
+    Run Keyword If    '@{AllCoreCodes}[3]'!='${AlreadySelectedValue}'    Select From List    name=core_code    @{AllCoreCodes}[3]
+    ${Updated Value}=    Get Selected List Label    name=core_code
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated Values not saved properly
+    Sleep    4
+    Element Text Should Be    //tr[1]/td    ${ResidenceTypeName}    Updated Residence Type name not displayed correctly
+    Element Text Should Be    //tr[1]/td[2]    ${Updated Value}    Updated Residence Type Core Code \ not displayed correctly
+
+editBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation of Edit functiopnality on Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened on Manage Residence Types page
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Focus    name=core_code
+    Select From List By Index    name=core_code    0
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Comment    Error Message for the Residence Type Name
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Residence \ Type name validation message not appear on the Manage Residence \ Type \ page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Residence \ type name \ has invalid characters on the Manage Residence \ Page
+    Comment    Error Message for the Core Code Drop down List
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    css=td.secondCol > small.error    Empty Core Code \ validation message not appear on the Manage Residence \ Type \ page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    css=td.secondCol > small.error    This field is required.    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Residence \ Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Empty Residence \ Type name validation message not appear on the Manage Residence \ Type \ page    This field is required. message for the Empty Residence \ type name \ has invalid characters on the Manage Residence \ Page    Empty Core Code \ validation message not appear on the Manage Residence \ Type \ page    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Residence \ Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editResidenceTypeCancelButton
+    [Documentation]    This script verifies the Cancel button functionality of edit mode on Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${ExistingName}=    Get Text    //tr[1]/td
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    ${ResidenceTypeName}=    Generate Random String    7    [LETTERS]
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened on Manage Residence Types page
+    Focus    name=name
+    Input Text    name=name    ${ResidenceTypeName}
+    @{AllCoreCodes}=    Get List Items    name=core_code
+    ${AlreadySelectedValue}=    Get Selected List Label    name=core_code
+    Run Keyword If    '@{AllCoreCodes}[2]'!='${AlreadySelectedValue}'    Select From List    name=core_code    @{AllCoreCodes}[2]
+    Run Keyword If    '@{AllCoreCodes}[3]'!='${AlreadySelectedValue}'    Select From List    name=core_code    @{AllCoreCodes}[3]
+    ${Updated Value}=    Get Selected List Label    name=core_code
+    Click Element    xpath=(//button[@type='button'])[2]
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values not saved properly
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${ExistingName}    Cancel button click update the Residence \ Type name value
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td[2]    ${AlreadySelectedValue}    Cancel button click update the Core Code value
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    Save link \ present on the Residence \ Type page after clicking on the Cancel Edit button
+    ${V4}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    Close link \ present on the Residence \ Type page after clicking on the Cancel Edit button
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Cancel button click update the Residence \ Type name value    Cancel button click update the Core Code value    Save link \ present on the Residence \ Type page after clicking on the Cancel Edit button    Close link \ present on the Residence \ Type page after clicking on the Cancel Edit button
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editResidenceTypeNameUniqueValidation
+    [Documentation]    This script verifies the unique Residence Type Name validation of Edit mode on Manage Residence Types Page.
+    goToManageResidenceTypesPage
+    ${SecondName}=    Get Text    //tr[2]/td
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened on Manage Residence Types page
+    Focus    name=name
+    Input Text    name=name    ${SecondName}
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    2
+    Page Should Contain Element    css=small.error    Unique name validation message not appear on the Page
+    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+
+verifyAddedEnabledTypeInApplicationPage
+    [Documentation]    This script adds the new Residence Type with enable status and verifies the added residence type on New Application page.
+    goToManageResidenceTypesPage
+    ${ResidenceTypeName}=    Generate Random String    7    [LETTERS]
+    addNewResidenceTypeName    ${ResidenceTypeName}    2    Enabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${ResidenceTypeName}']    Could not add New Residence Type
+    fillApplicationForm
+    Sleep    1
+    Wait Until Page Contains Element    name=-1_residence_type    ${Timeout}    Primary Applicant Page not loaded properly
+    @{AllTypes}=    Get List Items    name=-1_residence_type
+    ${V2}=    Run Keyword And Return Status    Should Contain    ${AllTypes}    ${ResidenceTypeName}    Added Enabled Residence Type name is not displayed on the Additional Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${ResidenceTypeName}    1    Added Residence \ Type name is displayed \ more than one time on the Additional Applicant page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Could not add New Residence Type    Added Residence \ Applicant Type name is not displayed on the Additional Applicant page    Added \ Residence \ \ Type name is displayed \ more than one time on the Additional Applicant page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedDisabledTypeInApplicationPage
+    [Documentation]    This script adds the new Residence Type with disable status and verifies the added residence type on New Application page.
+    goToManageResidenceTypesPage
+    ${ResidenceTypeName}=    Generate Random String    7    [LETTERS]
+    addNewResidenceTypeName    ${ResidenceTypeName}    2    Disabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${ResidenceTypeName}']    Could not add New Residence Type
+    fillApplicationForm
+    sleep    1
+    Wait Until Page Contains Element    name=-1_residence_type    ${Timeout}    Primary Applicant Page not loaded properly
+    @{AllTypes}=    Get List Items    name=-1_residence_type
+    ${V2}=    Run Keyword And Return Status    Should Not Contain    ${AllTypes}    ${ResidenceTypeName}    Added Disabled Residence \ Type name is displayed on the Additional Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${ResidenceTypeName}    0    Added \ Disabled Residence \ Type name is displayed \ one time on the Additional Applicant page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Could not add New Residence Type    Added Disabled Residence \ Type name is displayed on the Additional Applicant page    Added Residence \ Type name is displayed \ one time on the Additional Applicant page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+goToManageResidenceTypesPage
+    [Documentation]    This keyword use to navigate to Manage Residence Type Page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_app_config']/div/a[2]/i    ${Timeout}    Administration Panel not loaded properly
+    Click Element    //div[@id='controller_app_config']/div/a[2]/i
+    Sleep    1
+    Wait Until Page Contains Element    link=Residence Types    ${Timeout}    Residence Types link not diaplyed
+    Click Element    link=Residence Types
+    Sleep    1
+
+addNewResidenceTypeName
+    [Arguments]    ${Name}    ${CoreCodeNumber}    ${Status}
+    [Documentation]    This keyword add new Applicant Type
+    ...
+    ...    Please provide the arguments as
+    ...    Name = "Name"
+    ...    Core Code = must be greater than 1
+    ...    Status = Enabled Or Disabled
+    Focus    id=new_residence_type_name
+    Input Text    id=new_residence_type_name    ${Name}
+    @{AllCoreCodes}=    Get List Items    id=new_residence_type_core_code
+    Select From List    id=new_residence_type_core_code    @{AllCoreCodes}[${CoreCodeNumber}]
+    Run Keyword If    '${Status}'=='Disabled'    Unselect Checkbox    name=enabled
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    1
+
+fillApplicationForm
+    [Documentation]    This script fill the Primary applicant form under New Application Page.
+    sleep    1
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    sleep    1
+    Page Should Contain Element    link=New Application    New Application link is not present.
+    Click Element    link=New Application
+    Sleep    2
+    Page Should Contain Element    name=loan_type    Loan Type drop down is not present on first page of New application.
+    @{LoanType}=    Get List Items    name=loan_type
+    Select From List    name=loan_type    @{LoanType}[1]
+    Page Should Contain Element    id=request_amount    Request Amount text box is not present on first page of New Application.
+    Input Text    id=request_amount    100
+    Page Should Contain Textfield    id=request_term    Request Term text box is not present on first page of New Application.
+    Focus    id=request_term
+    Input Text    id=request_term    1
+    Click Element    name=continue
+    Sleep    1
+    Wait Until Page Contains Element    id=search_ssn    ${Timeout}    Primary Applicant Page not loaded properly

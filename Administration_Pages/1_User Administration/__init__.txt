@@ -1,0 +1,6 @@
+*** Settings ***
+Documentation     This folders Contains the scripts related to the below functinnalities.
+...               \ 1. Manage User Accounts
+...               \ 2.Manage User Roles
+...               3.Manage Approval Limit Groups
+...               4. Manage Contract Override Groups

@@ -1,0 +1,9 @@
+*** Settings ***
+Documentation     This folders Contains the scripts related to the below functinnalities.
+...
+...               \ 1. Manage Loan Types
+...               2.Manage Loan Purposes
+...               3. Manage Collateral Types
+...               4. Manage Core Codes
+...               5. \ Manage Payment Frequencies
+...               6. \ Manage Supporting Documentation Types

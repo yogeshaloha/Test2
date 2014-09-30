@@ -1,0 +1,521 @@
+*** Settings ***
+Documentation     This suite contains the scripts related to the Manage Branches page
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Variables ***
+
+*** Test Cases ***
+verifyBranchesLink
+    [Documentation]    This script verifies Manage Branches \ link displayed under Lender Settings section
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Lender Settings \ section not appear on page
+    Click Element    //div[@id='controller_lender_settings']/div/a[2]/i
+    Sleep    1
+    Page Should Contain Element    link=Branches    Branches link under Lender Settings \ page not appeared \ on Admin Page
+    Element Text Should Be    link=Branches    Branches    Branches \ under Lender Settings page has invalid text on Admin Page
+
+verifyBranchesLinkClick
+    [Documentation]    This script verifies Manage Branches \ link click.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Lender Settings \ section not appear on page
+    Click Element    //div[@id='controller_lender_settings']/div/a[2]/i
+    Sleep    1
+    Click Element    link=Branches
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Branch    ${Timeout}    Manage \ Branches \ page not loaded properly
+    Element Text Should Be    css=h1.subheading    Manage Branches    Manage Branches \ not functioning properly
+
+verifyManageBranchesPageUI
+    [Documentation]    This script verifies Manage Branches Page UI
+    goToTheBranchesPage
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Manage Branches    Manage Branches page has invalid header text
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    link=Add Branch    Add Branch    Add Branch link has invalid text on \ Manage Branches page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    css=label > input[type="text"]    Search Text box not present on Manage Branches page
+    ${V4}=    Run Keyword And Return Status    Page Should Contain List    name=mngBranches_length    Per page drop down not present on Manage Branches page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='mngBranches']/thead/tr/th    Name    Name column name has invalid text on Manage Branches Page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='mngBranches']/thead/tr/th[2]    Address    Address column name has invalid text on Manage Branches Page
+    ${V7}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='mngBranches']/thead/tr/th[3]    City    City column name has invalid text on Manage Branches Page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='mngBranches']/thead/tr/th[4]    State    State column name has invalid text on Manage Branches Page
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='mngBranches']/thead/tr/th[6]    Updated On    Updated On column name has invalid text on Manage Branches Page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='mngBranches']/thead/tr/th[7]    By    By column name has invalid text on Manage Branches Page
+    ${V11}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='mngBranches']/thead/tr/th[8]    Status    Status column name has invalid text on Manage Branches Page
+    ${AddButtonTooTip}=    Get Element Attribute    link=Add Branch@data-original-title
+    ${V12}=    Run Keyword And Return Status    Should Be Equal    Add New Branch    ${AddButtonTooTip}
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}
+    @{Messages}=    Create List    Manage Branches page has invalid header text    Add Branch link has invalid text on \ Manage Branches page    Search Text box not present on Manage Branches page    Per page drop down not present on Manage Branches page    Name column name has invalid text on Manage Branches Page
+    ...    Address column name has invalid text on Manage Branches Page    City column name has invalid text on Manage Branches Page    State column name has invalid text on Manage Branches Page    Updated On column name has invalid text on Manage Branches Page    By column name has invalid text on Manage Branches Page    Status column name has invalid text on Manage Branches Page
+    ...    Add Branch link has invalid toot tip on the Manage Branches Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+toVerifyNewBranchLink
+    [Documentation]    This script verifies Add Branch link click
+    goToTheBranchesPage
+    Click Element    link=Add Branch
+    Sleep    2
+    Element Text Should Be    css=h1.subheading    Add New Branch    Add New Branch \ link not working properly
+
+toVerifyAddNewBranchPage
+    [Documentation]    This script verifies Add Branch Page UI
+    goToTheBranchesPage
+    Click Element    link=Add Branch
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    Add New Branch    Add New Branch page has invalid header text
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    link=Save    Save link not present on Add New Branch Page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    link=Cancel    Cancel link not present on Add New Branch Page
+    Comment    Branch Overview section
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_overview']/fieldset/legend    Branch Overview    Branch Overview section has invalid text on the Ad New Branch Page
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_overview']/fieldset/div/div/label    Branch Name*    Branch Name* \ label has invalid text on Add \ New Branch page under Branch Overview section
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Textfield    id=name    Branch Name text box not present on Add \ New Branch page under Branch Overview section
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Checkbox    name=active    Enable Check box not present on Add \ New Branch page under Branch Overview section
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //div[2]/div/div/label    \ Enabled    Enabled \ label has invalid text on Add \ New Branch page under Branch Overview section
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_overview']/fieldset/div[2]/div/label    Core ID    Core ID label has invalid text on Add \ New Branch page under Branch Overview section
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Textfield    id=core_id    Core ID text box not present on Add \ New Branch page under Branch Overview section
+    ${V11}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_overview']/fieldset/div[3]/div/label    Email Address    Email Address \ label has invalid text on Add \ New Branch page under Branch Overview section
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    id=email_address    Email Address text box not present on Add \ New Branch page under Branch Overview section
+    Comment    Branch Contact Information Section
+    ${V13}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_contact_info']/fieldset/legend    Branch Contact Information    Branch Contact Information section has invalid text on the Add New Branch Page
+    ${V14}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_contact_info']/fieldset/div/div/label    Address1    Address1 \ label has invalid text on Add \ New Branch page under Branch Contact Information section
+    ${V15}=    Run Keyword And Return Status    Page Should Contain Textfield    id=address_1    Address1 \ text box not present on Add New Branch page under Branch Contact Information section
+    ${V16}=    Run Keyword And Return Status    Page Should Contain Textfield    id=address_2    Address2 text box not present on Add New Branch page under Branch Contact Information section
+    ${V17}=    Run Keyword And Return Status    Page Should Contain Textfield    id=zip    Zip text \ box not present on Add New Branch page under Branch Contact Information section
+    ${V18}=    Run Keyword And Return Status    Page Should Contain Textfield    id=city    City text \ box not present on Add New Branch page under Branch Contact Information section
+    ${V19}=    Run Keyword And Return Status    Page Should Contain List    id=state    State drop down \ not present on Add New Branch page under Branch Contact Information section
+    ${V20}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_contact_info']/fieldset/div[2]/div/label    Phone    Phone \ label has invalid text on Add \ New Branch page under Branch Contact Information section
+    ${V21}=    Run Keyword And Return Status    Page Should Contain Textfield    id=phone    Phone text \ box not present on Add New Branch page under Branch Contact Information section
+    ${V22}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_contact_info']/fieldset/div[3]/div/label    Ext    Ext label has invalid text on Add \ New Branch page under Branch Contact Information section
+    ${V23}=    Run Keyword And Return Status    Page Should Contain Textfield    id=ext    Phone Extension \ text \ box not present on Add New Branch page under Branch Contact Information section
+    ${V24}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_contact_info']/fieldset/div[4]/div/label    Fax    Fax label has invalid text on Add \ New Branch page under Branch Contact Information section
+    ${V25}=    Run Keyword And Return Status    Page Should Contain Textfield    id=fax    Fax text \ box not present on Add New Branch page under Branch Contact Information section
+    ${V26}=    Run Keyword And Return Status    Page Should Contain Element    css=input.btn.btn-success    Create \ button not present on Add New Branch page under Branch Contact Information section
+    ${V27}=    Run Keyword And Return Status    Page Should Contain Element    //input[@value='Cancel']    Cancel \ not present on Add New Branch page under Branch Contact Information section
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}    ${V13}    ${V14}    ${V15}    ${V16}    ${V17}
+    ...    ${V18}    ${V19}    ${V20}    ${V21}    ${V22}    ${V23}
+    ...    ${V24}    ${V25}    ${V26}    ${V27}
+    @{Messages}=    Create List    Add New Branch page has invalid header text    Save link not present on Add New Branch Page    Cancel link not present on Add New Branch Page    Branch Overview section has invalid text on the Ad New Branch Page    Branch Name* \ label has invalid text on Add \ New Branch page under Branch Overview section
+    ...    Branch Name text box not present on Add \ New Branch page under Branch Overview section    Enable Check box not present on Add \ New Branch page under Branch Overview section    Enabled \ label has invalid text on Add \ New Branch page under Branch Overview section    Core ID label has invalid text on Add \ New Branch page under Branch Overview section    Core ID text box not present on Add \ New Branch page under Branch Overview section    Email Address \ label has invalid text on Add \ New Branch page under Branch Overview section
+    ...    Email Address text box not present on Add \ New Branch page under Branch Overview section    Branch Contact Information section has invalid text on the Add New Branch Page    Address1 \ label has invalid text on Add \ New Branch page under Branch Contact Information section    Address1 \ text box not present on Add New Branch page under Branch Contact Information section    Address2 text box not present on Add New Branch page under Branch Contact Information section    Zip text \ box not present on Add New Branch page under Branch Contact Information section
+    ...    City text \ box not present on Add New Branch page under Branch Contact Information section    State drop down \ not present on Add New Branch page under Branch Contact Information section    Phone \ label has invalid text on Add \ New Branch page under Branch Contact Information section    Phone text \ box not present on Add New Branch page under Branch Contact Information section    Ext label has invalid text on Add \ New Branch page under Branch Contact Information section    Phone Extension \ text \ box not present on Add New Branch page under Branch Contact Information section
+    ...    Fax label has invalid text on Add \ New Branch page under Branch Contact Information section    Fax text \ box not present on Add New Branch page under Branch Contact Information section    Create button not present on Add New Branch page under Branch Contact Information section    Cancel \ not present on Add New Branch page under Branch Contact Information section
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewEnabledBranch
+    [Documentation]    This script add New Enabled branch and Verify
+    goToTheBranchesPage
+    ${BranchName}=    Generate Random String    5    [LETTERS]
+    ${Email}=    Generate Random String    5    [LETTERS]
+    ${Address}=    Generate Random String    10    [LETTERS]
+    ${CoreID}=    Generate Random String    4    [NUMBERS]
+    Focus    link=Add Branch
+    Click Element    link=Add Branch
+    Sleep    1
+    addNewBranch    ${BranchName}    ${CoreID}    ${Email}@${Email}.com    ${Address}    11211    9999999999
+    ...    Enabled
+    Sleep    1
+    Wait Until Page Contains Element    css=div.alert.alert-info    ${Timeout}    After Adding new Branch notification message text not appear on the Manage Branches Page
+    Page Should Contain Element    //table[@id='mngBranches']/tbody/tr[td/a/text()='${BranchName}']    Could not add new \ enabled branch
+    ${NotificationMessage}=    Get Text    css=div.alert.alert-info
+    @{NotificationMessage}=    Split To Lines    ${NotificationMessage}
+    Should Be Equal    @{NotificationMessage}[0]    ×
+    Should Be Equal    @{NotificationMessage}[1]    Your changes have been successfully saved.
+
+addNewDisabledBranch
+    [Documentation]    This script add New Disabled branch and Verify
+    goToTheBranchesPage
+    ${BranchName}=    Generate Random String    5    [LETTERS]
+    ${Email}=    Generate Random String    5    [LETTERS]
+    ${Address}=    Generate Random String    10    [LETTERS]
+    ${CoreID}=    Generate Random String    4    [NUMBERS]
+    Focus    link=Add Branch
+    Click Element    link=Add Branch
+    Sleep    1
+    addNewBranch    ${BranchName}    ${CoreID}    ${Email}@${Email}.com    ${Address}    11211    9999999999
+    ...    Disabled
+    Sleep    1
+    Wait Until Page Contains Element    css=div.alert.alert-info    ${Timeout}    After Adding new Branch notification message text not appear on the Manage Branches Page
+    Page Should Contain Element    //table[@id='mngBranches']/tbody/tr[td/a/text()='${BranchName}']    Could not add new disabled branch
+    ${NotificationMessage}=    Get Text    css=div.alert.alert-info
+    @{NotificationMessage}=    Split To Lines    ${NotificationMessage}
+    Should Be Equal    @{NotificationMessage}[0]    ×
+    Should Be Equal    @{NotificationMessage}[1]    Your changes have been successfully saved.
+
+updateBranchDetailsAndVerify
+    [Documentation]    This script update the Branch details and verifies
+    goToTheBranchesPage
+    ${BranchName}=    Generate Random String    5    [LETTERS]
+    ${Email}=    Generate Random String    5    [LETTERS]
+    ${Address}=    Generate Random String    10    [LETTERS]
+    ${CoreID}=    Generate Random String    4    [NUMBERS]
+    Focus    link=Add Branch
+    Click Element    link=Add Branch
+    Sleep    1
+    addNewBranch    ${BranchName}    ${CoreID}    ${Email}@${Email}.com    ${Address}    11211    9999999999
+    ...    Enabled
+    Sleep    1
+    Wait Until Page Contains Element    css=div.alert.alert-info    ${Timeout}    After Adding new Branch notification message text not appear on the Manage Branches Page
+    Page Should Contain Element    //table[@id='mngBranches']/tbody/tr[td/a/text()='${BranchName}']    Could not add new \ enabled branch
+    Click Element    link=${BranchName}
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    Branch View Page not loaded properly
+    Focus    link=Edit
+    Click Element    link=Edit
+    Sleep    1
+    ${NewBranchName}=    Generate Random String    5    [LETTERS]
+    ${NewEmail}=    Generate Random String    5    [LETTERS]
+    ${NewAddress}=    Generate Random String    10    [LETTERS]
+    ${NewCoreID}=    Generate Random String    4    [NUMBERS]
+    addNewBranch    ${NewBranchName}    ${NewCoreID}    ${NewEmail}@${NewEmail}.com    ${NewAddress}    11411    9999999999
+    ...    Enabled
+    Sleep    2
+    Wait Until Page Contains Element    css=div.alert.alert-info    ${Timeout}    After Adding new Branch notification message text not appear on the Manage Branches Page
+    Page Should Contain Element    //table[@id='mngBranches']/tbody/tr[td/a/text()='${NewBranchName}']    Could not add new \ enabled branch
+    ${NotificationMessage}=    Get Text    css=div.alert.alert-info
+    @{NotificationMessage}=    Split To Lines    ${NotificationMessage}
+    ${V1}=    Run Keyword And Return Status    Should Be Equal    @{NotificationMessage}[1]    Info! Your changes have been successfully saved.    Update Branch successful notification message has invalid text on the Manage Branches Page
+    Comment    verify Updated Branch Data on View Page
+    Focus    link=${NewBranchName}
+    Click Element    link=${NewBranchName}
+    Sleep    2
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=h1.subheading    View Branch    View Branch page has invalid title
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_overview']/div[2]/div/div[2]    ${NewBranchName}    Branch Name not updated correctly
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_overview']/div[2]/div[2]/div[2]    ${NewCoreID}    Core ID not updated correctly
+    ${V5}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_overview']/div[2]/div[3]/div[2]    ${NewEmail}@${NewEmail}.com    Email not updated correctly
+    ${Address}=    Get Text    //div[@id='branch_contact_info']/div[2]/div/div[2]/address
+    @{Address}=    Split To Lines    ${Address}
+    ${V6}=    Run Keyword And Return Status    Should Be Equal    @{Address}[0]    ${NewAddress}    Address not updated correctly
+    ${V7}=    Run Keyword And Return Status    Should Be Equal    @{Address}[1]    Cambria Heights, NY \ 11411    Address not updated correctly
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_contact_info']/div[2]/div[2]/div[2]    (999) 999-9999    Phone Number not updated correctly
+    ${V9}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_contact_info']/div[2]/div[3]/div[2]    (999) 999-9999    Fax Number not updated correctly
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}
+    @{Messages}=    Create List    Update Branch successful notification message has invalid text on the Manage Branches Page    View Branch page has invalid title    Branch Name not updated correctly    Core ID not updated correctly    Email not updated correctly
+    ...    Address not updated correctly    Address not updated correctly    Phone Number not updated correctly    Fax Number not updated correctly
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+branchNameRequiredToCreateNewBranch
+    [Documentation]    Only branch name is required to create a branch
+    goToTheBranchesPage
+    Focus    link=Add Branch
+    Click Element    link=Add Branch
+    Sleep    1
+    addNewBranch    ${EMPTY}    1234    test@email.com    Adrress    41101    9999999999
+    ...    Enabled
+    Sleep    2
+    Page Should Contain Element    //div[@id='branch_overview']/fieldset/div/div[2]/div/div/small    Branch Name is not required on the Add New Branch Page
+    Element Text Should Be    //div[@id='branch_overview']/fieldset/div/div[2]/div/div/small    This field is required.    This field is required. message has invalid characters on the Add New Branch Page
+
+branchNameRequiredonEditBranchName
+    [Documentation]    Branch Required to Update Branch
+    goToTheBranchesPage
+    Sleep    1
+    Click Element    //tr[1]/td/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    Branch View Page not loaded
+    Click Element    link=Edit
+    Sleep    1
+    Focus    id=name
+    Input Text    id=name    ${EMPTY}
+    Focus    css=input.btn.btn-success
+    Click Element    css=input.btn.btn-success
+    Sleep    1
+    Page Should Contain Element    //div[@id='branch_overview']/fieldset/div/div[2]/div/div/small    Branch Name is not required on the Edit Branch Page
+    Element Text Should Be    //div[@id='branch_overview']/fieldset/div/div[2]/div/div/small    This field is required.    This field is required. message has invalid characters on the Edit Branch Page
+
+verifyUniqueBranchNameandCoreIDValidation
+    [Documentation]    This script verifies the Existing Branch Name and Core ID validation
+    ...
+    ...
+    ...    On the displayed form enter an existng branch name and click on create.
+    goToTheBranchesPage
+    ${BranchName}=    Generate Random String    5    [LETTERS]
+    ${Email}=    Generate Random String    5    [LETTERS]
+    ${Address}=    Generate Random String    10    [LETTERS]
+    ${CoreID}=    Generate Random String    4    [NUMBERS]
+    Focus    link=Add Branch
+    Click Element    link=Add Branch
+    Sleep    1
+    addNewBranch    ${BranchName}    ${CoreID}    ${Email}@${Email}.com    ${Address}    41101    9999999999
+    ...    Enabled
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Branch    ${Timeout}    Manage \ Branches page not loaded
+    Focus    link=Add Branch
+    Click Element    link=Add Branch
+    Sleep    1
+    addNewBranch    ${BranchName}    ${CoreID}    ${Email}@${Email}.com    ${Address}    41101    9999999999
+    ...    Enabled
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='branch_overview']/fieldset/div/div[2]/div/div/small    Existing Branch Name validation message not appear on the Add New Branch Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_overview']/fieldset/div/div[2]/div/div/small    This field must be unique.    This field must be unique. \ validation message of Brnach Name \ has invalid characters on the Add New Branch Name
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='branch_overview']/fieldset/div[2]/div[2]/div/div/small    Existing Core ID validation message not appear on the Add New Branch Page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_overview']/fieldset/div[2]/div[2]/div/div/small    This field must be unique.    This field must be unique. \ validation message of Core ID \ has invalid characters on the Add New Branch Name
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Existing Branch Name validation message not appear on the Add New Branch Page    This field must be unique. \ validation message of Brnach Name \ has invalid characters on the Add New Branch Name    Existing Core ID validation message not appear on the Add New Branch Page    This field must be unique. \ validation message of Core ID \ has invalid characters on the Add New Branch Name
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+validatePhoneFieldAddNewBranch
+    [Documentation]    Phone field Validation on Add New Branch Page
+    goToTheBranchesPage
+    Click Element    link=Add Branch
+    Sleep    1
+    Wait Until Page Contains Element    id=phone    ${Timeout}    Add New Branch Page not loaded
+    Comment    Phone Field For Invalid Phone Number
+    Focus    id=phone
+    Input Text    id=phone    1234567890
+    Focus    css=input.btn.btn-success
+    Click Element    css=input.btn.btn-success
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='branch_contact_info']/fieldset/div[2]/div[2]/div/div/small    Invalid phone validation message not appear on the Add New Branch Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_contact_info']/fieldset/div[2]/div[2]/div/div/small    Please enter a valid phone number    Please enter a valid phone number message has invalid characters on the Add New Branch Page
+    Focus    id=phone
+    Input Text    id=phone    9999999999
+    Focus    css=input.btn.btn-success
+    Click Element    css=input.btn.btn-success
+    Sleep    1
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='branch_contact_info']/fieldset/div[2]/div[2]/div/div/small    Phone validation message appear on the page for valid phone number on the Add New Branch Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Invalid phone validation message not appear on the Add New Branch Page    Please enter a valid phone number message has invalid characters on the Add New Branch Page    Phone validation message appear on the page for valid phone number on the Add New Branch Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+validatePhoneFieldEditBranch
+    [Documentation]    Phone field Validation on Edit \ Branch Page
+    goToTheBranchesPage
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td/a
+    Click Element    //tr[1]/td/a
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    Branch View Page not loaded
+    Click Element    link=Edit
+    Comment    Phone Field For Invalid Phone Number
+    Sleep    1
+    Focus    id=phone
+    Input Text    id=phone    1234567890
+    Focus    css=input.btn.btn-success
+    Click Element    css=input.btn.btn-success
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='branch_contact_info']/fieldset/div[2]/div[2]/div/div/small    Invalid phone validation message not appear on the Edit Branch Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='branch_contact_info']/fieldset/div[2]/div[2]/div/div/small    Please enter a valid phone number    Please enter a valid phone number message has invalid characters on the Edit Branch Page
+    Focus    id=phone
+    Input Text    id=phone    9999999999
+    Focus    css=input.btn.btn-success
+    Click Element    css=input.btn.btn-success
+    Sleep    1
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='branch_contact_info']/fieldset/div[2]/div[2]/div/div/small    Phone validation message appear on the page for valid phone number on the Edit Branch Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Invalid phone validation message not appear on the Edit Branch Page    Please enter a valid phone number message has invalid characters on the Edit Branch Page    Phone validation message appear on the page for valid phone number on the Edit Branch Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+searchFunctionality
+    [Documentation]    This scrit verifies the search functionality with Two , Three and Four characters.
+    goToTheBranchesPage
+    ${BranchName}=    Generate Random String    5    [LETTERS]
+    ${Email}=    Generate Random String    5    [LETTERS]
+    ${Address}=    Generate Random String    10    [LETTERS]
+    ${CoreID}=    Generate Random String    4
+    Focus    link=Add Branch
+    Click Element    link=Add Branch
+    Sleep    1
+    addNewBranch    ${BranchName}    ${CoreID}    ${Email}@${Email}.com    ${Address}    41101    9999999999
+    ...    Enabled
+    Comment    Search by 2 characters
+    ${TwoCharacters}=    Get Substring    ${BranchName}    0    2
+    searchByCharacters    ${TwoCharacters}
+    Comment    Three Characters Search
+    ${ThreeCharacters}=    Get Substring    ${BranchName}    0    3
+    searchByCharacters    ${ThreeCharacters}
+    Comment    Four Characters Search
+    ${FourCharacters}=    Get Substring    ${BranchName}    0    4
+    searchByCharacters    ${ThreeCharacters}
+
+verifyTheUserSelectTheBranchWithDropDown
+    [Documentation]    user can select the branch with dropdown
+    assignTwoBranchesForLoggedUser
+    Sleep    2
+    Click Element    //div[@id='navHeader']/div[3]/div[3]/ul/li/a
+    Sleep    1
+    ${FirstBranch}=    Get Text    //div[3]/ul/li/ul/li/a
+    ${SecondBranch}=    Get Text    //div[3]/ul/li/ul/li[2]/a
+    @{Branches}=    Create List    ${FirstBranch}    ${SecondBranch}
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[3]/ul/li/ul/li/a    Assigned First Branch not displayed in the Active Branch Drop down
+    ${V2}=    Run Keyword And Return Status    Should Contain X Times    ${Branches}    ${FirstBranch}    1
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //div[3]/ul/li/ul/li[2]/a    Assigned Second \ Branch not displayed in the Active Branch Drop down
+    ${V4}=    Run Keyword And Return Status    Should Contain X Times    ${Branches}    ${SecondBranch}    1
+    Click Element    //div[3]/ul/li/ul/li[2]/a
+    Sleep    3
+    Wait Until Page Contains Element    //div[@id='navHeader']/div[3]/div[3]/ul/li/a    ${Timeout}    Page not loaded after changing the branch
+    ${Active Branch}=    Get Text    css=a[title="Active Branch"]
+    ${V5}=    Run Keyword And Return Status    Should Contain X Times    ${Branches}    ${Active Branch}    1    After Selecting the branch from the drop down , selected branch is not displayed as active Branch
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    @{Messages}=    Create List    Assigned First Branch not displayed in the Active Branch Drop down    Assigned \ First branch name not displayed correctly    Assigned Second \ Branch not displayed in the Active Branch Drop down    Assigned Second branch name not displayed correctly    After Selecting the branch from the drop down , selected branch is not displayed as active Branch
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyActiveBranchLabel
+    [Documentation]    Label "Active Branch" and field on user profile
+    Sleep    1
+    Click Element    css=li.dropdown.user > a.dropdown-toggle
+    Click Element    link=Profile
+    Sleep    2
+    Page Should Contain Element    //div[@id='loginInfo']/div[2]/div[3]/div    Active Branch: label not present on the User Profile page
+    Element Text Should Be    //div[@id='loginInfo']/div[2]/div[3]/div    Active Branch:    Active Branch: \ label has invalid characters on the User Profile page
+
+verifyTheMouseOverText
+    [Documentation]    Verify the tooltip on the Active Branch
+    Sleep    2
+    Mouse Over    //div[@id='navHeader']/div[3]/div[3]/ul/li/a
+    Capture Page Screenshot
+    ${Title}=    Get Element Attribute    //div[@id='navHeader']/div[3]/div[3]/ul/li/a@title
+    Should Be Equal As Strings    Active Branch    ${Title}    Active Branch has invalid tool tip text on Mouse Over event
+
+*** Keywords ***
+goToTheBranchesPage
+    [Documentation]    This keyword is used to navigate to the Manage Branches Pages
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Lender Settings \ section not appear on page
+    Click Element    //div[@id='controller_lender_settings']/div/a[2]/i
+    Sleep    1
+    Wait Until Page Contains Element    link=Branches    ${Timeout}    Branches link not found under the Lender Setting Tab
+    Click Element    link=Branches
+    Sleep    1
+    Wait Until Page Contains Element    link=Add Branch    ${Timeout}    Manage Branches Page not loaded or User Redirected to the Other Page
+
+updateAssignedBranch
+    [Documentation]    This keyword is used to disable the active branch and again enable the same
+    goToTheBranchesPage
+    Comment    Search for the Assigned Branch
+    ${AsignedBranch}=    Get Text    //div[@id='navHeader']/div[3]/div[3]/ul/li/a
+    Focus    css=label > input[type="text"]
+    Input Text    css=label > input[type="text"]    ${AsignedBranch}
+    Focus    css=label > input[type="text"]
+    ${Rows}=    Get Matching Xpath Count    //table[@id='mngBranches']/tbody/tr/td[1]
+    ${Count}=    Evaluate    ${Rows}
+    ${RowNumber}=    Set Variable
+    : FOR    ${Rows}    IN RANGE    ${Count}
+    \    ${Rows}=    Evaluate    ${Rows}+1
+    \    ${Name}=    Get Text    //tr[${Rows}]/td[1]/a
+    \    Run Keyword If    '${Name}'=='${AsignedBranch}'    updateStatus    //tr[${Rows}]/td/a
+    \    Run Keyword If    ${Rows}==${Count}    Exit For Loop
+    Sleep    2
+
+updateStatus
+    [Arguments]    ${Locator}
+    [Documentation]    This keyword is used to update the satus of the Branch
+    Click Element    ${Locator}
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    Branch View Page not loaded or Edit link not appear on the Branch View Page
+    Focus    link=Edit
+    Click Element    link=Edit
+    Sleep    2
+    Focus    name=active
+    Click Element    name=active
+    Focus    css=input.btn.btn-success
+    Click Element    css=input.btn.btn-success
+    Sleep    2
+    Wait Until Page Contains Element    link=Add Branch    ${Timeout}    Branch Not updated succesffuly
+
+assignTwoBranchesForLoggedUser
+    [Documentation]    This Keyword is used to assign two branches for the Logged in user
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_user_admin']/div/a[2]/i    ${Timeout}    Admin Page not loaded after clicking on the Admin Link
+    Click Element    //div[@id='controller_user_admin']/div/a[2]/i
+    Click Element    link=User Accounts
+    Sleep    2
+    Wait Until Page Contains Element    link=Add User    ${Timeout}    Add User link not appear on the Manage User Account Page
+    Focus    link=@{UsernameAndPassword}[0]
+    Click Element    link=@{UsernameAndPassword}[0]
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    View User page not loaded on clicking User
+    Focus    link=Edit
+    Click Element    link=Edit
+    Sleep    1
+    Wait Until Page Contains Element    name=selected_branches[]    ${Timeout}    Edit User Page not loaded
+    Focus    //div[@id='loginDetails']/fieldset/div[3]/div[2]/div/div/div/ul/li/label/input
+    Select Checkbox    //div[@id='loginDetails']/fieldset/div[3]/div[2]/div/div/div/ul/li/label/input
+    Select Checkbox    //div[@id='loginDetails']/fieldset/div[3]/div[2]/div/div/div/ul/li[2]/label/input
+    ${FirstBranch}=    Get Text    //div[@id='loginDetails']/fieldset/div[3]/div[2]/div/div[2]/div/ul/li
+    ${SecondBranch}=    Get Text    //div[@id='loginDetails']/fieldset/div[3]/div[2]/div/div[2]/div/ul/li[2]
+    ${ThirdBranch}=    Get Text    //div[@id='loginDetails']/fieldset/div[3]/div[2]/div/div[2]/div/ul/li[3]
+    Set Global Variable    ${Global-Branch1}    ${FirstBranch}
+    Set Global Variable    ${Global-Branch2}    ${SecondBranch}
+    Set Global Variable    ${Global-Branch3}    ${ThirdBranch}
+    Focus    id=update_user
+    Click Element    id=update_user
+    Sleep    1
+    Wait Until Page Contains Element    link=Edit    ${Timeout}    View User page not loaded after updating the user details
+
+addNewBranch
+    [Arguments]    ${BranchName}    ${CoreID}    ${Email}    ${Address}    ${Zip}    ${PhoneNumber}
+    ...    ${Status}    # Please pass the exact value as required
+    [Documentation]    This keyword is used to add new Branch
+    Sleep    1
+    Wait Until Page Contains Element    id=name    ${Timeout}    Add New Branch Page not laoded
+    Focus    id=name
+    Input Text    id=name    ${BranchName}
+    Focus    name=core_id
+    Input Text    name=core_id    ${CoreID}
+    Focus    name=email_address
+    Input Text    name=email_address    ${Email}
+    Run Keyword If    '${Status}'=='Enabled'    Select Checkbox    name=active
+    Focus    id=address_1
+    Input Text    id=address_1    ${Address}
+    Focus    id=zip
+    Input Text    id=zip    ${Zip}
+    Sleep    2
+    Focus    id=city
+    Sleep    2
+    Focus    id=phone
+    Input Text    id=phone    ${PhoneNumber}
+    Focus    id=fax
+    Input Text    id=fax    ${PhoneNumber}
+    Focus    css=input.btn.btn-success
+    Click Element    css=input.btn.btn-success
+    Sleep    1
+
+searchByCharacters
+    [Arguments]    ${Searchtext}
+    [Documentation]    This keword is used to search the Branch
+    Wait Until Page Contains Element    name=mngBranches_length
+    Select From List    name=mngBranches_length    View All
+    Wait Until Page Contains Element    css=label > input[type="text"]
+    Focus    css=label > input[type="text"]
+    Input Text    css=label > input[type="text"]    ${Searchtext}
+    Capture Page Screenshot
+    ${Rows}=    Get Matching Xpath Count    //table[@id='mngBranches']/tbody/tr/td[1]
+    ${Count}=    Evaluate    ${Rows}
+    ${RowNumber}=    Set Variable
+    : FOR    ${Rows}    IN RANGE    ${Count}
+    \    Sleep    1
+    \    Log    ${Count}
+    \    ${Rows}=    Evaluate    ${Rows}+1
+    \    ${Email}=    Get Text    //tr[${Rows}]/td/a
+    \    ${Address}=    Get Text    //tr[${Rows}]/td[2]
+    \    ${City}=    Get Text    //tr[${Rows}]/td[3]
+    \    ${State}=    Get Text    //tr[${Rows}]/td[4]
+    \    ${Date}=    Get Text    //tr[${Rows}]/td[6]
+    \    ${By}=    Get Text    //tr[${Rows}]/td[7]
+    \    ${Searched Text}=    Evaluate    "${Email}"+" "+"${Address}"+" "+"${City}"+" "+"${State}"+" "+"${Date}"+" "+"${By}"
+    \    ${Result}=    Get Lines Containing String    ${Searched Text}    ${Searchtext}    False
+    \    Run Keyword If    '${Result}'==''    Fail    searching by "${Searchtext}" characters does not display right results
+    \    Run Keyword If    ${Rows}==${Count}    Exit For Loop

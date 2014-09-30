@@ -1,0 +1,80 @@
+*** Settings ***
+Documentation     This suite contains the scripts of Image Upload functionality.
+...               We are creating only UI validations.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyImageUploadLink
+    [Documentation]    This script verifies the Image upload link on lender settings tab.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Image Upload    ${Timeout}    Image Upload link not present under Lender Settings tab
+
+verifyImageUploadButton
+    [Documentation]    This script verifies the Image upload button on Lender Settings dashboard.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Image Upload    ${Timeout}    Manage Image Upload Button not present under Lender Settings page
+    Page Should Contain Element    link=Manage Image Upload    Manage Image Upload \ button not present on Lender Settings Dashboard page
+
+verifyImageUploadLinkRedirection
+    [Documentation]    This script verifies the redirection of page after clicking on Image Upload link under Lender Settings.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Image Upload    ${Timeout}    Image Upload link not present under Lender Settings tab
+    Focus    link=Image Upload
+    Click Element    link=Image Upload
+    Sleep    2
+    Wait Until Page Contains Element    id=image_file    ${Timeout}    Image Upload page not opened after clickng on Image Upload link
+
+verifyUIOfImageUploadPage
+    [Documentation]    This script verifies the UI of Image Upload page.
+    navigateToImageUploadPage
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    Image Upload header not present on Image Upload page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Image Upload    Image Upload header has invalid text on Image Upload page
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //form[@id='remove']/h3    Current Log In Page Logo: label not present on Image Upload page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //form[@id='remove']/h3    Current Log In Page Logo:    Current Log In Page Logo: label has invalid text on Image Upload page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    xpath=(//form[@id='remove']/h3)[2]    Current Header Icon: label not present on Image Upload page
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    xpath=(//form[@id='remove']/h3)[2]    Current Header Icon:    Current Header Icon: label has invalid text on Image Upload page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //form[@id='upload_form']/h3    Upload a New Logo: label not present on Image Upload page
+    ${V8}=    Run Keyword And Return Status    Element Text Should Be    //form[@id='upload_form']/h3    Upload a New Logo:    Upload a New Logo: label has invalid text on Image Upload page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    //form[@id='upload_icon']/h3    Upload a New Icon: label not present on Image Upload page
+    ${V10}=    Run Keyword And Return Status    Element Text Should Be    //form[@id='upload_icon']/h3    Upload a New Icon:    Upload a New Icon: label has invalid text on Image Upload page
+    ${V11}=    Run Keyword And Return Status    Page Should Contain Element    id=image_file    Browse button for New Logo image not present on Image Upload page
+    ${V12}=    Run Keyword And Return Status    Page Should Contain Element    id=icon_file    Browse button for New Icon image not present on Image Upload page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}    ${V11}
+    ...    ${V12}
+    @{Messages}=    Create List    Image Upload header not present on Image Upload page    Image Upload header has invalid text on Image Upload page    Current Log In Page Logo: label not present on Image Upload page    Current Log In Page Logo: label has invalid text on Image Upload page    Current Header Icon: label not present on Image Upload page
+    ...    Current Header Icon: label has invalid text on Image Upload page    Upload a New Logo: label not present on Image Upload page    Upload a New Logo: label has invalid text on Image Upload page    Upload a New Icon: label not present on Image Upload page    Upload a New Icon: label has invalid text on Image Upload page    Browse button for New Logo image not present on Image Upload page
+    ...    Browse button for New Icon image not present on Image Upload page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+navigateToImageUploadPage
+    [Documentation]    This keyword navigates to the Image Upload page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Lender Settings    ${Timeout}    Admin page not loaded properly
+    Click Element    link=Lender Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Image Upload    ${Timeout}    Image Upload link not present under Lender Settings tab
+    Focus    link=Image Upload
+    Click Element    link=Image Upload
+    Sleep    2
+    Wait Until Page Contains Element    id=image_file    ${Timeout}    Image Upload page not opened after clickng on Image Upload link

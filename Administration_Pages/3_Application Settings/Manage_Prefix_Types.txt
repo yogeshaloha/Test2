@@ -1,0 +1,364 @@
+*** Settings ***
+Documentation     This suite contains the scenarios of Manage Prefix Types page.
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyPrefixTypesLink
+    [Documentation]    This script verifies the Manage Prefix Types link under Administration Settings tab.
+    Focus    link=Admin
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Prefix Types    ${Timeout}    Prefix Types link is not displayed in the "Application settings" tab
+    Page Should Contain Element    link=Prefix Types    Prefix Types link is not displayed in the "Application settings" tab
+
+verifyPrefixTypesButton
+    [Documentation]    This script verifies the Manage Prefix Types button under Administration Settings.
+    Focus    link=Admin
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Prefix Types    ${Timeout}    Prefix Types button is not displayed in the "Application settings" tab
+    Page Should Contain Element    link=Prefix Types    Prefix Types button is not displayed in the "Application settings" tab
+
+toVerifyThePrefixTypesLinkRedirection
+    [Documentation]    This script navigate to Manage Prefix Types page.
+    Focus    link=Admin
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Prefix Types    ${Timeout}    Prefix Types button is not displayed in the "Application settings" tab
+    Page Should Contain Element    link=Prefix Types    Prefix Types button is not displayed in the "Application settings" tab
+    Click Element    link=Prefix Types
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Prefix Types page not loaded properly
+
+toVerifyUIOfManagePrefixTypesPage
+    [Documentation]    This script verifies all the UI elements of Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='content']/div/div/div/div/h1    General Application Settings - Manage Prefix Types header not present on Manage Prefix Type page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Prefix Types    Manage Prefix Types header has invalid text
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='prefix_table']/thead/tr/th    Prefix Type column \ not present on Manage Prefix Type page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='prefix_table']/thead/tr/th    Prefix Type    Prefix Type column has invalid text on Manage Prefix Type page \
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //table[@id='prefix_table']/thead/tr/th[2]    Status column not present on Manage Prefix Type page \ \
+    ${V6}=    Run Keyword And Return Status    Element Text Should Be    //table[@id='prefix_table']/thead/tr/th[2]    Status    Status column has invalid text on Manage Prefix Type page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    //span[@id='last_updated']/small    Last Updated label not present on Manage Prefix Type page
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Textfield    id=prefix_type_name    Prefix Type text field not present on Manage Prefix Type page
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Element    id=prefix_enabled    Enabled check box not present on Manage Prefix Type Page
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add button not present on Manage Prefix Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}
+    @{Messages}=    Create List    Manage Prefix Types header not present on Manage Prefix Type page    Manage Prefix Types header has invalid text    Prefix Type column \ not present on Manage Prefix Type page    Prefix Type column has invalid text on Manage Prefix Type page \    Status column not present on Manage Prefix Type page \ \
+    ...    Status column has invalid text on Manage Prefix Type page    Last Updated label not present on Manage Prefix Type page    Prefix Type text field not present on Manage Prefix Type page    Enabled check box not present on Manage Prefix Type Page    Add button not present on Manage Prefix Type page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyDefaultValues
+    [Documentation]    This script verifies default values of all the fields on Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    ${PrefixTypeWaterMarkText}    Get Element Attribute    id=prefix_type_name@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    Prefix Type    ${PrefixTypeWaterMarkText}    Prefix Type text box has invalid watermark text
+    ${V2}=    Run Keyword And Return Status    Checkbox Should Be Selected    id=prefix_enabled
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Prefix Type text box has invalid watermark text    Enabled check box is not selected by default on Manage Prefix types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addNewPrefixTypeEnabled
+    [Documentation]    This script add new Prefix type with enabled status on Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    ${PrefixTypeName}=    Generate Random String    7    [LETTERS]
+    addNewPrefixType    ${PrefixTypeName}    Enabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${PrefixTypeName}']    Newly added Prefix Type not displayed
+
+addNewPrefixTypeDisabled
+    [Documentation]    This script add new Prefix type with disabled \ status on Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    ${PrefixTypeName}=    Generate Random String    7    [LETTERS]
+    addNewPrefixType    ${PrefixTypeName}    Disabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${PrefixTypeName}']    Newly added Prefix Type not displayed
+
+verifyBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation on Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    Sleep    1
+    addNewPrefixType    ${EMPTY}    ${EMPTY}
+    Comment    Blank field validation Error message for Prefix Type text field
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Prefix Type validation message not appear on Manage Prefix Types page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Prefix Type has invalid characters on Manage Prefix Types page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Empty Prefix Type validation message not appear on Manage Prefix Types page    This field is required. message for the Empty Prefix Type has invalid characters on Manage Prefix Types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addPrefixTypeUniqueNameValidation
+    [Documentation]    This script verifies the Unique Prefix type name validation on Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    ${PrefixTypeName}=    Generate Random String    7    [LETTERS]
+    addNewPrefixType    ${PrefixTypeName}    Enabled
+    Sleep    1
+    addNewPrefixType    ${PrefixTypeName}    Enabled
+    Sleep    1
+    Page Should Contain Element    css=small.error    Unique Prefix Type validation message not present on Manage PrefixTypes page
+    Element Text Should Be    css=small.error    This field must be unique.    Message 'This field must be unique.' has invalid text on \ Manage Prefix Types page
+
+verifyTheEditButtonClick
+    [Documentation]    This script verifies the Edit button functionality on Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //tr[1]/td[3]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[3]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=prefix    ${Timeout}    Edit mode of Prefix Type not opened
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    name=prefix    PrefixType name text box not present for the edited record
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    name=enabled    Enabled check box not present for the edited record
+    ${V4}=    Run Keyword And Return Status    Element Should Be Visible    //button[@type='submit']    Save link not appear on the Edit Prefix \ Type page
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='submit']    Save link not present on the Edit Prefix Type page
+    ${V6}=    Run Keyword And Return Status    Element Should Be Visible    xpath=(//button[@type='button'])[2]    Close link not appear on the Edit Prefix Type page
+    ${V7}=    Run Keyword And Return Status    Page Should Contain Element    xpath=(//button[@type='button'])[2]    X("Close") link not present on the Edit Prefix Type page
+    ${V8}=    Run Keyword And Return Status    Element Should Not Be Visible    //tr[1]/td[4]/form/button    Edit link button present on Edit Prefix Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}
+    @{Messages}=    Create List    Edit button not found for the first row in the grid    PrefixType name text box not present for the edited record    Enabled check box not present for the edited record    Save link not appear on the Edit Prefix \ Type page    Save link not present on the Edit Prefix Type page
+    ...    Close link not appear on the Edit Prefix Type page    X("Close") link not present on the Edit Prefix Type page    Edit link button present on Edit Prefix Type page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editPrefixTypeToolTipsOnControls
+    [Documentation]    This script verifies the tool tips of all controls on edit mode on Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    Page Should Contain Element    //tr[1]/td[3]/form/button    Edit button not found for the first row in the grid
+    Comment    Taking Tool Tip of Edit Button
+    ${EditButtonToolTip}=    Get Element Attribute    id=edit_button_4@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${EditButtonToolTip}    Edit Prefix Type    Edit button has invalid tool tip
+    Mouse Over    //tr[1]/td[3]/form/button
+    Focus    //tr[1]/td[3]/form/button
+    Sleep    2
+    Click Element    //tr[1]/td[3]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=prefix    ${Timeout}    Edit mode not opened properly
+    Comment    Taking Tool Tip of Save and Close button
+    ${SaveButtonToolTip}=    Get Element Attribute    //table[@id='prefix_table']/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]@title
+    ${CancelButtonToolTip}=    Get Element Attribute    //table[@id='prefix_table']/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button@title
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${SaveButtonToolTip}    Update Prefix Type    Save button has invalid tool tip
+    Mouse Over    //table[@id='prefix_table']/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CancelButtonToolTip}    Cancel    Cancel button has invalid tool tip
+    Mouse Over    //table[@id='prefix_table']/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button
+    Sleep    2
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Edit button has invalid tool tip    Save button has invalid tool tip    Cancel button has invalid tool tip
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editPrefixTypeWaterMarkText
+    [Documentation]    This script verifies the watermark text of Prefix Type text box on Edit mode on Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    Page Should Contain Element    //tr[1]/td[3]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[3]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=prefix    ${Timeout}    Edit mode of Prefix \ Type not opened
+    Input Text    name=prefix    ${EMPTY}
+    ${PrefixTypeWaterMarkText}=    Get Element Attribute    name=prefix@placeholder
+    Should Be Equal As Strings    ${PrefixTypeWaterMarkText}    Prefix Type    Prefix Type text box has invalid watermark text at edit mode
+
+editPrefixTypeNameDetails
+    [Documentation]    This script verifies the updated details on edit mode on Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    Page Should Contain Element    //tr[1]/td[3]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[3]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=prefix    ${Timeout}    Edit mode of Prefix \ Type not opened
+    Comment    Enter new details for existing Prefix type
+    ${PrefixTypeName}=    Generate Random String    7    [LETTERS]
+    Focus    name=prefix
+    Input Text    name=prefix    ${PrefixTypeName}
+    Sleep    1
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values not saved properly
+    Element Text Should Be    //tr[1]/td    ${PrefixTypeName}    Updated Prefix Type name not displayed correctly
+
+editBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation on Edit mode on Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    Page Should Contain Element    //tr[1]/td[3]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[3]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=prefix    ${Timeout}    Edit mode of Prefix Type \ not opened
+    Focus    name=prefix
+    Input Text    name=prefix    ${EMPTY}
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    name=prefix    ${Timeout}    Updated values saved properly without giving error messages
+    Comment    Error Message for the Prefix Type field
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Prefix Type validation message not appear on the Manage Prefix types Page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Prefix Type has invalid characters on Manage \ Prefix types page
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Empty Prefix Type validation message not appear on the Manage Prefix types Page    This field is required. message for the Empty Prefix Type has invalid characters on Manage \ Prefix types page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+
+editPrefixTypeCancelButtonFunctionality
+    [Documentation]    This script verifies the Cancel button functionality on Edit mode \ on Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    Page Should Contain Element    //tr[1]/td[3]/form/button    Edit button not found for the first row in the grid
+    ${ExistingName}=    Get Text    //tr[1]/td
+    Focus    //tr[1]/td[3]/form/button
+    Click Element    //tr[1]/td[3]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=prefix    ${Timeout}    Edit mode of prefix Type not opened
+    Comment    Enter the New Details in prefix Type fields
+    ${PrefixTypeName}=    Generate Random String    7    [LETTERS]
+    Focus    name=prefix
+    Input Text    name=prefix    ${PrefixTypeName}
+    Focus    xpath=(//button[@type='button'])[2]
+    Click Element    xpath=(//button[@type='button'])[2]
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values not saved properly
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${ExistingName}    Cancel button click update the Prefix Type name value
+    ${V2}=    Run Keyword And Return Status    Element Should Not Be Visible    //table[@id='prefix_table']/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button    Save link present on the Prefix Type page after clicking on the Cancel Edit button
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //table[@id='prefix_table']/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button    Close link present on the Prefix Type page after clicking on the Cancel Edit button
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Cancel button click update the Prefix Type name value    Save link present on the Prefix Type page after clicking on the Cancel Edit button    Close link present on the Prefix Type page after clicking on the Cancel Edit button
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editPrefixTypeUniqueNameValidation
+    [Documentation]    This script verifies the unique Prefix Type name validation on Edit mode on Manage Prefix Types page.
+    goToManagePrefixTypesPage
+    ${SecondName}=    Get Text    //tr[2]/td
+    Page Should Contain Element    //tr[1]/td[3]/form/button    Edit button not found for the first row in the grid
+    Focus    //tr[1]/td[3]/form/button
+    Click Element    //tr[1]/td[3]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=prefix    ${Timeout}    Edit mode of Prefix Type not opened
+    Comment    Enter the New Details
+    Focus    name=prefix
+    Input Text    name=prefix    ${SecondName}
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    name=prefix    ${Timeout}    Updated values/duplicate values saved without any error message
+    Page Should Contain Element    css=small.error    Unique name validation message not appear on the Page
+    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+
+verifyAddedEnabledPrefixTypeInApplicationPage
+    [Documentation]    This script add New Prefix type with Enabled status and verifies it on New Application page.
+    goToManagePrefixTypesPage
+    ${PrefixTypeName}=    Generate Random String    7    [LETTERS]
+    addNewPrefixType    ${PrefixTypeName}    Enabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${PrefixTypeName}']    Newly added Prefix Type not displayed
+    toFillApplicationForm
+    Sleep    2
+    Focus    //div[@id='generalInformation']/div/div[2]/div/div/span/span/span/span
+    Click Element    //div[@id='generalInformation']/div/div[2]/div/div/span/span/span/span
+    Sleep    1
+    ${AllPrefixCount}=    Get Matching Xpath Count    //ul[@id='prefix__listbox']/li
+    ${Count}=    Set Variable    0
+    ${Locator}=    Set Variable    1
+    ${Exit}=    Evaluate    ${AllPrefixCount}+1
+    : FOR    ${Count}    IN RANGE    ${AllPrefixCount}
+    \    Page Should Contain Element    //ul[@id='prefix__listbox']/li[${Locator}]
+    \    ${GetPrefixType}=    Get Text    //ul[@id='prefix__listbox']/li[${Locator}]
+    \    ${V1}=    Run Keyword And Return Status    Should Be Equal    ${GetPrefixType}    ${PrefixTypeName}
+    \    Run Keyword If    '${V1}'=='True'    Exit For Loop
+    \    ${Locator}=    Evaluate    ${Locator}+1
+    \    ${Count}=    Evaluate    ${Count}+1
+    \    Run Keyword If    ${Locator}==${Exit}    Exit For Loop
+    Run Keyword If    '${V1}'=='False'    Fail    Added Enabled Prefix Type name is \ displaying on the Primary Applicant page
+
+verifyAddedDisabledPrefixTypeInApplicationPage
+    [Documentation]    This script add New Prefix type with Disabled status and verifies it on New Application page.
+    goToManagePrefixTypesPage
+    ${PrefixTypeName}=    Generate Random String    7    [LETTERS]
+    addNewPrefixType    ${PrefixTypeName}    Disabled
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${PrefixTypeName}']    Newly added Prefix Type not displayed
+    toFillApplicationForm
+    Sleep    2
+    Focus    //div[@id='generalInformation']/div/div[2]/div/div/span/span/span/span
+    Click Element    //div[@id='generalInformation']/div/div[2]/div/div/span/span/span/span
+    Sleep    1
+    ${AllPrefixCount}=    Get Matching Xpath Count    //ul[@id='prefix__listbox']/li
+    ${Count}=    Set Variable    0
+    ${Locator}=    Set Variable    1
+    ${Exit}=    Evaluate    ${AllPrefixCount}+1
+    : FOR    ${Count}    IN RANGE    ${AllPrefixCount}
+    \    Page Should Contain Element    //ul[@id='prefix__listbox']/li[${Locator}]
+    \    ${GetPrefixType}=    Get Text    //ul[@id='prefix__listbox']/li[${Locator}]
+    \    ${V2}=    Run Keyword And Return Status    Should Be Equal    ${GetPrefixType}    ${PrefixTypeName}
+    \    Run Keyword If    '${V2}'=='True'    Exit For Loop
+    \    ${Locator}=    Evaluate    ${Locator}+1
+    \    ${Count}=    Evaluate    ${Count}+1
+    \    Run Keyword If    ${Locator}==${Exit}    Exit For Loop
+    Run Keyword If    '${V2}'=='True'    Fail    Added Enabled Prefix Type name is \ displaying on the Primary Applicant page
+
+*** Keywords ***
+goToManagePrefixTypesPage
+    [Documentation]    This Keyword \ navigate to Manage Prefix Types page.
+    Focus    link=Admin
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not opened properly
+    Focus    link=Application Settings
+    Click Element    link=Application Settings
+    Sleep    1
+    Wait Until Page Contains Element    link=Prefix Types    ${Timeout}    Prefix Types button is not displayed in the "Application settings" tab
+    Page Should Contain Element    link=Prefix Types    Prefix Types button is not displayed in the "Application settings" tab
+    Click Element    link=Prefix Types
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='content']/div/div/div/div/h1    ${Timeout}    Manage Prefix Types page not loaded properly
+
+addNewPrefixType
+    [Arguments]    ${Name}    ${Status}
+    [Documentation]    This keyword add new prefix type on Manage Prefix types page.
+    Focus    id=prefix_type_name
+    Input Text    id=prefix_type_name    ${Name}
+    Sleep    1
+    Run Keyword If    '${Status}'=='Disabled'    Unselect Checkbox    name=enabled
+    Sleep    1
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    1
+
+toFillApplicationForm
+    [Documentation]    This keyword fill the first form of New Application and Navigate to Primary Applicant page.
+    Sleep    1
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    Sleep    1
+    Page Should Contain Element    link=New Application    New Application link is not present.
+    Click Element    link=New Application
+    Sleep    2
+    Page Should Contain Element    name=loan_type    Loan Type drop down is not present on first page of New application.
+    @{LoanType}=    Get List Items    name=loan_type
+    Select From List    name=loan_type    @{LoanType}[1]
+    Page Should Contain Element    id=request_amount    Request Amount text box is not present on first page of New Application.
+    Input Text    id=request_amount    100
+    Page Should Contain Textfield    id=request_term    Request Term text box is not present on first page of New Application.
+    Focus    id=request_term
+    Input Text    id=request_term    1
+    Click Element    name=continue
+    Sleep    1
+    Wait Until Page Contains Element    id=search_ssn    ${Timeout}    Primary Applicant page not loaded properly

@@ -1,0 +1,516 @@
+*** Settings ***
+Documentation     ID:US410
+...               Name:[Unfinished] Identification types
+...               Tags:
+...
+...               Description:
+...
+...               Identification types are currently hard coded into the system instead, they should be configurable by the lender that then mapped to the values that are supported by the core system (when available).
+...
+...               When the core system is Symitar, the options should be as follows:
+...
+...               0) unknown
+...               1) Known Existing Member
+...               2) State Drivers License
+...               3) State ID Card
+...               4) US Passport
+...               5) Foreign Passport
+...               6) Military ID Card
+...               7) Foreign Government Issues Id
+...               8) Resident Alien Card
+...               9) Disabled Elderly with no ID
+...               10) Foreign Entity with no ID
+...               11) Law Enforcement
+...               12)Amish Customer with no ID
+...               Credit Union Defined : XXX
+...
+...               Acceptance Criteria:
+...
+...               New page to configure identification types that support in line editing
+...               Ability to add new with:
+...               Free form text in identification type
+...               core defined values in core system code (see above)
+...               enable/disable toggle defaulted to enabled for new entries
+...               When Credit Union Defined is selected, user should be able to enter a 3 digit value
+...               3 Digit values can be reused/ reentered
+...               only 3 digit codes 101-999 are valid
+...               Ability to edit inline
+...               Ability to save on edit
+...               Validation for unique value for identification type across all entries (enabled and disabled)
+...               validation needed for core system code - must be filled in (one to many relationship is OK)
+...               sort order by status (enabled then disabled) then identification type
+...               Confirmation message on successful update or save
+...               Current drop down on the application page should show only enabled values
+...               On application view, no need to validate application entry.
+...               On application edit, need identification type to be valid/active. \ At any point in the process, if a user edits the application, need to validate and enforce identification type by providing an error telling the applicant that the identification type is "not valid" when it is disabled.
+...               Canceling out of edit mode (and not making any changes to the application) should clear out any enforcement.
+...
+...
+...               Support for all UI components including:
+...               - last update date
+...               - last update by
+...               -save from link at top and button at bottom
+...               - green highlight of updated record on save
+...               - confirmation message on save
+...               - dynamic labels based on core system
+...               - suppression of core components if no core system is configured
+Suite Setup       OpenNewBrowseAndloginToApplication
+Suite Teardown    Close All Browsers
+Test Setup        setFailureCountToZero
+Resource          ../../financegeniusresource.txt
+
+*** Test Cases ***
+verifyIdentificationTypesLink
+    [Documentation]    This script verifies the Manage Identification Types link under Application Settings Tab.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_app_config']/div/a[2]/i    ${Timeout}    Admin page not loaded properly after clicking on Admin tab.
+    Click Element    //div[@id='controller_app_config']/div/a[2]/i
+    Page Should Contain Element    link=Identification Types    Identification Types link is not displayed in the "Application settings" tab
+
+verifyIdentificationTypesButton
+    [Documentation]    This script verifies the \ Manage Identification Types link under Application Settings Tab.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    link=Application Settings    ${Timeout}    Application Settings tab not dispalyed after clicking on Admin tab
+    Click Element    link=Application Settings
+    Sleep    1
+    Page Should Contain Element    link=Manage Identification Types    Manage Identification Types Button is not displayed On \ "Application settings" Page
+
+toVerifyTheIdentificationLinkRedirection
+    [Documentation]    This script navigate to the \ Manage Identification Types page.
+    goToManageIdentificationTypesPage
+    Sleep    1
+    Wait Until Page Contains Element    id=new_identification_type_name    ${Timeout}    Manage Identification Type Page not loaded properly after clicking on Identification Type link
+    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Identification Types    Identification Types \ link not working
+    Page Should Contain Element    id=new_identification_type_name    Identification Types link not working
+
+toVerifyUIOfManageIdentificationType
+    [Documentation]    This script verifies the UI of \ Manage Identification Types page.
+    goToManageIdentificationTypesPage
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='content']/div/div/div/div/h1    Manage Identification Types    Manage Identification Types page header has invalid characters
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_identification_types']/table/thead/tr/th    Identification Type    Identification Type column name has invalid characters on the Manage Identification Types \
+    ${V3}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_identification_types']/table/thead/tr/th[2]    Core ID    [Core System] Code \ column name has invalid characters on the Manage Identification Types \
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div[@id='manage_identification_types']/table/thead/tr/th[3]    Status    Status \ column name has invalid characters on the Manage Identification Types \
+    ${V5}=    Run Keyword And Return Status    Page Should Contain Element    //span[@id='last_updated']/small    Last Updated Label not present on the Manage Identification Types \
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Textfield    id=new_identification_type_name    Identification Type name text box not present on the Manage Identification Types \
+    ${V7}=    Run Keyword And Return Status    Page Should Contain List    id=new_identification_type_core_code    Core System Code Drop down not present on the Manage Identification Types \
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Textfield    id=defined_core_code    Core Code text box not present on the Manage Identification Types \
+    ${V9}=    Run Keyword And Return Status    Page Should Contain Checkbox    name=enabled    Enabled text box not present on the Manage Identification Types
+    ${V10}=    Run Keyword And Return Status    Page Should Contain Element    name=submit-add    Add button not present on the Manage Identification Types \
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}    ${V10}
+    @{Messages}=    Create List    General Application Settings - Manage Identification Types page header has invalid characters    Identification Type column name has invalid characters on the Manage Identification Types \    [Core System] Code \ column name has invalid characters on the Manage Identification Types \    Status \ column name has invalid characters on the Manage Identification Types \    Last Updated Label not present on the Manage Identification Types \
+    ...    Identification Type name text box not present on the Manage Identification Types \    Core System Code Drop down not present on the Manage Identification Types \    Core Code text box not present on the Manage Identification Types \    Enabled text box not present on the Manage Identification Types    Add button not present on the Manage Identification Types \
+    Set Global Variable    @{GlobalFailureMessages}    ${EMPTY}
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyCodeVisiblity
+    [Documentation]    This script verifies the selected Core Code for Identification Type.
+    goToManageIdentificationTypesPage
+    Element Should Be Visible    //div[@id='manage_identification_types']/table/thead/tr/th[2]    By Default the Code Text box not appear on the Manage Identifcation Types
+    @{AllCodeCode}=    Get List Items    id=new_identification_type_core_code
+    Select From List    id=new_identification_type_core_code    @{AllCodeCode}[2]
+    Focus    id=new_identification_type_name
+    ${V1}=    Run Keyword And Return Status    Element Should Not Be Visible    id=defined_core_code    For \ "@{AllCodeCode}[2] " Selected \ \ Core code, \ Core Text box appear on the Manage Identifcation Types
+    Select From List    id=new_identification_type_core_code    @{AllCodeCode}[1]
+    Focus    id=new_identification_type_name
+    ${V2}=    Run Keyword And Return Status    Element Should Be Visible    id=defined_core_code    For \ "@{AllCodeCode}[1] " Selected \ \ Core code, \ Core Text box not appear on the Manage Identifcation Types
+    Select From List    id=new_identification_type_core_code    @{AllCodeCode}[2]
+    Focus    id=new_identification_type_name
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    id=defined_core_code    For \ "@{AllCodeCode}[2] " Selected \ \ Core code, \ Core Text box appear on the Manage Identifcation Types
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    For \ "@{AllCodeCode}[2] " Selected \ \ Core code, \ Core Text box appear on the Manage Identifcation Types    For \ "@{AllCodeCode}[1] " Selected \ \ Core code, \ Core Text box not appear on the Manage Identifcation Types    For \ "@{AllCodeCode}[2] " Selected \ \ Core code, \ Core Text box appear on the Manage Identifcation Types
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+    Set Global Variable    @{GlobalFailureMessages}    ${EMPTY}
+    Set Global Variable    ${MessageToDisplay}    ${EMPTY}
+
+addNewIdentificationTypeEnabled
+    [Documentation]    This script add the new identification type with enable status.
+    goToManageIdentificationTypesPage
+    ${IdentificationTypeName}=    Generate Random String    7    [LETTERS]
+    addNewIdentificationTypeName    ${IdentificationTypeName}    2    Enabled
+    Sleep    2
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${IdentificationTypeName}']    Could not add New Identification Type
+
+addNewIdentificationTypeDisabled
+    [Documentation]    This script add the new identification type with disable status.
+    goToManageIdentificationTypesPage
+    ${IdentificationTypeName}=    Generate Random String    7    [LETTERS]
+    addNewIdentificationTypeName    ${IdentificationTypeName}    2    Disabled
+    Sleep    1
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${IdentificationTypeName}']    Could not add New Identification Type
+
+verifyBlankFieldValidation
+    [Documentation]    This script verifies the blank field validation on Manage Identification Types Page.
+    goToManageIdentificationTypesPage
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Comment    Error Message for the Identification Type Name
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Identifcation \ Type name validation message not appear on the Manage Identifcation Types Page \
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Applicant type name \ has invalid characters on the Manage Identifcation Types Page
+    Comment    Error Message for the Core Code Drop down List
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    //div/small    Core Code \ validation message not appear on the Manage Identifcation Types Page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div/small    This field is required.    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Identifcation Types Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Empty Identifcation \ Type name validation message not appear on the Manage Identifcation Types Page \    This field is required. message for the Empty Applicant type name \ has invalid characters on the Manage Identifcation Types Page    Core Code \ validation message not appear on the Manage Identifcation Types Page    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Identifcation Types Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+addIdentificationTypeUniqueNameValidation
+    [Documentation]    This script verifies the unique name validation of Identification type on Manage Identification Types Page.
+    goToManageIdentificationTypesPage
+    ${IdentificationTypeName}=    Generate Random String    7    [LETTERS]
+    addNewIdentificationTypeName    ${IdentificationTypeName}    2    Enabled
+    Sleep    1
+    addNewIdentificationTypeName    ${IdentificationTypeName}    2    Enabled
+    Sleep    1
+    Page Should Contain Element    css=small.error    Unique name validation message not appear on the Page
+    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+
+editIdentificationTypeCoreCode
+    [Documentation]    This script verifies the selected Core Code for Identification Type on Edit Mode on Manage Identification Types Page.
+    goToManageIdentificationTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened after clicking on Edit button
+    @{AllCoreCodes}=    Get List Items    name=core_code
+    ${AlreadySelectedValue}=    Get Selected List Label    name=core_code
+    Select From List    name=core_code    @{AllCoreCodes}[1]
+    ${CodeNumber}=    Generate Random String    2    [NUMBERS]
+    Focus    name=defined_core_code
+    Input Text    name=defined_core_code    1${CodeNumber}
+    ${Code}=    Replace String    @{AllCoreCodes}[1]    Code    ${EMPTY}
+    ${Code}=    Evaluate    "${Code}".strip()
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    3
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values not saved after clicking on Save button
+    Element Text Should Be    //tr[1]/td[2]    (1${CodeNumber}) ${Code}    Updated Identification Type Core Code \ not displayed correctly
+
+editIdentificationTypeToolTipsOnControls
+    [Documentation]    This script verifies the tool tips of all controls on Edit mode of Manage Identification Types Page.
+    goToManageIdentificationTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${EditButtonToolTip}=    Get Element Attribute    //tr[1]/td[4]/form/button@title
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${EditButtonToolTip}    Edit Identification Type    Edit button has invalid tool tip
+    Mouse Over    //tr[1]/td[4]/form/button
+    Sleep    2
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=core_code    ${Timeout}    Edit mode not opened after clicking on Edit button
+    Focus    name=core_code
+    Select From List By Index    name=core_code    3
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    2
+    Focus    //tr[1]/td[4]/form/button
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    2
+    Wait Until Page Contains Element    //div[@id='manage_identification_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]    ${Timeout}    Edit mode not opened after clicking on Edit button
+    ${SaveButtonToolTip}=    Get Element Attribute    //div[@id='manage_identification_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]@title
+    ${CancelButtonToolTip}=    Get Element Attribute    //div[@id='manage_identification_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button@title
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${SaveButtonToolTip}    Update Identification Type    Save button has invalid tool tip
+    Mouse Over    //div[@id='manage_identification_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button[2]
+    Sleep    2
+    ${V3}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CancelButtonToolTip}    Cancel    Cancel \ button has invalid tool tip
+    Mouse Over    //div[@id='manage_identification_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button
+    Sleep    2
+    ${Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Edit button has invalid tool tip    Save button has invalid tool tip    Cancel \ button has invalid tool tip
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editIdentificationTypeCancelButton
+    [Documentation]    This script verifies the Cancel button functionality on edit mode of Manage Identification Types Page.
+    goToManageIdentificationTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    ${ExistingName}=    Get Text    //tr[1]/td
+    ${AlreadySelectedValue}=    Get Text    //tr[1]/td[2]
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    ${IdentificationTypeName}=    Generate Random String    7    [LETTERS]
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened after clicking on Edit button
+    Focus    name=name
+    Input Text    name=name    ${IdentificationTypeName}
+    @{AllCoreCodes}=    Get List Items    name=core_code
+    Run Keyword If    '@{AllCoreCodes}[2]'!='${AlreadySelectedValue}'    Select From List    name=core_code    @{AllCoreCodes}[2]
+    Run Keyword If    '@{AllCoreCodes}[3]'!='${AlreadySelectedValue}'    Select From List    name=core_code    @{AllCoreCodes}[3]
+    ${Updated Value}=    Get Selected List Label    name=core_code
+    Sleep    1
+    Click Element    //div[@id='manage_identification_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values not saved after clicking on Save button
+    Sleep    1
+    ${V1}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td    ${ExistingName}    Cancel button click update the Identification Type name value
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    //tr[1]/td[2]    ${AlreadySelectedValue}    Cancel button click update the Core Code value
+    ${V3}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button[2]    Save link \ present on the Identification \ Type page after clicking on the Cancel Edit button
+    ${V4}=    Run Keyword And Return Status    Element Should Not Be Visible    //div[@id='core_system_connection']/table/tbody/tr[2]/td/form/table/tbody/tr/td[3]/button    Close link \ present on the Identification \ Type page after clicking on the Cancel Edit button
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Cancel button click update the Identification \ Type name value    Cancel button click update the Core Code value    Save link \ present on the Identification \ Type page after clicking on the Cancel Edit button    Close link \ present on the Identification \ Type page after clicking on the Cancel Edit button
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyTheEditButtonClick
+    [Documentation]    This script verifies the Edit Button functionality on Manage Identification Types Page.
+    goToManageIdentificationTypesPage
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened after clicking on Edit button
+    ${V2}=    Run Keyword And Return Status    Page Should Contain Element    name=name    Type name text box not present for the edited record
+    ${V3}=    Run Keyword And Return Status    Page Should Contain Element    name=core_code    Core Code drop down not present for the edited record
+    ${V4}=    Run Keyword And Return Status    Page Should Contain Element    name=enabled    Satus check box not present for the edited record
+    ${V5}=    Run Keyword And Return Status    Element Should Be Visible    //button[@type='submit']    Save link not appear on the Edit Account Type
+    ${V6}=    Run Keyword And Return Status    Page Should Contain Element    //button[@type='submit']    Save link not present on the Edit Account Type page
+    ${V7}=    Run Keyword And Return Status    Element Should Be Visible    //div[@id='manage_identification_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    Close link not appear on the Edit Account Type
+    ${V8}=    Run Keyword And Return Status    Page Should Contain Element    //div[@id='manage_identification_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[4]/button    X("Close") link not present on the Edit Account Type page
+    ${V9}=    Run Keyword And Return Status    Element Should Not Be Visible    //tr[1]/td[4]/form/button    Edit button still appear on the Edit Account Type page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}    ${V5}
+    ...    ${V6}    ${V7}    ${V8}    ${V9}
+    @{Messages}=    Create List    Edit button not found for the first row in the grid    Type name text box not present for the edited record    Core Code drop down not present for the edited record    Satus check box not present for the edited record    Save link not appear on the Edit Account Type
+    ...    Save link not present on the Edit Account Type page    Close link not appear on the Edit Account Type    X("Close") link not present on the Edit Account Type page    Edit button still appear on the Edit Account Type page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editBlankFieldValidation
+    [Documentation]    This script verifies blank field validation on edit functionality on Manage Identification Types page.
+    goToManageIdentificationTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened after clicking on Edit.
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    Focus    name=core_code
+    Select From List By Index    name=core_code    0
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Comment    Error Message for the Identification \ Type Name
+    ${V1}=    Run Keyword And Return Status    Element Should Be Visible    css=small.error    Empty Identification \ \ \ Type name validation message not appear on the Manage Identification \ \ Type \ page
+    ${V2}=    Run Keyword And Return Status    Element Text Should Be    css=small.error    This field is required.    This field is required. message for the Empty Identification type name \ has invalid characters on the Manage Identification Page
+    Comment    Error Message for the Core Code Drop down List
+    ${V3}=    Run Keyword And Return Status    Element Should Be Visible    //div/small    Empty Core Code \ validation message not appear on the Manage Identification Type \ page
+    ${V4}=    Run Keyword And Return Status    Element Text Should Be    //div/small    This field is required.    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Identification \ Page
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}    ${V4}
+    @{Messages}=    Create List    Empty Identification \ \ \ Type name validation message not appear on the Manage Identification \ \ Type \ page    This field is required. message for the Empty Identification type name \ has invalid characters on the Manage Identification Page    Empty Core Code \ validation message not appear on the Manage Identification Type \ page    This field is required. message for the Empty Core Code \ has invalid characters on the Manage Identification \ Page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editIdentificationTypeNameUniqueValidation
+    [Documentation]    This script verifies the Unique Identification Types Name validation On Edit Page on Manage Identification Types page.
+    goToManageIdentificationTypesPage
+    ${SecondName}=    Get Text    //tr[2]/td
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened after clicking on Edit button
+    Focus    name=name
+    Input Text    name=name    ${SecondName}
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    2
+    Page Should Contain Element    css=small.error    Unique name validation message not appear on the Page
+    Element Text Should Be    css=small.error    This field must be unique.    This field must be unique. message has invalid characters
+
+editIdentificationTypeWaterMarkText
+    [Documentation]    This script verifies the Water Mark Text on Identification Type text box on Manage Identification Types Page.
+    goToManageIdentificationTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened after clicking on Edit button
+    Focus    name=name
+    Input Text    name=name    ${EMPTY}
+    ${IdentificationTypeWaterMarkText}=    Get Element Attribute    name=name@placeholder
+    ${V1}=    Run Keyword And Return Status    Should Be Equal As Strings    ${IdentificationTypeWaterMarkText}    Identification Type    Identification Type text box has invalid watermark text at edit mode
+    @{AllCoreCodes}=    Get List Items    name=core_code
+    Select From List    name=core_code    @{AllCoreCodes}[1]
+    Focus    name=defined_core_code
+    Input Text    name=defined_core_code    ${EMPTY}
+    ${CodeWaterMarkText}=    Get Element Attribute    name=defined_core_code@placeholder
+    ${V2}=    Run Keyword And Return Status    Should Be Equal As Strings    ${CodeWaterMarkText}    Code    Code \ text box has invalid watermark text at edit mode
+    @{Verification}=    Create List    ${V1}    ${V2}
+    @{Messages}=    Create List    Identification Type text box has invalid watermark text at edit mode    Code \ text box has invalid watermark text at edit mode
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+editIdentificationTypeNameDetails
+    [Documentation]    This script verifies the details of updated Identification Type after edit them.
+    goToManageIdentificationTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    ${IdentificationTypeName}=    Generate Random String    7    [LETTERS]
+    Sleep    1
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened after clicking on Edit button
+    Focus    name=name
+    Input Text    name=name    ${IdentificationTypeName}
+    @{AllCoreCodes}=    Get List Items    name=core_code
+    ${AlreadySelectedValue}=    Get Selected List Label    name=core_code
+    Run Keyword If    '@{AllCoreCodes}[2]'!='${AlreadySelectedValue}'    Select From List    name=core_code    @{AllCoreCodes}[2]
+    Run Keyword If    '@{AllCoreCodes}[3]'!='${AlreadySelectedValue}'    Select From List    name=core_code    @{AllCoreCodes}[3]
+    ${Updated Value}=    Get Selected List Label    name=core_code
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Wait Until Page Contains Element    //tr[1]/td    ${Timeout}    Updated values not saved after clicking on Save button
+    Sleep    4
+    Element Text Should Be    //tr[1]/td    ${IdentificationTypeName}    Updated Identification Type name not displayed correctly
+    Element Text Should Be    //tr[1]/td[2]    ${Updated Value}    Updated Identification Type Core Code \ not displayed correctly
+
+editCodeInvalidDataValidation
+    [Documentation]    This script verifies the invalid core code data for edit record.
+    goToManageIdentificationTypesPage
+    Page Should Contain Element    //tr[1]/td[4]/form/button    Edit button not found for the first row in the grid
+    Click Element    //tr[1]/td[4]/form/button
+    Comment    Enter the New Details
+    Wait Until Page Contains Element    name=name    ${Timeout}    Edit mode not opened after clicking on Edit.
+    @{AllCoreCodes}=    Get List Items    name=core_code
+    ${AlreadySelectedValue}=    Get Selected List Label    name=core_code
+    Select From List    name=core_code    @{AllCoreCodes}[1]
+    Sleep    2
+    Focus    name=defined_core_code
+    Input Text    name=defined_core_code    011
+    Focus    //button[@type='submit']
+    Click Element    //button[@type='submit']
+    Sleep    1
+    Page Should Contain Element    //div[@id='manage_identification_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/div[2]/small    Invalid defined core code validation message not appear on the page
+    Element Text Should Be    //div[@id='manage_identification_types']/table/tbody/tr[2]/td/form/table/tbody/tr/td[2]/div[2]/small    Invalid defined core code    Invalid defined core code messgae has invalid characters on the page
+
+toVerifyTheCoreCodeWithInvalidValue
+    [Documentation]    This script verifies the invalid core code on Manage Identification type page.
+    goToManageIdentificationTypesPage
+    ${IdentificationTypeName}=    Generate Random String    7    [LETTERS]
+    Focus    id=new_identification_type_name
+    Input Text    id=new_identification_type_name    ${IdentificationTypeName}
+    @{AllCoreCodes}=    Get List Items    id=new_identification_type_core_code
+    Select From List    id=new_identification_type_core_code    @{AllCoreCodes}[1]
+    Sleep    2
+    Focus    id=defined_core_code
+    Input Text    id=defined_core_code    011
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    1
+    Page Should Contain Element    css=small.error    Invalid defined core code validation message not appear on the page
+    Element Text Should Be    css=small.error    Invalid defined core code    Invalid defined core code messgae has invalid characters on the page
+
+toVerifyTheCoreCodeWithValidValue
+    [Documentation]    This script verifies the Core code for valid data.
+    goToManageIdentificationTypesPage
+    ${IdentificationTypeName}=    Generate Random String    7    [LETTERS]
+    Focus    id=new_identification_type_name
+    Input Text    id=new_identification_type_name    ${IdentificationTypeName}
+    @{AllCoreCodes}=    Get List Items    id=new_identification_type_core_code
+    Select From List    id=new_identification_type_core_code    @{AllCoreCodes}[1]
+    ${CodeNumber}=    Generate Random String    2    [NUMBERS]
+    Focus    id=defined_core_code
+    Input Text    id=defined_core_code    1${CodeNumber}
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    4
+    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${IdentificationTypeName}']    Could not add New Identification Type
+    ${Code}=    Replace String    @{AllCoreCodes}[1]    Code    ${EMPTY}
+    ${Code}=    Evaluate    "${Code}".strip()
+    Element Text Should Be    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${IdentificationTypeName}']//td[2]    (1${CodeNumber}) ${Code}    Added core code not displayed correctly on Manage Identification Page
+
+verifyAddedEnabledIdentificationTypeOnNewApplicationPage
+    [Documentation]    This script verifies the added enabled Identification type on New Application page.
+    goToManageIdentificationTypesPage
+    Sleep    1
+    ${IdentificationTypeName}=    Generate Random String    7    [LETTERS]
+    addNewIdentificationTypeName    ${IdentificationTypeName}    2    Enabled
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${IdentificationTypeName}']    Newly added Identification Type not displayed
+    fillApplicationForm
+    @{AllTypes}=    Get List Items    id=identification_type_
+    ${V2}=    Run Keyword And Return Status    Should Contain    ${AllTypes}    ${IdentificationTypeName}    Added Enabled Identification Type name not displayed on the Primary Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${IdentificationTypeName}    1
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Newly added Identification Type not displayed    Added Enabled Identification Type name not displayed on the Primary Applicant page    Added Iedentification Type name is displayed more than one time on the Primary Applicant page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+verifyAddedDisabledIdentificationTypeOnNewApplicationPage
+    [Documentation]    This script verifies the added disabled Identification type on New Application page.
+    goToManageIdentificationTypesPage
+    Sleep    1
+    ${IdentificationTypeName}=    Generate Random String    7    [LETTERS]
+    addNewIdentificationTypeName    ${IdentificationTypeName}    2    Disabled
+    Sleep    2
+    ${V1}=    Run Keyword And Return Status    Page Should Contain Element    //table[@class='table table-hover table-condensed inline-edit']/tbody/tr[td/text()='${IdentificationTypeName}']    Newly added Identification Type not displayed
+    fillApplicationForm
+    @{AllTypes}=    Get List Items    id=identification_type_
+    ${V2}=    Run Keyword And Return Status    Should Not Contain    ${AllTypes}    ${IdentificationTypeName}    Added Disabled Identification Type name displayed on the Primary Applicant page
+    ${V3}=    Run Keyword And Return Status    Should Contain X Times    ${AllTypes}    ${IdentificationTypeName}    0
+    @{Verification}=    Create List    ${V1}    ${V2}    ${V3}
+    @{Messages}=    Create List    Newly added Identification Type not displayed    Added Disabled Identification Type name displayed on the Primary Applicant page    Added Iedentification Type name is displayed more than one time on the Primary Applicant page
+    Set Global Variable    @{GlobalFailureMessages}    @{Messages}
+    verifyFailuresFromExecution    @{Verification}
+    Run Keyword If    ${FailureCount}>0    Fail    ${MessageToDisplay}
+
+*** Keywords ***
+goToManageIdentificationTypesPage
+    [Documentation]    This script navigate to Manage Identification Types page.
+    Click Element    link=Admin
+    Sleep    1
+    Wait Until Page Contains Element    //div[@id='controller_app_config']/div/a[2]/i    ${Timeout}    Application Settings tab not displayed after clicking on Admin button
+    Click Element    //div[@id='controller_app_config']/div/a[2]/i
+    Sleep    1
+    Wait Until Page Contains Element    link=Identification Types    ${Timeout}    Identification Types link not displayed under Application Settings tab
+    Click Element    link=Identification Types
+    Sleep    1
+
+addNewIdentificationTypeName
+    [Arguments]    ${Name}    ${CoreCodeNumber}    ${Status}
+    [Documentation]    This keyword add new Identification Type
+    ...
+    ...    Please provide the arguments as
+    ...    Name = "Name"
+    ...    [Core Code] = must be greater than 1
+    ...    Core Code = Ant Interger
+    ...    Status = Enabled Or Disabled
+    Focus    id=new_identification_type_name
+    Input Text    id=new_identification_type_name    ${Name}
+    @{AllCoreCodes}=    Get List Items    id=new_identification_type_core_code
+    Select From List    id=new_identification_type_core_code    @{AllCoreCodes}[${CoreCodeNumber}]
+    Run Keyword If    '${Status}'=='Disabled'    Unselect Checkbox    name=enabled
+    Focus    name=submit-add
+    Click Element    name=submit-add
+    Sleep    1
+
+fillApplicationForm
+    [Documentation]    This script fill the Primary applicant form under New Application Page.
+    sleep    1
+    Click Element    //div[@id='navHeader']/div[3]/div/ul/li[2]/a/i
+    sleep    1
+    Page Should Contain Element    link=New Application    New Application link is not present.
+    Click Element    link=New Application
+    Sleep    2
+    Page Should Contain Element    name=loan_type    Loan Type drop down is not present on first page of New application.
+    @{LoanType}=    Get List Items    name=loan_type
+    Select From List    name=loan_type    @{LoanType}[1]
+    Page Should Contain Element    id=request_amount    Request Amount text box is not present on first page of New Application.
+    Input Text    id=request_amount    100
+    Page Should Contain Textfield    id=request_term    Request Term text box is not present on first page of New Application.
+    Focus    id=request_term
+    Input Text    id=request_term    1
+    Click Element    name=continue
+    Sleep    1
+    Wait Until Page Contains Element    id=search_ssn    ${Timeout}    Primary Applicant page not loaded after clicking on Continue button

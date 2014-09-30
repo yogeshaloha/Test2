@@ -1,0 +1,6 @@
+*** Settings ***
+Documentation     \ \ Manage Credit Tier Sets
+...               \ Manage Rate Tables
+...               Manage Stipulations
+...               Manage Decline Reasons
+...               Manage Rule Sets
